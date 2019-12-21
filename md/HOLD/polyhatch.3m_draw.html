@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="generator" content="HTML Tidy for Cygwin (vers 25 March 2009), see www.w3.org" />
+
+  <title></title>
+  <style type="text/css">
+/*<![CDATA[*/
+
+  px {font-family: "Lucida Console", Monaco, monospace}
+  p { font-size:100%; line-height:1.1em; }
+  body {xfont-style: sans-serif}
+  body {
+  color:#333; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:1em; line-height:1.3em; }
+  a:visited { color:#666; }
+  h1,h2,h3,h4,h5,h6 { color:#333; font-family:georgia, verdana, sans-serif; }
+  h1 { font-size:150%; page-break-before:auto;background-color: #aaaaff}
+  h2 { font-size:143%;color:teal; }
+  h3 { font-size:134%;color:blue; }
+  h4 { font-size:120%;color:gray; }
+  img { max-width: 55em}
+  p{ padding: 0;margin:0; }
+  p{ padding-right:1.4em; }
+  p{ padding-bottom:1em; }
+  p{ padding-top:1em; }
+  p{ whitespace: pre-wrap; }
+  h5,h6 { font-size:100% }
+  a.nav,a:link.nav, a:visited.nav { background-color:#FFF; color:#000; }
+  XXtable { border:double #000; border-collapse:collapse; }
+  XXtable { border-collapse:collapse; }
+  XXtd { border:thin solid #888; }
+  XXtd { border:none; }
+  li { margin-bottom:0.5em; }
+  blockquote { display:block; font-size:100%; line-height:1.1em; margin:0 0 1.5em; padding:0 2.5em; }
+  pre { background-color:#DDD; font-size:100%; overflow:auto; padding:1em; }
+  a,li span { color:#000; }
+  a:hover, a.nav:hover, a:hover math { background-color:#000; color:#FFF; }
+  #Container { margin:0 10px; text-align:center; background-color: #BBB}
+  #Content { border-top:none; margin:auto; padding:0.3em; text-align:left; width:100%; max-width:55em; background:#FFF}
+  span.webName { font-size:.5em; }
+  textarea#content { font-size: 1em; line-height: 1.125; }
+  h1#pageName { line-height:1em; margin:0.2em 0 0.2em 0; padding:0; }
+  .property { color:#666; font-size:100%; }
+  a.existingWikiWord[title]{ //border: 1px dashed #BBB; }
+  .byline { color:#666; font-size:1.0em; font-style:italic; margin-bottom:1em; padding-top:1px; } 
+  /*]]>*/
+  </style>
+  <style type="text/css">
+/*<![CDATA[*/
+  body {
+  background-color: #F0F0F0;
+  color: #000000;
+  }
+  :link { color: #0000FF }
+  :visited { color: #C000C0 }
+  :active { color: #FF0000 }
+  span.c267 {font-size: 80%}
+  td.c266 {font-style: italic}
+  div.c265 {text-align: center}
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <a name="top" id="top"></a>
+
+  <h5><a href="download.html">[UP]</a></h5>
+
+  <div id="Container">
+    <div id="Content">
+      <div class="c265">
+        <hr />
+
+        <h1><i>Manual Reference Pages -</i> polyhatch (3)</h1>
+        <hr />
+      </div><a name="0"></a>
+
+      <h3><a name="0">NAME</a></h3>
+
+      <blockquote>
+        <b>polyhatch(3f)</b> - [M_draw:POLYGONS] Set the polygon hatch flag <b>(LICENSE:PD)</b>
+      </blockquote><a name="contents" id="contents"></a>
+
+      <h3>CONTENTS</h3>
+
+      <blockquote>
+        <a href="#1">Synopsis</a><br />
+        <a href="#2">Description</a><br />
+        <a href="#3">Example</a><br />
+      </blockquote><a name="4"></a>
+
+      <h3><a name="4">SYNOPSIS</a></h3>
+
+      <blockquote>
+        <pre>
+subroutine <b>polyhatch</b>(<i>onoff</i>)
+logical <i>onoff</i>
+</pre>
+      </blockquote><a name="2"></a>
+
+      <h3><a name="2">DESCRIPTION</a></h3>
+
+      <blockquote>
+        <p>Set the polygon hatch flag. This will always turn off fill. A non-zero integer or LOGICAL .true. turns polyhatch on. Note that hatched polygons
+        must initially be defined parallel to the X-Y plane.</p>
+      </blockquote><a name="3"></a>
+
+      <h3><a name="3">EXAMPLE</a></h3>
+
+      <blockquote>
+        Sample program:
+        <pre>
+   program demo_polyhatch
+   use M_draw
+   use M_drawplus, only : page, spirograph
+   use M_draw,    only  : D_BLACK,   D_WHITE
+   use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
+   use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
+   real :: N=11
+   call prefsize(600*10/6,200*10/6)
+   call vinit(' ')
+   call page( -15.0, 15.0, -5.0, 5.0)
+   call linewidth(100)
+   call color(D_BLACK)
+   call clear()
+   call color(D_RED)
+   call spirograph(-10.0, 0.0, N, 1.0, N, 5.0, 1000, 0.0, 0.0, 0)
+   call polyhatch(.true.) ! turn on polygon hatching
+   call hatchang(45.0)
+   call hatchpitch(0.3)
+   call color(D_GREEN)
+   call spirograph(10.0, 0.0, N, 1.0, N, 5.0, 1000, 0.0, 0.0, 2)
+   call vflush()
+   key=getkey()
+   call vexit()
+   end program demo_polyhatch
+</pre>
+      </blockquote>
+      <hr />
+
+      <table width="100%">
+        <tr>
+          <td width="33%"></td>
+
+          <td width="33%" align="center">polyhatch (3)</td>
+
+          <td class="c266" align="right" width="33%">December 18, 2019</td>
+        </tr>
+      </table><span class="c267">Generated by <a href="http://www.squarebox.co.uk/download/manServer.shtml">manServer 1.08</a> from
+      e4c9bae9-e8be-4272-a763-2409366978e4 using man macros.</span><br />
+      <br />
+
+      <div class="c265"><img src="images/polyhatch.3m_draw.gif" /></div>
+    </div>
+  </div>
+</body>
+</html>

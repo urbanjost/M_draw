@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="generator" content="HTML Tidy for Cygwin (vers 25 March 2009), see www.w3.org" />
+
+  <title></title>
+  <style type="text/css">
+/*<![CDATA[*/
+
+  px {font-family: "Lucida Console", Monaco, monospace}
+  p { font-size:100%; line-height:1.1em; }
+  body {xfont-style: sans-serif}
+  body {
+  color:#333; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:1em; line-height:1.3em; }
+  a:visited { color:#666; }
+  h1,h2,h3,h4,h5,h6 { color:#333; font-family:georgia, verdana, sans-serif; }
+  h1 { font-size:150%; page-break-before:auto;background-color: #aaaaff}
+  h2 { font-size:143%;color:teal; }
+  h3 { font-size:134%;color:blue; }
+  h4 { font-size:120%;color:gray; }
+  img { max-width: 55em}
+  p{ padding: 0;margin:0; }
+  p{ padding-right:1.4em; }
+  p{ padding-bottom:1em; }
+  p{ padding-top:1em; }
+  p{ whitespace: pre-wrap; }
+  h5,h6 { font-size:100% }
+  a.nav,a:link.nav, a:visited.nav { background-color:#FFF; color:#000; }
+  XXtable { border:double #000; border-collapse:collapse; }
+  XXtable { border-collapse:collapse; }
+  XXtd { border:thin solid #888; }
+  XXtd { border:none; }
+  li { margin-bottom:0.5em; }
+  blockquote { display:block; font-size:100%; line-height:1.1em; margin:0 0 1.5em; padding:0 2.5em; }
+  pre { background-color:#DDD; font-size:100%; overflow:auto; padding:1em; }
+  a,li span { color:#000; }
+  a:hover, a.nav:hover, a:hover math { background-color:#000; color:#FFF; }
+  #Container { margin:0 10px; text-align:center; background-color: #BBB}
+  #Content { border-top:none; margin:auto; padding:0.3em; text-align:left; width:100%; max-width:55em; background:#FFF}
+  span.webName { font-size:.5em; }
+  textarea#content { font-size: 1em; line-height: 1.125; }
+  h1#pageName { line-height:1em; margin:0.2em 0 0.2em 0; padding:0; }
+  .property { color:#666; font-size:100%; }
+  a.existingWikiWord[title]{ //border: 1px dashed #BBB; }
+  .byline { color:#666; font-size:1.0em; font-style:italic; margin-bottom:1em; padding-top:1px; } 
+  /*]]>*/
+  </style>
+  <style type="text/css">
+/*<![CDATA[*/
+  body {
+  background-color: #F0F0F0;
+  color: #000000;
+  }
+  :link { color: #0000FF }
+  :visited { color: #C000C0 }
+  :active { color: #FF0000 }
+  span.c402 {font-size: 80%}
+  td.c401 {font-style: italic}
+  div.c400 {text-align: center}
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <a name="top" id="top"></a>
+
+  <h5><a href="download.html">[UP]</a></h5>
+
+  <div id="Container">
+    <div id="Content">
+      <div class="c400">
+        <hr />
+
+        <h1><i>Manual Reference Pages -</i> translate (3)</h1>
+        <hr />
+      </div><a name="0"></a>
+
+      <h3><a name="0">NAME</a></h3>
+
+      <blockquote>
+        <b>translate(3f)</b> - [M_draw:TRANSFORMATION] Set up a translation. <b>(LICENSE:PD)</b>
+      </blockquote><a name="contents" id="contents"></a>
+
+      <h3>CONTENTS</h3>
+
+      <blockquote>
+        <a href="#1">Synopsis</a><br />
+        <a href="#2">Description</a><br />
+        <a href="#3">Example</a><br />
+      </blockquote><a name="4"></a>
+
+      <h3><a name="4">SYNOPSIS</a></h3>
+
+      <blockquote>
+        <pre>
+subroutine <b>translate</b>(<i>x</i>, <i>y</i>, <i>z</i>)
+real <i>x</i>, <i>y</i>, <i>z</i>
+</pre>
+      </blockquote><a name="2"></a>
+
+      <h3><a name="2">DESCRIPTION</a></h3>
+
+      <blockquote>
+        <p>Set up a translation.</p>
+      </blockquote><a name="3"></a>
+
+      <h3><a name="3">EXAMPLE</a></h3>
+
+      <blockquote>
+        Sample program:
+        <pre>
+   program demo_translate
+   !
+   !      a demonstration of objects
+   !
+   use M_draw
+<br />   integer SPHERE
+   real RADIUS
+   parameter (RADIUS = 10.0)
+   parameter(SPHERE = 1)
+   character(len=50) :: device
+   integer           :: ios
+<br />   print*,'Enter output device:'
+   read(*,'(a)',iostat=ios) device
+   if(ios.ne.0)device=' '
+<br />   call vinit(device)
+<br />   call vsetflush(.false.)
+   !
+   ! set up our viewing transformation
+   !
+   call perspective(90.0, 1.0, 0.001, 500.0)
+   call lookat(13.0, 13.0, 8.0, 0.0, 0.0, 0.0, 0.0)
+<br />   call color(D_BLACK)
+   call clear()
+   !
+   ! Call a routine to make the sphere object
+   !
+   call makesphere()
+<br />   !
+   ! Now draw the sphere object scaled down. We use the pushmatrix
+   ! and the popmatrix to preserve the transformation matrix so
+   ! that only this sphere is drawn scaled. The callobj then enables
+   ! us to draw the sphere we generated with makeobj in makesphere.
+   !
+   call color(D_CYAN)
+<br />   call pushmatrix()
+   call scale(0.5, 0.5, 0.5)
+   call callobj(SPHERE)
+   call popmatrix()
+   !
+   ! now we draw the same sphere translated, with a different
+   ! scale and color.
+   !
+   call color(D_WHITE)
+<br />   call pushmatrix()
+   call translate(0.0, (-1.4) * RADIUS, 1.4 * RADIUS)
+   call scale(0.3, 0.3, 0.3)
+   call callobj(SPHERE)
+   call popmatrix()
+   !
+   ! and maybe a few more times....
+   !
+   call color(D_RED)
+<br />   call pushmatrix()
+   call translate(0.0, RADIUS, 0.7 * RADIUS)
+   call scale(0.2, 0.2, 0.2)
+   call callobj(SPHERE)
+   call popmatrix()
+<br />   call color(D_GREEN)
+<br />   call pushmatrix()
+   call translate(0.0, 1.5 * RADIUS, -RADIUS)
+   call scale(0.15, 0.15, 0.15)
+   call callobj(SPHERE)
+   call popmatrix()
+<br />   call color(D_YELLOW)
+<br />   call pushmatrix()
+   call translate(0.0, -RADIUS, -RADIUS)
+   call scale(0.12, 0.12, 0.12)
+   call callobj(SPHERE)
+   call popmatrix()
+<br />   call color(D_BLUE)
+<br />   call pushmatrix()
+   call translate(0.0, (-2.0)*RADIUS, -RADIUS)
+   call scale(0.3, 0.3, 0.3)
+   call callobj(SPHERE)
+   call popmatrix()
+<br />   idum=getkey()
+<br />   call vexit()
+   contains
+   subroutine makesphere
+   !
+   !        make a sphere object
+   !
+   integer SPHERE
+   integer ii
+   real i, r, z, a, RADIUS, PI
+   parameter (PI = 3.1415926535, RADIUS = 10.0, SPHERE = 1)
+<br />   call makeobj(SPHERE)
+   !
+   ! create the latitudinal rings
+   !
+   do ii = 0, 180, 20
+      call pushmatrix()
+      i=real(ii)
+      call rotate(i, 'y')
+      call circle(0.0, 0.0, RADIUS)
+      call popmatrix()
+   enddo
+   !
+   ! create the longitudinal rings
+   !
+   call pushmatrix()
+   call rotate(90.0, 'x')
+   do ia = -90, 90, 20
+      a=ia
+      r = RADIUS * cos(a * PI / 180.0)
+      z = RADIUS * sin(a * PI / 180.0)
+      call pushmatrix()
+      call translate(0.0, 0.0, -z)
+      call circle(0.0, 0.0, r)
+      call popmatrix()
+   enddo
+   call popmatrix()
+<br />   call closeobj()
+<br />   end subroutine makesphere
+<br />   end program demo_translate
+</pre>
+      </blockquote>
+      <hr />
+
+      <table width="100%">
+        <tr>
+          <td width="33%"></td>
+
+          <td width="33%" align="center">translate (3)</td>
+
+          <td class="c401" align="right" width="33%">December 18, 2019</td>
+        </tr>
+      </table><span class="c402">Generated by <a href="http://www.squarebox.co.uk/download/manServer.shtml">manServer 1.08</a> from
+      06de4dba-f260-43ae-8507-16b902cf11ca using man macros.</span><br />
+      <br />
+
+      <div class="c400"><img src="images/translate.3m_draw.gif" /></div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="generator" content="HTML Tidy for Cygwin (vers 25 March 2009), see www.w3.org" />
+
+  <title></title>
+  <style type="text/css">
+/*<![CDATA[*/
+
+  px {font-family: "Lucida Console", Monaco, monospace}
+  p { font-size:100%; line-height:1.1em; }
+  body {xfont-style: sans-serif}
+  body {
+  color:#333; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:1em; line-height:1.3em; }
+  a:visited { color:#666; }
+  h1,h2,h3,h4,h5,h6 { color:#333; font-family:georgia, verdana, sans-serif; }
+  h1 { font-size:150%; page-break-before:auto;background-color: #aaaaff}
+  h2 { font-size:143%;color:teal; }
+  h3 { font-size:134%;color:blue; }
+  h4 { font-size:120%;color:gray; }
+  img { max-width: 55em}
+  p{ padding: 0;margin:0; }
+  p{ padding-right:1.4em; }
+  p{ padding-bottom:1em; }
+  p{ padding-top:1em; }
+  p{ whitespace: pre-wrap; }
+  h5,h6 { font-size:100% }
+  a.nav,a:link.nav, a:visited.nav { background-color:#FFF; color:#000; }
+  XXtable { border:double #000; border-collapse:collapse; }
+  XXtable { border-collapse:collapse; }
+  XXtd { border:thin solid #888; }
+  XXtd { border:none; }
+  li { margin-bottom:0.5em; }
+  blockquote { display:block; font-size:100%; line-height:1.1em; margin:0 0 1.5em; padding:0 2.5em; }
+  pre { background-color:#DDD; font-size:100%; overflow:auto; padding:1em; }
+  a,li span { color:#000; }
+  a:hover, a.nav:hover, a:hover math { background-color:#000; color:#FFF; }
+  #Container { margin:0 10px; text-align:center; background-color: #BBB}
+  #Content { border-top:none; margin:auto; padding:0.3em; text-align:left; width:100%; max-width:55em; background:#FFF}
+  span.webName { font-size:.5em; }
+  textarea#content { font-size: 1em; line-height: 1.125; }
+  h1#pageName { line-height:1em; margin:0.2em 0 0.2em 0; padding:0; }
+  .property { color:#666; font-size:100%; }
+  a.existingWikiWord[title]{ //border: 1px dashed #BBB; }
+  .byline { color:#666; font-size:1.0em; font-style:italic; margin-bottom:1em; padding-top:1px; } 
+  /*]]>*/
+  </style>
+  <style type="text/css">
+/*<![CDATA[*/
+  body {
+  background-color: #F0F0F0;
+  color: #000000;
+  }
+  :link { color: #0000FF }
+  :visited { color: #C000C0 }
+  :active { color: #FF0000 }
+  span.c87 {font-size: 80%}
+  td.c86 {font-style: italic}
+  div.c85 {text-align: center}
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <a name="top" id="top"></a>
+
+  <h5><a href="download.html">[UP]</a></h5>
+
+  <div id="Container">
+    <div id="Content">
+      <div class="c85">
+        <hr />
+
+        <h1><i>Manual Reference Pages -</i> dashcode (3)</h1>
+        <hr />
+      </div><a name="0"></a>
+
+      <h3><a name="0">NAME</a></h3>
+
+      <blockquote>
+        <b>dashcode(3f)</b> - [M_draw:LINESTYLE] set dash pattern length <b>(LICENSE:PD)</b>
+      </blockquote><a name="contents" id="contents"></a>
+
+      <h3>CONTENTS</h3>
+
+      <blockquote>
+        <a href="#1">Synopsis</a><br />
+        <a href="#2">Description</a><br />
+        <a href="#3">Image</a><br />
+        <a href="#4">Example</a><br />
+      </blockquote><a name="5"></a>
+
+      <h3><a name="5">SYNOPSIS</a></h3>
+
+      <blockquote>
+        <pre>
+subroutine <b>dashcode</b>(<i>dashlen</i>)
+real <i>dashlen</i>
+</pre>
+      </blockquote><a name="2"></a>
+
+      <h3><a name="2">DESCRIPTION</a></h3>
+
+      <blockquote>
+        <p>Set the current dash length (in world units) to be <i>dashlen</i>.</p>
+      </blockquote><a name="3"></a>
+
+      <h3><a name="3">IMAGE</a></h3>
+
+      <blockquote>
+        <p>The sample graphic shows a line segment being drawn using the same linestyle except the dashcode is being changed. Note that the dashcode is in
+        world units,</p>
+      </blockquote><a name="4"></a>
+
+      <h3><a name="4">EXAMPLE</a></h3>
+
+      <blockquote>
+        Sample program:
+        <pre>
+  program demo_dashcode
+  use M_draw
+  use M_drawplus, only : page
+  implicit none
+  integer        :: icolor
+  integer        :: ikey
+  real,parameter :: b=0.5
+  real           :: x, y
+  real           :: dcode
+     call prefsize(1000,200)
+     call vinit(' ')
+     call color(D_BLACK)
+     call clear()
+     call page(-25.0-b, 25.0+b, -5.0-b, 5.0+b)
+     call textsize(2.0, 2.4)
+     call font("futura.m")
+     call ycentertext()
+     icolor=7; dcode=0.010/5.0; X=-23.0; Y=3.5  ; call line()
+     icolor=1; dcode=0.025/5.0; X=-23.0; Y=-0.0 ; call line()
+     icolor=2; dcode=0.030/5.0; X=-23.0; Y=-3.5 ; call line()
+     icolor=4; dcode=0.050/5.0; X=0.0;   Y=3.5  ; call line()
+     icolor=5; dcode=0.075/5.0; X=0.0;   Y=-0.0 ; call line()
+     icolor=6; dcode=0.100/5.0; X=0.0;   Y=-3.5 ; call line()
+     call linewidth(200)
+     call color(D_BLUE)
+     call move2(-25.0, -5.0)
+     call draw2(-25.0,  5.0)
+     call draw2(25.0,   5.0)
+     call draw2(25.0,  -5.0)
+     call draw2(-25.0, -5.0)
+     ikey=getkey()
+     call vexit()
+  contains
+  subroutine line
+  character(len=6) :: string
+     call linestyle('11100100')
+     call dashcode(dcode)
+     call color(icolor)
+     call linewidth(70)
+     call move2(X,Y)
+     call rdraw2(10.0, 0.0)
+     call rmove2(3.0, 0.0)
+     call linestyle('')
+     call linewidth(180)
+     call color(D_WHITE)
+     write(string,'(f6.3)')dcode
+     call drawstr (string)
+  end subroutine line
+  end program demo_dashcode
+<br />
+</pre>
+      </blockquote>
+      <hr />
+
+      <table width="100%">
+        <tr>
+          <td width="33%"></td>
+
+          <td width="33%" align="center">dashcode (3)</td>
+
+          <td class="c86" align="right" width="33%">December 18, 2019</td>
+        </tr>
+      </table><span class="c87">Generated by <a href="http://www.squarebox.co.uk/download/manServer.shtml">manServer 1.08</a> from
+      b883ea47-6401-4880-9a7a-56b3e8e9f191 using man macros.</span><br />
+      <br />
+
+      <div class="c85"><img src="images/dashcode.3m_draw.gif" /></div>
+    </div>
+  </div>
+</body>
+</html>

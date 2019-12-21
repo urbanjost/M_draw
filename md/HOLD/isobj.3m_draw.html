@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="generator" content="HTML Tidy for Cygwin (vers 25 March 2009), see www.w3.org" />
+
+  <title></title>
+  <style type="text/css">
+/*<![CDATA[*/
+
+  px {font-family: "Lucida Console", Monaco, monospace}
+  p { font-size:100%; line-height:1.1em; }
+  body {xfont-style: sans-serif}
+  body {
+  color:#333; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:1em; line-height:1.3em; }
+  a:visited { color:#666; }
+  h1,h2,h3,h4,h5,h6 { color:#333; font-family:georgia, verdana, sans-serif; }
+  h1 { font-size:150%; page-break-before:auto;background-color: #aaaaff}
+  h2 { font-size:143%;color:teal; }
+  h3 { font-size:134%;color:blue; }
+  h4 { font-size:120%;color:gray; }
+  img { max-width: 55em}
+  p{ padding: 0;margin:0; }
+  p{ padding-right:1.4em; }
+  p{ padding-bottom:1em; }
+  p{ padding-top:1em; }
+  p{ whitespace: pre-wrap; }
+  h5,h6 { font-size:100% }
+  a.nav,a:link.nav, a:visited.nav { background-color:#FFF; color:#000; }
+  XXtable { border:double #000; border-collapse:collapse; }
+  XXtable { border-collapse:collapse; }
+  XXtd { border:thin solid #888; }
+  XXtd { border:none; }
+  li { margin-bottom:0.5em; }
+  blockquote { display:block; font-size:100%; line-height:1.1em; margin:0 0 1.5em; padding:0 2.5em; }
+  pre { background-color:#DDD; font-size:100%; overflow:auto; padding:1em; }
+  a,li span { color:#000; }
+  a:hover, a.nav:hover, a:hover math { background-color:#000; color:#FFF; }
+  #Container { margin:0 10px; text-align:center; background-color: #BBB}
+  #Content { border-top:none; margin:auto; padding:0.3em; text-align:left; width:100%; max-width:55em; background:#FFF}
+  span.webName { font-size:.5em; }
+  textarea#content { font-size: 1em; line-height: 1.125; }
+  h1#pageName { line-height:1em; margin:0.2em 0 0.2em 0; padding:0; }
+  .property { color:#666; font-size:100%; }
+  a.existingWikiWord[title]{ //border: 1px dashed #BBB; }
+  .byline { color:#666; font-size:1.0em; font-style:italic; margin-bottom:1em; padding-top:1px; } 
+  /*]]>*/
+  </style>
+  <style type="text/css">
+/*<![CDATA[*/
+  body {
+  background-color: #F0F0F0;
+  color: #000000;
+  }
+  :link { color: #0000FF }
+  :visited { color: #C000C0 }
+  :active { color: #FF0000 }
+  span.c184 {font-size: 80%}
+  td.c183 {font-style: italic}
+  div.c182 {text-align: center}
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <a name="top" id="top"></a>
+
+  <h5><a href="download.html">[UP]</a></h5>
+
+  <div id="Container">
+    <div id="Content">
+      <div class="c182">
+        <hr />
+
+        <h1><i>Manual Reference Pages -</i> isobj (3)</h1>
+        <hr />
+      </div><a name="0"></a>
+
+      <h3><a name="0">NAME</a></h3>
+
+      <blockquote>
+        <b>isobj(3f)</b> - [M_draw:OBJECT] Returns non-zero if there is an object of number n. <b>(LICENSE:PD)</b>
+      </blockquote><a name="contents" id="contents"></a>
+
+      <h3>CONTENTS</h3>
+
+      <blockquote>
+        <a href="#1">Synopsis</a><br />
+        <a href="#2">Description</a><br />
+        <a href="#3">Example</a><br />
+      </blockquote><a name="4"></a>
+
+      <h3><a name="4">SYNOPSIS</a></h3>
+
+      <blockquote>
+        <pre>
+logical function <b>isobj</b>(<i>n</i>)
+integer :: <i>n</i>
+</pre>
+      </blockquote>
+
+      <p><a name="2"></a></p>
+
+      <h3><a name="2">DESCRIPTION</a></h3>
+
+      <blockquote>
+        Returns non-zero if there is an object of number <i>n</i>.
+      </blockquote><a name="3"></a>
+
+      <h3><a name="3">EXAMPLE</a></h3>
+
+      <blockquote>
+        Sample program:
+        <pre>
+   program demo_isobj
+   use M_draw
+      call prefsize(300, 300)
+      call prefposition(100, 100)
+      call vinit(' ')   ! set up device
+      call ortho2(-5.0,5.0,-5.0,5.0)
+      call color(D_WHITE)  ! set current color
+      call clear()   ! clear screen to current color
+<br />      call makeobj(3)  ! create a simple object
+         call polyfill(.true.)
+         call color(D_GREEN)
+         call circle(0.0,0.0,4.0)
+      call closeobj()
+<br />      if(isobj(3))then
+         write(*,*)' 3 is an object (CORRECT)'
+         call callobj(3)
+      else
+         write(*,*)' 3 is not an object (ERROR)'
+      endif
+<br />      if(isobj(4))then
+         write(*,*)' 4 is an object (ERROR)'
+      else
+         write(*,*)' 4 is not an object (CORRECT)'
+      endif
+<br />      call callobj(4) ! note: calling a non-existent object is a no-op
+<br />      idum=getkey()! wait for some input
+      call vexit()!  set the screen back to its original state
+<br />   end program demo_isobj
+<br />
+</pre>Expected output:
+
+        <blockquote>
+          <p>3 is an object (CORRECT) 4 is not an object (CORRECT)</p>
+        </blockquote>
+      </blockquote>
+      <hr />
+
+      <table width="100%">
+        <tr>
+          <td width="33%"></td>
+
+          <td width="33%" align="center">isobj (3)</td>
+
+          <td class="c183" align="right" width="33%">December 18, 2019</td>
+        </tr>
+      </table><span class="c184">Generated by <a href="http://www.squarebox.co.uk/download/manServer.shtml">manServer 1.08</a> from
+      385bdee8-d136-46d2-b900-374b7e2e2756 using man macros.</span><br />
+      <br />
+
+      <div class="c182"><img src="images/isobj.3m_draw.gif" /></div>
+    </div>
+  </div>
+</body>
+</html>
