@@ -67,35 +67,6 @@ clean:
 .F90.o:
 	$(F90) $(F90FLAGS) -c $<
 
-.f95.o:
-	$(F90) $(F90FLAGS) -c $<
-
-.F95.o:
-	$(F90) $(F90FLAGS) -c $<
-
-.f03.o:
-	$(F90) $(F90FLAGS) -c $<
-
-.F03.o:
-	$(F90) $(F90FLAGS) -c $<
-#=================================================================================
-# Fortran free format file known to have ufpp(1) preprocessor directives
-# run thru ufpp(1) preprocessor with system commands allowed, variable F90 defined
-# Assumes .F90 file does not exist previously, as it will overwrite it.
-.FF.F90:
-	@# run thru ufpp(1) preprocessor with system commands allowed
-	ufpp -D F90 `uname -o` -verbose -system .true. -i $(<) -o $(*F).F90
-	@[ -s $(*F).F90 ] || echo "error: $(*F).F90 is empty"
-#=================================================================================
-# Fortran free format file known to have ufpp(1) preprocessor directives
-# run thru ufpp(1) preprocessor with no system commands allowed, variable F90
-# defined. Assumes .F90 file does not exist previously, as it will overwrite it.
-.ff.f90:
-	@# run thru ufpp(1) preprocessor with system commands allowed
-	ufpp -D F90 `uname -o` -verbose -i $(<) -o $(*F).F90
-	@[ -s $(*F).F90 ] || echo "error: $(*F).F90 is empty"
-#=================================================================================
-
 C-arcs.o: draw.h 
 C-aspect.o: draw.h 
 C-attr.o: draw.h 
