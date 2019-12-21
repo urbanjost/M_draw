@@ -32,7 +32,7 @@ subroutine <b>unexpandviewport</b>()
    integer :: ipaws
 <br />   !! set up graphics area
    call prefsize(1000,200)
-   call vinit(' ') ! start graphics using device $M_draw_DEVICE
+   call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
 <br />   !! draw circle that fills default world coordinate window
    call polyfill(.true.)
    call color(D_GREEN)

@@ -49,7 +49,7 @@ subroutine <b>rdraw2</b>(<i>deltax</i>, <i>deltay</i>)
      use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
      integer :: ipaws
 <br />     call prefsize(200,200)
-     call vinit(' ') ! start graphics using device $M_draw_DEVICE
+     call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
      call ortho2(-55.0, 55.0, -55.0, 55.0)
      call linewidth(400)
      call color(D_WHITE)

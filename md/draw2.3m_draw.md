@@ -60,7 +60,7 @@ subroutine <b>draw2</b>(<i>x</i>, <i>y</i>)
       real,parameter :: rotate=0.0, gap=2.0
       integer        :: ipaws
 <br />      call prefsize(400,400)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call ortho2(-150.0,150.0,-150.0,150.0)
       call color(D_MAGENTA)
       call clear()

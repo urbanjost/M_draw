@@ -66,7 +66,7 @@ subroutine <b>mapcolor</b>(<i>indx</i>, <i>red</i>, <i>green</i>, <i>blue</i>)
       integer              :: istart, iend
       character(len=20)    :: device
       call prefsize(BOX,BOX)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call polyfill(.true.)
       call color(D_BLACK)
       call clear()

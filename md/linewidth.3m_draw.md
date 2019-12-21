@@ -36,7 +36,7 @@ integer <i>iwidth</i>
    real    :: b=0.5
    integer :: ipaws
    call prefsize(1000,200)
-   call vinit(' ') ! start graphics using device $M_draw_DEVICE
+   call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
    call page(-25.0-b, 25.0+b, -5.0-b, 5.0+b)
    call color(D_YELLOW)
    call clear()

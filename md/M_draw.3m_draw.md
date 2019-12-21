@@ -682,7 +682,7 @@ following software fonts are supported:
 <br />
 </pre>A markers font "markers" is also provided for doing markers - you need to have centertext mode on for this to give sensible results when placing the
 markers.
-        <p>If the environment variable "M_draw_FONTPATH" is set M_draw looks for the software fonts in the directory given by this value.</p>
+        <p>If the environment variable "M_DRAW_FONTPATH" is set M_draw looks for the software fonts in the directory given by this value.</p>
         <p>the default font is futura.l</p>
       </blockquote><a name=""></a>
       <h4><a name="">TRANSFORMATION ROUTINES</a></h4>
@@ -846,7 +846,7 @@ markers.
    integer  :: i,j
 <br />      ! initialize image
       call prefsize(400,400)  ! set size before starting
-      call vinit(' ')         ! start graphics using device $M_draw_DEVICE
+      call vinit(' ')         ! start graphics using device $M_DRAW_DEVICEDEVICE
       call textsize(10.0,10.0)
       call mapcolor( 0,   255,255,255 )  !white
       call mapcolor( 1,   255,  0,  0 )  !red

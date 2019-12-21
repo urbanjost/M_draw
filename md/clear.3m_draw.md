@@ -33,7 +33,7 @@ subroutine <b>clear</b>()
      implicit none
      integer :: ipaws
 <br />     call prefsize(300,300)
-     call vinit(' ') ! start graphics using device $M_draw_DEVICE
+     call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
      ipaws=getkey()
      call ortho2(-100.0,100.0,-100.0,100.0)
 <br />     call color(D_BLACK)               ! set current  color

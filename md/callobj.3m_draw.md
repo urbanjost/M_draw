@@ -33,7 +33,7 @@ integer <i>n</i>
       integer :: icolor
 <br />      ! set up graphics area
       call prefsize(680,680)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       !! Background color
       !call color(D_WHITE)
       !! Page setup

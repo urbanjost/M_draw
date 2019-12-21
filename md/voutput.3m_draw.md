@@ -37,9 +37,9 @@ character*(*) <i>path</i>
             </tr>
           </table>
         </blockquote>
-        <p>If the open of the file fails, an attempt is made to append to file "M_draw_OUTPUT". If this fails, standard output is used.</p>
-        <p>When <b>vinit</b>() is called if <b>voutput</b>() has not been called then the environment variable M_draw_OUTPUT is checked and if it is defined
-        and not a null string then <b>voutput</b>() is called with the M_draw_OUTPUT variable's value.</p>
+        <p>If the open of the file fails, an attempt is made to append to file "M_DRAW_OUTPUT". If this fails, standard output is used.</p>
+        <p>When <b>vinit</b>() is called if <b>voutput</b>() has not been called then the environment variable M_DRAW_OUTPUT is checked and if it is defined
+        and not a null string then <b>voutput</b>() is called with the M_DRAW_OUTPUT variable's value.</p>
         <p>A common use of the |command option is to automatically call programs that convert PPM files to other common pixmap formats or converts the GNU
         metafile to other formats (typically via the GNU plotutils plot program).</p>
       </blockquote><a name="3"></a>

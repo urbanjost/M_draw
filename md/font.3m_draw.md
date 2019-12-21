@@ -58,7 +58,7 @@ markers.
    integer :: ipaws
       !! set up drawing surface
       call prefsize(400, 400)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call page(-100.0, 100.0, -100.0, 100.0)
       call color(D_WHITE)
       call clear()

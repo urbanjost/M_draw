@@ -37,7 +37,7 @@ subroutine <b>makepoly</b>()
    real    :: bottom, left, sun_radius, planet_radius, planet_offset
    integer :: ipaws
       call prefsize(wide,tall)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call ortho2(0.0, real(wide), 0.0, real(tall) )
       ! call linewidth(3) ! really slows down pbm driver because all lines are polygons
       call color(D_WHITE)

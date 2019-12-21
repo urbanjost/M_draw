@@ -37,7 +37,7 @@ subroutine <b>prefposition</b>(<i>x</i>, <i>y</i>)
      integer :: ipaws
 <br />     call prefsize(60,40)
      call prefposition(100,100)
-<br />     call vinit(' ')         ! start graphics using device $M_draw_DEVICE
+<br />     call vinit(' ')         ! start graphics using device $M_DRAW_DEVICEDEVICE
      call ortho2(-300.0,300.0,-200.0,200.0)
      call color(D_BLACK)
      call clear()

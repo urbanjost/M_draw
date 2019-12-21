@@ -34,7 +34,7 @@ subroutine <b>expandviewport</b>()
    integer :: ipaws
 <br />   !! set up graphics area
    call prefsize(1000,200)
-   call vinit(' ') ! start graphics using device $M_draw_DEVICE
+   call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
 <br />   !! draw box that fills default world coordinate window
    call color(D_RED)
    call polyfill(.true.)

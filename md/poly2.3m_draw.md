@@ -30,7 +30,7 @@ subroutine <b>poly2</b>(<i>n</i>, <i>points</i>)
    integer :: i,j
    real    :: xx,yy
       call prefsize(512,512)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call ortho2(0.0,256.0,0.0,256.0)
       call linewidth(1)
       call polyfill(.true.)

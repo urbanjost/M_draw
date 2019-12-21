@@ -53,7 +53,7 @@ subroutine <b>page</b>(xsmall,xlarge,ysmall,ylarge)
    integer :: ipaws
    real,parameter :: radius=25.0
       call prefsize(600,600)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call page(-radius, radius, -radius, radius)
       call linewidth(200)
       call clear()

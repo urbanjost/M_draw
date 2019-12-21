@@ -60,7 +60,7 @@ subroutine <b>rect</b>(<i>x1</i>, <i>y1</i>, <i>x2</i>, <i>y2</i>)
    real    :: b=0.2
 <br />   !! set up graphics area
    call prefsize(1000,200)
-   call vinit(' ') ! start graphics using device $M_draw_DEVICE
+   call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
    call page(-25.0-b, 25.0+b, -5.0-b, 5.0+b)
 <br />   call linewidth(150)
    call color(D_RED)

@@ -42,7 +42,7 @@ subroutine <b>rmove2</b>(<i>deltax</i>, <i>deltay</i>)
      use M_draw, only: move2, rmove2, rdraw2, vexit
      use M_draw, only: linewidth
      call prefsize(500,500)
-     call vinit(' ') ! start graphics using device $M_draw_DEVICE
+     call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
      call ortho2(-110.0,110.0,-110.0,110.0)
      call move2(-100.0,-100.0)
      call linewidth(70)

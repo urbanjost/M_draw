@@ -38,7 +38,7 @@ subroutine <b>centertext</b>(<i>onoff</i>)
    use :: M_units, only : cosd, sind
    !! set up drawing environment
    call prefsize(600,600)
-   call vinit(' ') ! start graphics using device $M_draw_DEVICE
+   call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
    call ortho2(-300.0,300.0,-300.0,300.0)
    call textsize(8.0,8.0)
    call linewidth(30)

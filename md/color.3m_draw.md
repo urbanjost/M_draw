@@ -49,7 +49,7 @@ subroutine <b>color</b>(<i>col</i>)
     integer :: ipaws
        !! set up long bar as plotting area
        call prefsize(1000,200)
-       call vinit(' ') ! start graphics using device $M_draw_DEVICE
+       call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
        call page(-25.0-b, 25.0+b, -5.0-b, 5.0+b)
        call textsize( 3.5, 4.0)
        call font('futura.m')

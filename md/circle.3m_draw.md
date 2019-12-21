@@ -56,7 +56,7 @@ subroutine <b>circle</b>(<i>x</i>, <i>y</i>, <i>radius</i>)
       integer :: ipaws
    ! set up drawing surface
       call prefsize(1000,200)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call page(-25.0-b,25.0+b,-R-b,R+b)
       call linewidth(200)
       call color(D_CYAN)

@@ -201,10 +201,10 @@ subroutine <b>vinit</b>(<i>device</i>)
        mswin - IBM PC Microsoft Windows.
 <br />
 </pre>
-      </blockquote>Note 2 : If <i>device</i> is a NULL or a null string the value of the environment variable "M_draw_DEVICE" is taken as the <i>device</i>
+      </blockquote>Note 2 : If <i>device</i> is a NULL or a null string the value of the environment variable "M_DRAW_DEVICE" is taken as the <i>device</i>
       type to be opened. The format of the variable is
       <pre>
-            M_draw_DEVICE [ xsize [ ysize [ xoffset [ yoffset ] ] ]
+            M_DRAW_DEVICE [ xsize [ ysize [ xoffset [ yoffset ] ] ]
 <br />
 </pre>
       <blockquote>

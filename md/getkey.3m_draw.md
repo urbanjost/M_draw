@@ -30,7 +30,7 @@ integer function <b>getkey</b>()
      !! set up drawing environment
      call prefsize(600,600)
      call voutput('+')
-     call vinit(' ') ! start graphics using device $M_draw_DEVICE
+     call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
      call ortho2(-300.0,300.0,-300.0,300.0)
      call textsize(500.0,500.0)
      call linewidth(130)

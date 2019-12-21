@@ -39,7 +39,7 @@ subroutine <b>textang</b>(<i>ang</i>)
    use :: M_units, only : cosd, sind
 <br />   !! set up drawing environment
    call prefsize(600,600)
-   call vinit(' ') ! start graphics using device $M_draw_DEVICE
+   call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
    call ortho2(-100.0,100.0,-100.0,100.0)
    call textsize(7.0,7.0)
    call linewidth(20)
