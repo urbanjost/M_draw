@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta name="generator" content="HTML Tidy for Cygwin (vers 25 March 2009), see www.w3.org" />
+
+  <title></title>
+  <style type="text/css">
+/*<![CDATA[*/
+
+  px {font-family: "Lucida Console", Monaco, monospace}
+  p { font-size:100%; line-height:1.1em; }
+  body {xfont-style: sans-serif}
+  body {
+  color:#333; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:1em; line-height:1.3em; }
+  a:visited { color:#666; }
+  h1,h2,h3,h4,h5,h6 { color:#333; font-family:georgia, verdana, sans-serif; }
+  h1 { font-size:150%; page-break-before:auto;background-color: #aaaaff}
+  h2 { font-size:143%;color:teal; }
+  h3 { font-size:134%;color:blue; }
+  h4 { font-size:120%;color:gray; }
+  img { max-width: 55em}
+  p{ padding: 0;margin:0; }
+  p{ padding-right:1.4em; }
+  p{ padding-bottom:1em; }
+  p{ padding-top:1em; }
+  p{ whitespace: pre-wrap; }
+  h5,h6 { font-size:100% }
+  a.nav,a:link.nav, a:visited.nav { background-color:#FFF; color:#000; }
+  XXtable { border:double #000; border-collapse:collapse; }
+  XXtable { border-collapse:collapse; }
+  XXtd { border:thin solid #888; }
+  XXtd { border:none; }
+  li { margin-bottom:0.5em; }
+  blockquote { display:block; font-size:100%; line-height:1.1em; margin:0 0 1.5em; padding:0 2.5em; }
+  pre { background-color:#DDD; font-size:100%; overflow:auto; padding:1em; }
+  a,li span { color:#000; }
+  a:hover, a.nav:hover, a:hover math { background-color:#000; color:#FFF; }
+  #Container { margin:0 10px; text-align:center; background-color: #BBB}
+  #Content { border-top:none; margin:auto; padding:0.3em; text-align:left; width:100%; max-width:55em; background:#FFF}
+  span.webName { font-size:.5em; }
+  textarea#content { font-size: 1em; line-height: 1.125; }
+  h1#pageName { line-height:1em; margin:0.2em 0 0.2em 0; padding:0; }
+  .property { color:#666; font-size:100%; }
+  a.existingWikiWord[title]{ //border: 1px dashed #BBB; }
+  .byline { color:#666; font-size:1.0em; font-style:italic; margin-bottom:1em; padding-top:1px; } 
+  /*]]>*/
+  </style>
+  <style type="text/css">
+/*<![CDATA[*/
+  body {
+  background-color: #F0F0F0;
+  color: #000000;
+  }
+  :link { color: #0000FF }
+  :visited { color: #C000C0 }
+  :active { color: #FF0000 }
+  span.c219 {font-size: 80%}
+  td.c218 {font-style: italic}
+  td.c217 {font-weight: bold}
+  div.c216 {text-align: center}
+  /*]]>*/
+  </style>
+</head>
+
+<body>
+  <a name="top" id="top"></a>
+
+  <h5><a href="download.html">[UP]</a></h5>
+
+  <div id="Container">
+    <div id="Content">
+      <div class="c216">
+        <hr />
+
+        <h1><i>Manual Reference Pages -</i> move2 (3)</h1>
+        <hr />
+      </div><a name="0"></a>
+
+      <h3><a name="0">NAME</a></h3>
+
+      <blockquote>
+        <b>move2(3f)</b> - [M_draw:MOVE] Move graphics position to point (x, y) <b>(LICENSE:PD)</b>
+      </blockquote><a name="contents" id="contents"></a>
+
+      <h3>CONTENTS</h3>
+
+      <blockquote>
+        <a href="#1">Synopsis</a><br />
+        <a href="#2">Description</a><br />
+        <a href="#3">Options</a><br />
+        <a href="#4">Example</a><br />
+      </blockquote><a name="5"></a>
+
+      <h3><a name="5">SYNOPSIS</a></h3>
+
+      <blockquote>
+        <pre>
+subroutine <b>move2</b>(<i>x</i>, <i>y</i>)
+<b>real,intent</b>(<i>in</i>) :: <i>x</i>, <i>y</i>
+</pre>
+      </blockquote><a name="2"></a>
+
+      <h3><a name="2">DESCRIPTION</a></h3>
+
+      <blockquote>
+        <p>Update current position. Move graphics position to point (<i>x</i>, <i>y</i>). (<i>x</i>, <i>y</i>) is a point <i>in</i> world coordinates.</p>
+      </blockquote><a name="3"></a>
+
+      <h3><a name="3">OPTIONS</a></h3>
+
+      <blockquote>
+        <table cellpadding="3">
+          <tr valign="top">
+            <td class="c217" width="6%" nowrap="nowrap">X</td>
+
+            <td valign="bottom">new X position</td>
+          </tr>
+
+          <tr valign="top">
+            <td class="c217" width="6%" nowrap="nowrap">Y</td>
+
+            <td valign="bottom">new Y position</td>
+          </tr>
+
+          <tr>
+            <td></td>
+          </tr>
+        </table>
+      </blockquote><a name="4"></a>
+
+      <h3><a name="4">EXAMPLE</a></h3>
+
+      <blockquote>
+        Sample program:
+        <pre>
+     program demo_move2
+     use M_draw, only : prefsize, vinit, ortho2, clear, getkey
+     use M_draw, only : move2, draw2, vexit, color
+     use M_draw,    only  : D_BLACK,   D_WHITE
+     use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
+     use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
+     implicit none
+     integer :: ipaws
+     call prefsize(60,40)
+     call vinit(' ') ! start graphics using device $M_draw_DEVICE
+     call ortho2(-300.0,300.0,-200.0,200.0)
+     call color(D_BLACK)
+     call clear()
+     call color(D_WHITE)
+     call move2(-300.0,-200.0)
+     call draw2(300.0,200.0)
+     call move2(300.0,-200.0)
+     call draw2(-300.0,200.0)
+     ipaws=getkey()
+     call vexit()
+     end program demo_move2
+<br />
+</pre>
+      </blockquote>
+      <hr />
+
+      <table width="100%">
+        <tr>
+          <td width="33%"></td>
+
+          <td width="33%" align="center">move2 (3)</td>
+
+          <td class="c218" align="right" width="33%">December 18, 2019</td>
+        </tr>
+      </table><span class="c219">Generated by <a href="http://www.squarebox.co.uk/download/manServer.shtml">manServer 1.08</a> from
+      53b091bd-6419-4df0-aad0-744b3c42e101 using man macros.</span><br />
+      <br />
+
+      <div class="c216"><img src="images/move2.3m_draw.gif" /></div>
+    </div>
+  </div>
+</body>
+</html>
