@@ -320,7 +320,7 @@
 !!    to have centertext mode on for this to give sensible results when placing
 !!    the markers.
 !!
-!!    If the environment variable "M_draw_FONTPATH" is set M_draw looks for the software
+!!    If the environment variable "M_DRAW_FONTPATH" is set M_draw looks for the software
 !!    fonts in the directory given by this value.
 !!
 !!    the default font is futura.l
@@ -413,7 +413,7 @@
 !!
 !!       ! initialize image
 !!       call prefsize(400,400)  ! set size before starting
-!!       call vinit(' ')         ! start graphics using device $M_draw_DEVICE
+!!       call vinit(' ')         ! start graphics using device $M_DRAW_DEVICE
 !!       call textsize(10.0,10.0)
 !!       call mapcolor( 0,   255,255,255 )  !white
 !!       call mapcolor( 1,   255,  0,  0 )  !red
@@ -597,7 +597,7 @@
 !!      call prefsize(60,40)
 !!      call prefposition(100,100)
 !!
-!!      call vinit(' ')         ! start graphics using device $M_draw_DEVICE
+!!      call vinit(' ')         ! start graphics using device $M_DRAW_DEVICE
 !!      call ortho2(-300.0,300.0,-200.0,200.0)
 !!      call color(D_BLACK)
 !!      call clear()
@@ -644,7 +644,7 @@
 !!      integer :: ipaws
 !!         ! make first file with one size
 !!         call prefsize(60*2,40*2)
-!!         call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!         call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!         call picture()
 !!         ipaws=getkey()
 !!         call vexit()
@@ -770,10 +770,10 @@
 !!        mswin - IBM PC Microsoft Windows.
 !!
 !!     Note 2 : If device is a NULL or a null string the value
-!!          of the environment variable "M_draw_DEVICE" is taken as the
+!!          of the environment variable "M_DRAW_DEVICE" is taken as the
 !!          device type to be opened. The format of the variable is
 !!
-!!             M_draw_DEVICE [ xsize [ ysize [ xoffset [ yoffset ] ] ]
+!!             M_DRAW_DEVICE [ xsize [ ysize [ xoffset [ yoffset ] ] ]
 !!
 !!          That is, if present xsize and ysize will be used
 !!          in a call to prefsize(3c), and xoffset and yoffset will
@@ -1034,11 +1034,11 @@
 !!         * |command will create a pipe to "command"
 !!
 !!       If the open of the file fails, an attempt is made to append to file
-!!       "M_draw_OUTPUT". If this fails, standard output is used.
+!!       "M_DRAW_OUTPUT". If this fails, standard output is used.
 !!
 !!       When vinit() is called if voutput() has not been called then the
-!!       environment variable M_draw_OUTPUT is checked and if it is defined and not a
-!!       null string then voutput() is called with the M_draw_OUTPUT variable's value.
+!!       environment variable M_DRAW_OUTPUT is checked and if it is defined and not a
+!!       null string then voutput() is called with the M_DRAW_OUTPUT variable's value.
 !!
 !!       A common use of the |command option is to automatically call programs
 !!       that convert PPM files to other common pixmap formats or converts the GNU
@@ -1199,7 +1199,7 @@
 !!      implicit none
 !!      integer :: ipaws
 !!      call prefsize(60,40)
-!!      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!      call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!      call ortho2(-300.0,300.0,-200.0,200.0)
 !!      call color(D_BLACK)
 !!      call clear()
@@ -1238,7 +1238,7 @@
 !!      use M_draw, only: move2, rmove2, rdraw2, vexit
 !!      use M_draw, only: linewidth
 !!      call prefsize(500,500)
-!!      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!      call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!      call ortho2(-110.0,110.0,-110.0,110.0)
 !!      call move2(-100.0,-100.0)
 !!      call linewidth(70)
@@ -1351,7 +1351,7 @@
 !!       integer        :: ipaws
 !!
 !!       call prefsize(400,400)
-!!       call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!       call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!       call ortho2(-150.0,150.0,-150.0,150.0)
 !!       call color(D_MAGENTA)
 !!       call clear()
@@ -1406,7 +1406,7 @@
 !!      integer :: ipaws
 !!
 !!      call prefsize(200,200)
-!!      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!      call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!      call ortho2(-55.0, 55.0, -55.0, 55.0)
 !!      call linewidth(400)
 !!      call color(D_WHITE)
@@ -1505,7 +1505,7 @@
 !!
 !!    !! set up graphics area
 !!    call prefsize(1000,200)
-!!    call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!    call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!    call page(-25.0-b, 25.0+b, -5.0-b, 5.0+b)
 !!
 !!    call linewidth(150)
@@ -1782,7 +1782,7 @@
 !!    integer :: i,j
 !!    real    :: xx,yy
 !!       call prefsize(512,512)
-!!       call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!       call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!       call ortho2(0.0,256.0,0.0,256.0)
 !!       call linewidth(1)
 !!       call polyfill(.true.)
@@ -1951,7 +1951,7 @@
 !!    real    :: bottom, left, sun_radius, planet_radius, planet_offset
 !!    integer :: ipaws
 !!       call prefsize(wide,tall)
-!!       call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!       call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!       call ortho2(0.0, real(wide), 0.0, real(tall) )
 !!       ! call linewidth(3) ! really slows down pbm driver because all lines are polygons
 !!       call color(D_WHITE)
@@ -2337,7 +2337,7 @@
 !!    integer :: ipaws
 !!       !! set up long bar as plotting area
 !!       call prefsize(1000,200)
-!!       call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!       call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!       call page(-25.0-b, 25.0+b, -5.0-b, 5.0+b)
 !!       call textsize( 2.5/2.0, 3.0/2.0)
 !!       call font('futura.l')
@@ -2589,7 +2589,7 @@
 !!       integer :: ipaws
 !!    ! set up drawing surface
 !!       call prefsize(1000,200)
-!!       call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!       call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!       call page(-25.0-b,25.0+b,-R-b,R+b)
 !!       call linewidth(200)
 !!       call color(D_CYAN)
@@ -2712,7 +2712,7 @@
 !!    integer :: i
 !!    integer :: ipaws
 !!    call prefsize(300,300)
-!!    call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!    call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!    call ortho2(0.0, 20.0, 0.0, 20.0)
 !!    call color(D_MAGENTA)
 !!    do i=1,20
@@ -3030,7 +3030,7 @@
 !!    integer :: ipaws
 !!       !! set up drawing surface
 !!       call prefsize(400, 400)
-!!       call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!       call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!       call page(-100.0, 100.0, -100.0, 100.0)
 !!       call color(D_WHITE)
 !!       call clear()
@@ -3120,7 +3120,7 @@
 !!    integer :: ipaws
 !!       !! set up long bar as plotting area
 !!       call prefsize(900,150)
-!!       call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!       call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!       call ortho2(-30.0, 30.0, -5.0, 5.0)
 !!       call font('times.r')
 !!
@@ -3173,7 +3173,7 @@
 !!
 !!    !! set up drawing environment
 !!    call prefsize(600,600)
-!!    call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!    call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!    call ortho2(-100.0,100.0,-100.0,100.0)
 !!    call textsize(7.0,7.0)
 !!    call linewidth(20)
@@ -3276,7 +3276,7 @@
 !!    use :: M_units, only : cosd, sind
 !!    !! set up drawing environment
 !!    call prefsize(600,600)
-!!    call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!    call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!    call ortho2(-300.0,300.0,-300.0,300.0)
 !!    call textsize(8.0,8.0)
 !!    call linewidth(30)
@@ -3587,7 +3587,7 @@
 !!    real    :: texth=10.0
 !!       !! set up drawing surface
 !!       call prefsize(800, 400)
-!!       call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!       call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!       call page(-100.0, 300.0, -100.0, 100.0)
 !!       call color(D_WHITE)
 !!       call clear()
@@ -4231,7 +4231,7 @@
 !!    real    :: b=0.5
 !!    integer :: ipaws
 !!    call prefsize(1000,200)
-!!    call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!    call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!    call page(-25.0-b, 25.0+b, -5.0-b, 5.0+b)
 !!    call color(D_YELLOW)
 !!    call clear()
@@ -4573,7 +4573,7 @@
 !!      integer :: ipaws
 !!
 !!      call prefsize(300,300)
-!!      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!      call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!      ipaws=getkey()
 !!      call ortho2(-100.0,100.0,-100.0,100.0)
 !!
@@ -4630,7 +4630,7 @@
 !!     integer :: ipaws
 !!        !! set up long bar as plotting area
 !!        call prefsize(1000,200)
-!!        call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!        call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!        call page(-25.0-b, 25.0+b, -5.0-b, 5.0+b)
 !!        call textsize( 3.5, 4.0)
 !!        call font('futura.m')
@@ -4709,7 +4709,7 @@
 !!       integer              :: istart, iend
 !!       character(len=20)    :: device
 !!       call prefsize(BOX,BOX)
-!!       call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!       call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!       call polyfill(.true.)
 !!       call color(D_BLACK)
 !!       call clear()
@@ -4888,7 +4888,7 @@
 !!      !! set up drawing environment
 !!      call prefsize(600,600)
 !!      call voutput('+')
-!!      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!      call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!      call ortho2(-300.0,300.0,-300.0,300.0)
 !!      call textsize(500.0,500.0)
 !!      call linewidth(130)
@@ -4942,7 +4942,7 @@
 !!    use :: M_time, only : system_sleep
 !!    !! set up drawing environment
 !!    call prefsize(600,600)
-!!    call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!    call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!    call ortho2(-300.0,300.0,-300.0,300.0)
 !!    call textsize(500.0,500.0)
 !!    call linewidth(130)
@@ -5620,7 +5620,7 @@
 !!
 !!    !! set up graphics area
 !!    call prefsize(1000,200)
-!!    call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!    call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!
 !!    !! draw box that fills default world coordinate window
 !!    call color(D_RED)
@@ -5692,7 +5692,7 @@
 !!
 !!    !! set up graphics area
 !!    call prefsize(1000,200)
-!!    call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!    call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!
 !!    !! draw circle that fills default world coordinate window
 !!    call polyfill(.true.)
@@ -7049,7 +7049,7 @@
 !!
 !!       ! set up graphics area
 !!       call prefsize(680,680)
-!!       call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!       call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!       !! Background color
 !!       !call color(D_WHITE)
 !!       !! Page setup
@@ -7674,7 +7674,7 @@
 !!      implicit none
 !!      real :: X,Y
 !!      call prefsize(20,20)
-!!      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!      call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!      call ortho2(-100.0,100.0,-100.0,100.0)
 !!      call move2(0.0,0.0)
 !!      call draw2(96.5,98.333)
@@ -10125,7 +10125,7 @@ end subroutine page_rri
 !!    integer :: ipaws
 !!    real,parameter :: radius=25.0
 !!       call prefsize(600,600)
-!!       call vinit(' ') ! start graphics using device $M_draw_DEVICE
+!!       call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!       call page(-radius, radius, -radius, radius)
 !!       call linewidth(200)
 !!       call clear()
