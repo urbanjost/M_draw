@@ -1663,7 +1663,7 @@ following software fonts are supported:
 <br />
 </pre>A markers font "markers" is also provided for doing markers - you need to have centertext mode on for this to give sensible results when placing the
 markers.
-        <p>If the environment variable "M_draw_FONTPATH" is set M_draw looks for the software fonts in the directory given by this value.</p>
+        <p>If the environment variable "M_DRAW_FONTPATH" is set M_draw looks for the software fonts in the directory given by this value.</p>
         <p>the default font is futura.l</p>
       </blockquote><a name=""></a>
       <h4><a name="">TRANSFORMATION ROUTINES</a></h4>
@@ -1827,7 +1827,7 @@ markers.
    integer  :: i,j
 <br />      ! initialize image
       call prefsize(400,400)  ! set size before starting
-      call vinit(' ')         ! start graphics using device $M_draw_DEVICE
+      call vinit(' ')         ! start graphics using device $M_DRAW_DEVICEDEVICE
       call textsize(10.0,10.0)
       call mapcolor( 0,   255,255,255 )  !white
       call mapcolor( 1,   255,  0,  0 )  !red
@@ -2540,7 +2540,7 @@ integer <i>n</i>
       integer :: icolor
 <br />      ! set up graphics area
       call prefsize(680,680)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       !! Background color
       !call color(D_WHITE)
       !! Page setup
@@ -2879,7 +2879,7 @@ subroutine <b>centertext</b>(<i>onoff</i>)
    use :: M_units, only : cosd, sind
    !! set up drawing environment
    call prefsize(600,600)
-   call vinit(' ') ! start graphics using device $M_draw_DEVICE
+   call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
    call ortho2(-300.0,300.0,-300.0,300.0)
    call textsize(8.0,8.0)
    call linewidth(30)
@@ -2956,7 +2956,7 @@ integer function <b>checkkey</b>()
    use :: M_time, only : system_sleep
    !! set up drawing environment
    call prefsize(600,600)
-   call vinit(' ') ! start graphics using device $M_draw_DEVICE
+   call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
    call ortho2(-300.0,300.0,-300.0,300.0)
    call textsize(500.0,500.0)
    call linewidth(130)
@@ -3053,7 +3053,7 @@ subroutine <b>circle</b>(<i>x</i>, <i>y</i>, <i>radius</i>)
       integer :: ipaws
    ! set up drawing surface
       call prefsize(1000,200)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call page(-25.0-b,25.0+b,-R-b,R+b)
       call linewidth(200)
       call color(D_CYAN)
@@ -3163,7 +3163,7 @@ subroutine <b>circleprecision</b>(<i>nsegs</i>)
    integer :: ipaws
       !! set up long bar as plotting area
       call prefsize(1000,200)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call page(-25.0-b, 25.0+b, -5.0-b, 5.0+b)
       call textsize( 2.5/2.0, 3.0/2.0)
       call font('futura.l')
@@ -3235,7 +3235,7 @@ subroutine <b>clear</b>()
      implicit none
      integer :: ipaws
 <br />     call prefsize(300,300)
-     call vinit(' ') ! start graphics using device $M_draw_DEVICE
+     call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
      ipaws=getkey()
      call ortho2(-100.0,100.0,-100.0,100.0)
 <br />     call color(D_BLACK)               ! set current  color
@@ -3393,7 +3393,7 @@ subroutine <b>color</b>(<i>col</i>)
     integer :: ipaws
        !! set up long bar as plotting area
        call prefsize(1000,200)
-       call vinit(' ') ! start graphics using device $M_draw_DEVICE
+       call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
        call page(-25.0-b, 25.0+b, -5.0-b, 5.0+b)
        call textsize( 3.5, 4.0)
        call font('futura.m')
@@ -3908,7 +3908,7 @@ subroutine <b>draw2</b>(<i>x</i>, <i>y</i>)
       real,parameter :: rotate=0.0, gap=2.0
       integer        :: ipaws
 <br />      call prefsize(400,400)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call ortho2(-150.0,150.0,-150.0,150.0)
       call color(D_MAGENTA)
       call clear()
@@ -4168,7 +4168,7 @@ subroutine <b>expandviewport</b>()
    integer :: ipaws
 <br />   !! set up graphics area
    call prefsize(1000,200)
-   call vinit(' ') ! start graphics using device $M_draw_DEVICE
+   call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
 <br />   !! draw box that fills default world coordinate window
    call color(D_RED)
    call polyfill(.true.)
@@ -4337,7 +4337,7 @@ markers.
    integer :: ipaws
       !! set up drawing surface
       call prefsize(400, 400)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call page(-100.0, 100.0, -100.0, 100.0)
       call color(D_WHITE)
       call clear()
@@ -4715,7 +4715,7 @@ subroutine <b>getgp2</b>(<i>x</i>, <i>y</i>)
      implicit none
      real :: X,Y
      call prefsize(20,20)
-     call vinit(' ') ! start graphics using device $M_draw_DEVICE
+     call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
      call ortho2(-100.0,100.0,-100.0,100.0)
      call move2(0.0,0.0)
      call draw2(96.5,98.333)
@@ -4796,7 +4796,7 @@ integer function <b>getkey</b>()
      !! set up drawing environment
      call prefsize(600,600)
      call voutput('+')
-     call vinit(' ') ! start graphics using device $M_draw_DEVICE
+     call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
      call ortho2(-300.0,300.0,-300.0,300.0)
      call textsize(500.0,500.0)
      call linewidth(130)
@@ -5465,7 +5465,7 @@ integer <i>iwidth</i>
    real    :: b=0.5
    integer :: ipaws
    call prefsize(1000,200)
-   call vinit(' ') ! start graphics using device $M_draw_DEVICE
+   call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
    call page(-25.0-b, 25.0+b, -5.0-b, 5.0+b)
    call color(D_YELLOW)
    call clear()
@@ -6088,7 +6088,7 @@ subroutine <b>makepoly</b>()
    real    :: bottom, left, sun_radius, planet_radius, planet_offset
    integer :: ipaws
       call prefsize(wide,tall)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call ortho2(0.0, real(wide), 0.0, real(tall) )
       ! call linewidth(3) ! really slows down pbm driver because all lines are polygons
       call color(D_WHITE)
@@ -6262,7 +6262,7 @@ subroutine <b>mapcolor</b>(<i>indx</i>, <i>red</i>, <i>green</i>, <i>blue</i>)
       integer              :: istart, iend
       character(len=20)    :: device
       call prefsize(BOX,BOX)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call polyfill(.true.)
       call color(D_BLACK)
       call clear()
@@ -6484,7 +6484,7 @@ subroutine <b>move2</b>(<i>x</i>, <i>y</i>)
      implicit none
      integer :: ipaws
      call prefsize(60,40)
-     call vinit(' ') ! start graphics using device $M_draw_DEVICE
+     call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
      call ortho2(-300.0,300.0,-200.0,200.0)
      call color(D_BLACK)
      call clear()
@@ -6647,7 +6647,7 @@ subroutine <b>page</b>(xsmall,xlarge,ysmall,ylarge)
    integer :: ipaws
    real,parameter :: radius=25.0
       call prefsize(600,600)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call page(-radius, radius, -radius, radius)
       call linewidth(200)
       call clear()
@@ -7317,7 +7317,7 @@ subroutine <b>point2</b>(<i>x</i>, <i>y</i>)
    integer :: i
    integer :: ipaws
    call prefsize(300,300)
-   call vinit(' ') ! start graphics using device $M_draw_DEVICE
+   call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
    call ortho2(0.0, 20.0, 0.0, 20.0)
    call color(D_MAGENTA)
    do i=1,20
@@ -7508,7 +7508,7 @@ subroutine <b>poly2</b>(<i>n</i>, <i>points</i>)
    integer :: i,j
    real    :: xx,yy
       call prefsize(512,512)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call ortho2(0.0,256.0,0.0,256.0)
       call linewidth(1)
       call polyfill(.true.)
@@ -7868,7 +7868,7 @@ subroutine <b>prefposition</b>(<i>x</i>, <i>y</i>)
      integer :: ipaws
 <br />     call prefsize(60,40)
      call prefposition(100,100)
-<br />     call vinit(' ')         ! start graphics using device $M_draw_DEVICE
+<br />     call vinit(' ')         ! start graphics using device $M_DRAW_DEVICEDEVICE
      call ortho2(-300.0,300.0,-200.0,200.0)
      call color(D_BLACK)
      call clear()
@@ -7938,7 +7938,7 @@ subroutine <b>prefsize</b>(<i>width</i>, <i>height</i>)
      integer :: ipaws
         ! make first file with one size
         call prefsize(60*2,40*2)
-        call vinit(' ') ! start graphics using device $M_draw_DEVICE
+        call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
         call picture()
         ipaws=getkey()
         call vexit()
@@ -8186,7 +8186,7 @@ subroutine <b>rdraw2</b>(<i>deltax</i>, <i>deltay</i>)
      use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
      integer :: ipaws
 <br />     call prefsize(200,200)
-     call vinit(' ') ! start graphics using device $M_draw_DEVICE
+     call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
      call ortho2(-55.0, 55.0, -55.0, 55.0)
      call linewidth(400)
      call color(D_WHITE)
@@ -8279,7 +8279,7 @@ subroutine <b>rect</b>(<i>x1</i>, <i>y1</i>, <i>x2</i>, <i>y2</i>)
    real    :: b=0.2
 <br />   !! set up graphics area
    call prefsize(1000,200)
-   call vinit(' ') ! start graphics using device $M_draw_DEVICE
+   call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
    call page(-25.0-b, 25.0+b, -5.0-b, 5.0+b)
 <br />   call linewidth(150)
    call color(D_RED)
@@ -8452,7 +8452,7 @@ subroutine <b>rmove2</b>(<i>deltax</i>, <i>deltay</i>)
      use M_draw, only: move2, rmove2, rdraw2, vexit
      use M_draw, only: linewidth
      call prefsize(500,500)
-     call vinit(' ') ! start graphics using device $M_draw_DEVICE
+     call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
      call ortho2(-110.0,110.0,-110.0,110.0)
      call move2(-100.0,-100.0)
      call linewidth(70)
@@ -8476,13 +8476,17 @@ subroutine <b>rmove2</b>(<i>deltax</i>, <i>deltay</i>)
   <a name="top" id="top"></a>
   <div id="Container">
     <div id="Content">
-      <div class="c333">
+      <div class="c1">
       </div><a name="0"></a>
+
       <h3><a name="0">NAME</a></h3>
+
       <blockquote>
-        <b>rotate(3f)</b> - [M_draw:TRANSFORMATION] Set up a rotation in axis axis where axis is one of 'x','y', or 'z'. <b></b>
+        <b>rotate(3f)</b> - [M_draw:TRANSFORMATION] Set up a rotation in axis axis where axis is one of 'x','y', or 'z'.
       </blockquote><a name="contents" id="contents"></a>
+
       <h3><a name="6">SYNOPSIS</a></h3>
+
       <blockquote>
         <pre>
 subroutine <b>rotate</b>(<i>angle</i>, <i>axis</i>)
@@ -8490,103 +8494,77 @@ real <i>angle</i>
 character <i>axis</i>
 </pre>
       </blockquote><a name="2"></a>
+
       <h3><a name="2">DESCRIPTION</a></h3>
+
       <blockquote>
         <p>Set up a rotation of coordinate system along specified <i>axis</i>, relative to current coordinate system.</p>
       </blockquote><a name="3"></a>
+
       <h3><a name="3">OPTIONS</a></h3>
+
       <blockquote>
         <table cellpadding="3">
           <tr valign="top">
-            <td class="c334" width="6%" nowrap="nowrap">angle</td>
+            <td class="c2" width="6%" nowrap="nowrap">angle</td>
+
             <td valign="bottom">Angle in degrees to rotate coordinate system, with clockwise angles being positive.</td>
           </tr>
+
           <tr valign="top">
-            <td class="c334" width="6%" nowrap="nowrap">axis</td>
+            <td class="c2" width="6%" nowrap="nowrap">axis</td>
+
             <td valign="bottom">Which <i>axis</i> to perform rotation about. Allowed values are 'x',</td>
           </tr>
+
         </table>
       </blockquote><a name="4"></a>
+
       <h3><a name="4">EXAMPLE</a></h3>
+
       <blockquote>
-        Sample usage program demo_rotate use M_drawplus, only : draw_interpret <b>character</b>(len=:),allocatable :: <b>draw_cmds</b>(:)
-        <blockquote>
-          <table cellpadding="3">
-            <!-- tsb: Sample usage
- -->
-            <tr valign="top">
-              <td colspan="2"><b>draw_cmds=[</b> <b>character</b>(len=128) :: <!-- Consumed .TP -->
-              <br />
-              <b>'# set up display</b></td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'prefsize 300 300;prefposition 200 10;vinit X11;</td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'set SIZE=1.2</td>
-            </tr>
-            <tr valign="top">
-              <td colspan="2"><b>'color 3;clear;color 2; ortho2</b> <b>-SIZE</b> SIZE <b>-SIZE</b> SIZE</td>
-            </tr>
-            <tr valign="top">
-              <td colspan="2"><b>'set X=</b><b>-0.75</b> Y=0.75</td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'# create an object to repeatedly draw</td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'makeobj 1</td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'polyfill .true.;color 1; rect 0 0 X Y</td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'polyfill .false.;linewidth 200;color 2 ;rect 0 0 X Y</td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'closeobj</td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'# draw opbject, rotating coordinate system between instantiations</td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'callobj 1</td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'rotate 45 z</td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'callobj 1</td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'rotate 45 z</td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'callobj 1</td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'circle 0 0 X/3</td>
-            </tr>
-            <tr valign="top">
-              <td class="c335" colspan="2">'getkey;vexit</td>
-            </tr>
-            <tr valign="top">
-              <td width="6%"></td>
-              <td><b>write</b>(*,'(a)')draw_cmds call <b>draw_interpret</b>(draw_cmds,delimiters=';') end program demo_rotate</td>
-            </tr>
-          </table>
-        </blockquote>
+        Sample usage
+        <pre>
+   program demo_rotate
+   use M_drawplus, only : draw_interpret
+   character(len=:),allocatable :: draw_cmds(:)
+   draw_cmds=[ character(len=128) ::                                      &amp;
+   '# set up display                                                    ',&amp;
+   'prefsize 300 300;prefposition 200 10;vinit X11;                     ',&amp;
+   'set SIZE=1.2                                                        ',&amp;
+   'color 3;clear;color 2; ortho2 -SIZE SIZE -SIZE SIZE                 ',&amp;
+   'set X=-0.75 Y=0.75                                                  ',&amp;
+   '# create an object to repeatedly draw                               ',&amp;
+   'makeobj 1                                                           ',&amp;
+   'polyfill .true.;color 1; rect 0 0 X Y                               ',&amp;
+   'polyfill .false.;linewidth 200;color 2 ;rect 0 0 X Y                ',&amp;
+   'closeobj                                                            ',&amp;
+   '# draw opbject, rotating coordinate system between instantiations   ',&amp;
+   'callobj 1                                                           ',&amp;
+   'rotate 45 z                                                         ',&amp;
+   'callobj 1                                                           ',&amp;
+   'rotate 45 z                                                         ',&amp;
+   'callobj 1                                                           ',&amp;
+   'circle 0 0 X/3                                                      ',&amp;
+   'getkey;vexit                                                        ']
+   write(*,'(a)')draw_cmds
+   call draw_interpret(draw_cmds,delimiters=';')
+   end program demo_rotate
+<br />
+</pre>
       </blockquote><a name="5"></a>
+
       <h3><a name="5">SEE ALSO</a></h3>
+
       <blockquote>
         translate, pushmatrix, popmatrix, scale
       </blockquote>
       <hr />
-      <br />
-      <div class="c333"><img src="../images/rotate.3m_draw.gif" /></div>
+      <div class="c1"><img src="../images/rotate.3m_draw.gif" /></div>
     </div>
   </div>
 </div>
+</html>
 <?
 <div><P style="page-break-before: always">
   <a name="top" id="top"></a>
@@ -9182,7 +9160,7 @@ real <i>x</i>, <i>y</i>
    real    :: texth=10.0
       !! set up drawing surface
       call prefsize(800, 400)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call page(-100.0, 300.0, -100.0, 100.0)
       call color(D_WHITE)
       call clear()
@@ -9306,7 +9284,7 @@ subroutine <b>textang</b>(<i>ang</i>)
    use :: M_units, only : cosd, sind
 <br />   !! set up drawing environment
    call prefsize(600,600)
-   call vinit(' ') ! start graphics using device $M_draw_DEVICE
+   call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
    call ortho2(-100.0,100.0,-100.0,100.0)
    call textsize(7.0,7.0)
    call linewidth(20)
@@ -9471,7 +9449,7 @@ subroutine <b>textsize</b>(<i>width</i>, <i>height</i>)
    integer :: ipaws
       !! set up long bar as plotting area
       call prefsize(900,150)
-      call vinit(' ') ! start graphics using device $M_draw_DEVICE
+      call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
       call ortho2(-30.0, 30.0, -5.0, 5.0)
       call font('times.r')
 <br />      call move2(-23.0,-4.5)
@@ -9882,7 +9860,7 @@ subroutine <b>unexpandviewport</b>()
    integer :: ipaws
 <br />   !! set up graphics area
    call prefsize(1000,200)
-   call vinit(' ') ! start graphics using device $M_draw_DEVICE
+   call vinit(' ') ! start graphics using device $M_DRAW_DEVICEDEVICE
 <br />   !! draw circle that fills default world coordinate window
    call polyfill(.true.)
    call color(D_GREEN)
@@ -10413,10 +10391,10 @@ subroutine <b>vinit</b>(<i>device</i>)
        mswin - IBM PC Microsoft Windows.
 <br />
 </pre>
-      </blockquote>Note 2 : If <i>device</i> is a NULL or a null string the value of the environment variable "M_draw_DEVICE" is taken as the <i>device</i>
+      </blockquote>Note 2 : If <i>device</i> is a NULL or a null string the value of the environment variable "M_DRAW_DEVICE" is taken as the <i>device</i>
       type to be opened. The format of the variable is
       <pre>
-            M_draw_DEVICE [ xsize [ ysize [ xoffset [ yoffset ] ] ]
+            M_DRAW_DEVICE [ xsize [ ysize [ xoffset [ yoffset ] ] ]
 <br />
 </pre>
       <blockquote>
@@ -10647,9 +10625,9 @@ character*(*) <i>path</i>
             </tr>
           </table>
         </blockquote>
-        <p>If the open of the file fails, an attempt is made to append to file "M_draw_OUTPUT". If this fails, standard output is used.</p>
-        <p>When <b>vinit</b>() is called if <b>voutput</b>() has not been called then the environment variable M_draw_OUTPUT is checked and if it is defined
-        and not a null string then <b>voutput</b>() is called with the M_draw_OUTPUT variable's value.</p>
+        <p>If the open of the file fails, an attempt is made to append to file "M_DRAW_OUTPUT". If this fails, standard output is used.</p>
+        <p>When <b>vinit</b>() is called if <b>voutput</b>() has not been called then the environment variable M_DRAW_OUTPUT is checked and if it is defined
+        and not a null string then <b>voutput</b>() is called with the M_DRAW_OUTPUT variable's value.</p>
         <p>A common use of the |command option is to automatically call programs that convert PPM files to other common pixmap formats or converts the GNU
         metafile to other formats (typically via the GNU plotutils plot program).</p>
       </blockquote><a name="3"></a>

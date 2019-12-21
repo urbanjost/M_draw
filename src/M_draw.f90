@@ -7988,6 +7988,7 @@ end type MATRIX
  public :: draw2
  public :: drawchar
  public :: drawstr
+ public :: print
  public :: expandviewport
  public :: fixedwidth
  public :: font
@@ -10247,6 +10248,73 @@ real             :: ysplit
          write(*,*)'*page* window has zero dimension, no window set'
       endif
 end subroutine biggest_ortho2
+!===================================================================================================================================
+!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()=
+!===================================================================================================================================
+subroutine print(g1, g2, g3, g4, g5, g6, g7, g8, g9)
+class(*),intent(in),optional :: g1 ,g2 ,g3 ,g4 ,g5, g6 ,g7 ,g8 ,g9
+   call drawstr(msg(g1, g2, g3, g4, g5, g6, g7, g8, g9))
+end subroutine print
+!===================================================================================================================================
+!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()=
+!===================================================================================================================================
+function msg(generic1, generic2, generic3, generic4, generic5, generic6, generic7, generic8, generic9,nospace)
+implicit none
+
+character(len=*),parameter::ident_57="&
+&@(#)M_strings::msg(3fp): writes a message to a string composed of any standard scalar types"
+
+class(*),intent(in),optional  :: generic1 ,generic2 ,generic3 ,generic4 ,generic5
+class(*),intent(in),optional  :: generic6 ,generic7 ,generic8 ,generic9
+logical,intent(in),optional   :: nospace
+character(len=:), allocatable :: msg
+character(len=4096)           :: line
+integer                       :: istart
+integer                       :: increment
+   if(present(nospace))then
+      if(nospace)then
+         increment=1
+      else
+         increment=2
+      endif
+   else
+      increment=2
+   endif
+
+   istart=1
+   line=' '
+   if(present(generic1))call print_generic(generic1)
+   if(present(generic2))call print_generic(generic2)
+   if(present(generic3))call print_generic(generic3)
+   if(present(generic4))call print_generic(generic4)
+   if(present(generic5))call print_generic(generic5)
+   if(present(generic6))call print_generic(generic6)
+   if(present(generic7))call print_generic(generic7)
+   if(present(generic8))call print_generic(generic8)
+   if(present(generic9))call print_generic(generic9)
+   msg=trim(line)
+contains
+!===================================================================================================================================
+subroutine print_generic(generic)
+!use, intrinsic :: iso_fortran_env, only : int8, int16, int32, biggest=>int64, real32, real64, dp=>real128
+use,intrinsic :: iso_fortran_env, only : int8, int16, int32, int64, real32, real64, real128
+class(*),intent(in) :: generic
+   select type(generic)
+      type is (integer(kind=int8));     write(line(istart:),'(i0)') generic
+      type is (integer(kind=int16));    write(line(istart:),'(i0)') generic
+      type is (integer(kind=int32));    write(line(istart:),'(i0)') generic
+      type is (integer(kind=int64));    write(line(istart:),'(i0)') generic
+      type is (real(kind=real32));      write(line(istart:),'(1pg0)') generic
+      type is (real(kind=real64));      write(line(istart:),'(1pg0)') generic
+      type is (real(kind=real128));     write(line(istart:),'(1pg0)') generic
+      type is (logical);                write(line(istart:),'(1l)') generic
+      type is (character(len=*));       write(line(istart:),'(a)') trim(generic)
+      type is (complex);                write(line(istart:),'("(",1pg0,",",1pg0,")")') generic
+   end select
+   istart=len_trim(line)+increment
+end subroutine print_generic
+!===================================================================================================================================
+end function msg
 !===================================================================================================================================
 !()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()=
 !===================================================================================================================================
