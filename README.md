@@ -80,10 +80,11 @@ and demo programs ensures the library is functioning.
    and then to release the higher-level routines as separate distributions
    on top of this.
 
-   This version is essentially C based on the public-domain Vogle graphics library
-   but this intent is to convert it to a native Fortran library, which it is very
-   amenable to.
+   This version is essentially C code based on the public-domain Vogle
+   graphics library but the intent is to convert it to a native Fortran
+   library, which it is very amenable to.
 
-   ![sample](images/M_slices.3.gif)
+   There are a number of programs already using this low-level library
+   to generate higher-level graphics:
+                 ![sample](images/M_slices.3.gif)
 
-   ![sample](images/ush.gif)
