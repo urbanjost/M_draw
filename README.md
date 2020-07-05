@@ -21,14 +21,29 @@ programs that exercise the routines.
 Before running the example programs you must specify the location
 of the font definition files. For example:
 
-     # where M_draw is assumed to located
-     cd ~github/M_draw
-     # the hershey directory can be moved, and typically
-     # is in /usr/share/hershey on GNU/Linux platforms
+     # assuming you are in M_draw/src ...
      export M_DRAW_FONTPATH=`pwd`/src/hershey
      export M_DRAW_DEVICE='X11 640 480'
      # run an example program
      src/PROGRAMS/fballs
+
+## NOTES
+
+The *.o files can be combined into a library file and the library
+and module files can be placed in a convenient location for easier
+loading.
+
+The hershey/ directory typically is placed in /usr/share/hershey 
+or /usr/local/lib on GNU/Linux platforms. Just remember to set
+the environment variable M_DRAW_FONTPATH to the directory name.
+
+The build assumes you have the X11 libraries, and does not include
+the PC driver often used with Cygwin. It is relatively easy to remove a
+driver such as C-X11.c by going into C-drivers.c and changing a line like
+"#define X11" to "#undef X11" and removing C-X11.c from the Makefile. If
+anyone is interested about the CygWin/PC driver let me know; but it is
+relatively easy to install X11 Windows with CygWin and installing X11
+Windows allows you to use many more CygWin utilities as well.
 
 ## USER DOCUMENTATION
    - a simple [index](https://urbanjost.github.io/M_draw/) to
