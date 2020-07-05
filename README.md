@@ -15,9 +15,8 @@ graphics with a variety of output devices.
      # change Makefile if not using gfortran(1)
      make
 
-This will compile the modules and a basic example program that exercises
-the OOPs interface in M_strings_oops.f90 (which calls the procedural
-module in M_strings.f90).
+This will compile the Fortran module and C code  and basic example
+programs that exercise the routines.
 
 ## RUNNING AN EXAMPLE
 
@@ -39,7 +38,7 @@ of the font definition files. For example:
      the individual manpages in HTML form
    - A single page that uses javascript to combine all the HTML
      descriptions of the manpages is at 
-     [BOOK_FORTRAN](https://urbanjost.github.io/M_draw/BOOK_M_strings.html).
+     [BOOK_M_draw](https://urbanjost.github.io/M_draw/BOOK_M_draw.html).
    - [M_draw](https://urbanjost.github.io/M_draw/M_draw.html)
 
 
@@ -53,4 +52,4 @@ There are
 ## UNIT TESTS
 
 There are no automated unit tests per-se. Running the example programs
-and demo programs ensures the library.
+and demo programs ensures the library is functioning.
