@@ -28,7 +28,7 @@ of the font definition files. For example:
      export M_DRAW_FONTPATH=`pwd`/src/hershey
      export M_DRAW_DEVICE='X11 640 480'
      # run an example program
-     src/PROGRAMS/fballs
+     PROGRAMS/EXAMPLES/fballs
 
 ## USER DOCUMENTATION
    - a simple [index](https://urbanjost.github.io/M_draw/) to
