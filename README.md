@@ -1,4 +1,5 @@
 # NAME
+![sample](images/M_draw.gif)
 ## M_draw - low level vector graphics library
 
 ## DESCRIPTION
