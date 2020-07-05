@@ -19,13 +19,20 @@ programs that exercise the routines.
 
 ## RUNNING AN EXAMPLE
 Before running the example programs you must specify the location
-of the font definition files. For example:
+of the font definition files and a default output device. For example:
 
      # assuming you are in M_draw/src ...
-     export M_DRAW_FONTPATH=`pwd`/src/hershey
+     export M_DRAW_FONTPATH=`pwd`/hershey
+    #Specify a default output device and size
      export M_DRAW_DEVICE='X11 640 480'
      # run an example program
      PROGRAMS/EXAMPLES/fballs
+
+While you are there, you might want to generate a text version of the
+documentation as well
+
+    # show all manpages as text
+    env MANWIDTH=80 MANPATH=../man man --regex '.*' |col -b|tee man.txt
 
 ## NOTES
 
