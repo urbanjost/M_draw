@@ -3,7 +3,7 @@
 ## M_draw - low level vector graphics library
 
 ## DESCRIPTION
-This is the base graphics library intended for use with Fortran
+This is a base graphics library intended for use with Fortran
 although largely written in C. It is based on the public domain
 VOGLE graphics library. It allows for creating vector-based 
 graphics with a variety of output devices.
@@ -29,7 +29,7 @@ of the font definition files and a default output device. For example:
      PROGRAMS/EXAMPLES/fballs
 
 While you are there, you might want to generate a text version of the
-documentation as well
+documentation as well:
 
     # show all manpages as text
     env MANWIDTH=80 MANPATH=../man man --regex '.*' |col -b|tee man.txt
@@ -67,8 +67,23 @@ Windows allows you to use many more CygWin utilities as well.
 There are 
     - manpages in the man/man3 directory 
     - HTML documentation in the docs/ directory.
-    - demo programs extracted from the man pages in the demos/ directory
+    - demo programs extracted from the man pages in the src/PROGRAMS/DEMOS/ directory
 
 ## UNIT TESTS
 There are no automated unit tests per-se. Running the example programs
 and demo programs ensures the library is functioning.
+
+## FUTURE
+   There are higher-level routines based on this library not yet available
+   on github. Ultimately the hope is to release this as an fpm package
+   as described at [https://fortran-lang.org](https://fortran-lang.org)
+   and then to release the higher-level routines as separate distributions
+   on top of this.
+
+   This version is essentially C based on the public-domain Vogle graphics library
+   but this intent is to convert it to a native Fortran library, which it is very
+   amenable to.
+
+   ![sample](images/M_slices.3.gif)
+
+   ![sample](images/ush.gif)
