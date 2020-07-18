@@ -73,8 +73,8 @@ $(LIBRARY): $(LIBOBJ_F90) $(LIBOBJ_C)
 > @ $(AR) $(ARFLAGS) $(LIBRARY) $<  # optionally store the source code too
 > @ /bin/rm -f ${?F:.c=.o} $%
 #-------------------------------------------------------------------------------
-FONTLIB=$(BUILD_DIR)/hershey
 .phony: buildfonts
+FONTLIB=$(BUILD_DIR)/hershey
 buildfonts:
 > if test ! -d $(FONTLIB); then mkdir -p $(FONTLIB); chmod a+xr $(FONTLIB); fi
 > fpm run h2v  --args 'src/data/hersh.oc  src/fonts/astrol.hmp    $(FONTLIB)/astrology'

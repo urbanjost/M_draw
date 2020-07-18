@@ -61,8 +61,8 @@ $(OBJS): draw.h
 
 .phony: clean
 clean:
->   rm -f $(PROG) $(CPROG) $(OBJS) *.mod hershey/*
->   rm -f -i $(LIBRARY) $(INSTALL)/*.mod
+>   -rm -f $(PROG) $(CPROG) $(OBJS) *.mod $(INSTALL)/hershey/*
+>   -rm -f -i $(LIBRARY) $(INSTALL)/*.mod
 
 .SUFFIXES: $(SUFFIXES) .f90 .F90 .c
 #.f90.o:
