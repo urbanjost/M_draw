@@ -7928,8 +7928,6 @@ module M_draw
 use ISO_C_BINDING
 implicit none
 
-character(len=*),parameter::ident_1="@(#)M_draw::M_draw(3fm):: The M_draw graphics library module"
-
 private
 !-------------------------------------------------------------------------------
 integer(kind=c_short),public,parameter :: D_XCENTERED=     1_C_SHORT
@@ -10149,7 +10147,7 @@ end subroutine page_rri
 !===================================================================================================================================
 subroutine biggest_ortho2(xsmall,xlarge,ysmall,ylarge)
 
-character(len=*),parameter::ident_8="@(#)M_drawplus::page(3f): given a window size, find and set to largest accommodating viewport"
+! @(#)M_drawplus::page(3f): given a window size, find and set to largest accommodating viewport"
 
 real,intent(in)  :: xsmall
 real,intent(in)  :: xlarge
@@ -10260,9 +10258,6 @@ end subroutine print
 !===================================================================================================================================
 function msg(generic1, generic2, generic3, generic4, generic5, generic6, generic7, generic8, generic9,nospace)
 implicit none
-
-character(len=*),parameter::ident_57="&
-&@(#)M_strings::msg(3fp): writes a message to a string composed of any standard scalar types"
 
 class(*),intent(in),optional  :: generic1 ,generic2 ,generic3 ,generic4 ,generic5
 class(*),intent(in),optional  :: generic6 ,generic7 ,generic8 ,generic9
