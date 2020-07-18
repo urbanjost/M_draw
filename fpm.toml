@@ -9,17 +9,17 @@ copyright = "2020 John S. Urban"
 source-dir = "src"
 build-script = "fpm.mk"
 
-#[[test]]  name="demo_system_putenv"       source-dir="PROGRAMS/putenv"       main="demo_system_putenv.f90"
-#[[test]]  name="demo_system_rand"         source-dir="PROGRAMS/rand"         main="demo_system_rand.f90"
-#[[test]]  name="demo_system_readdir"      source-dir="PROGRAMS/readdir"      main="demo_system_readdir.f90"
-#[[test]]  name="demo_system_readenv"      source-dir="PROGRAMS/readenv"      main="demo_system_readenv.f90"
+[[test]]  name="make_hershey"      source-dir="test/make_hershey"      main="make_hershey.f90"
 
 [[executable]]
 name="h2v"
 source-dir="PROGRAMS/MAKE_HERSHEY"
 main="h2v.c"
 
-[[test]]  name="make_hershey"      source-dir="test/make_hershey"      main="make_hershey.f90"
+#[[test]]  name="demo_system_putenv"       source-dir="PROGRAMS/putenv"       main="demo_system_putenv.f90"
+#[[test]]  name="demo_system_rand"         source-dir="PROGRAMS/rand"         main="demo_system_rand.f90"
+#[[test]]  name="demo_system_readdir"      source-dir="PROGRAMS/readdir"      main="demo_system_readdir.f90"
+#[[test]]  name="demo_system_readenv"      source-dir="PROGRAMS/readenv"      main="demo_system_readenv.f90"
 
 #[test.dependencies]
 #M_msg          = { git = "https://github.com/urbanjost/M_msg.git" }
