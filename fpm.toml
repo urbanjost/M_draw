@@ -9,7 +9,10 @@ copyright = "2020 John S. Urban"
 source-dir = "src"
 build-script = "fpm.mk"
 
-[[test]]  name="make_hershey"      source-dir="test/make_hershey"      main="make_hershey.f90"
+[[test]]
+name="make_hershey"
+source-dir="test/make_hershey"
+main="make_hershey.f90"
 
 [[executable]]
 name="h2v"
