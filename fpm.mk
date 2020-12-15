@@ -59,7 +59,7 @@ directorysetup:
 $(LIBRARY): $(LIBOBJ_F90) $(LIBOBJ_C)
 > @ $(RANLIB) $(LIBRARY)
 > @ echo "TARGETS FOR $(LIBRARY) UP TO DATE"
-> @ fpm test make_hershey
+> @ ffpm test make_hershey
 #-------------------------------------------------------------------------------
 .f90.a:
 > $(FC) -c $(F90FLAGS) $(INCLUDE_FLAGS) $(FFLAGS) $< -o $%
@@ -77,38 +77,38 @@ $(LIBRARY): $(LIBOBJ_F90) $(LIBOBJ_C)
 FONTLIB=$(BUILD_DIR)/hershey
 buildfonts:
 > if test ! -d $(FONTLIB); then mkdir -p $(FONTLIB); chmod a+xr $(FONTLIB); fi
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/astrol.hmp    $(FONTLIB)/astrology'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/scripts.hmp   $(FONTLIB)/cursive'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/cyrilc.hmp    $(FONTLIB)/cyrillic'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/romans.hmp    $(FONTLIB)/futura.l'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/romand.hmp    $(FONTLIB)/futura.m'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/gotheng.hmp   $(FONTLIB)/gothic.eng'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/gothger.hmp   $(FONTLIB)/gothic.ger'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/gothita.hmp   $(FONTLIB)/gothic.ita'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/greeks.hmp    $(FONTLIB)/greek'
-> fpm run h2v  --args 'src/data/hersh.or  src/fonts/japan.hmp     $(FONTLIB)/japanese'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/marker.hmp    $(FONTLIB)/markers'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/marker2.hmp   $(FONTLIB)/markers   '
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/lowmat.hmp    $(FONTLIB)/math.low'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/uppmat.hmp    $(FONTLIB)/math.upp'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/meteo.hmp     $(FONTLIB)/meteorology'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/music.hmp     $(FONTLIB)/music'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/scriptc.hmp   $(FONTLIB)/script'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/symbol.hmp    $(FONTLIB)/symbolic'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/greekc.hmp    $(FONTLIB)/times.g'
-> fpm run h2v  --args 'src/data/hersh.or  src/fonts/orall_aa.hmp  $(FONTLIB)/orall_aa'
-> fpm run h2v  --args 'src/data/hersh.or  src/fonts/orall_ac.hmp  $(FONTLIB)/orall_ac'
-> fpm run h2v  --args 'src/data/hersh.or  src/fonts/orall_ae.hmp  $(FONTLIB)/orall_ae'
-> fpm run h2v  --args 'src/data/hersh.or  src/fonts/orall_ag.hmp  $(FONTLIB)/orall_ag'
-> fpm run h2v  --args 'src/data/hersh.or  src/fonts/orall_ab.hmp  $(FONTLIB)/orall_ab'
-> fpm run h2v  --args 'src/data/hersh.or  src/fonts/orall_ad.hmp  $(FONTLIB)/orall_ad'
-> fpm run h2v  --args 'src/data/hersh.or  src/fonts/orall_af.hmp  $(FONTLIB)/orall_af'
-> fpm run h2v  --args 'src/data/hersh.or  src/fonts/orall_ah.hmp  $(FONTLIB)/orall_ah'
-> fpm run h2v  --args 'src/data/hersh.or  src/fonts/orall_ai.hmp  $(FONTLIB)/orall_ai'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/italicc.hmp   $(FONTLIB)/times.i'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/italict.hmp   $(FONTLIB)/times.ib'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/romanc.hmp    $(FONTLIB)/times.r'
-> fpm run h2v  --args 'src/data/hersh.oc  src/fonts/romant.hmp    $(FONTLIB)/times.rb'
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/astrol.hmp    $(FONTLIB)/astrology
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/scripts.hmp   $(FONTLIB)/cursive
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/cyrilc.hmp    $(FONTLIB)/cyrillic
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/romans.hmp    $(FONTLIB)/futura.l
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/romand.hmp    $(FONTLIB)/futura.m
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/gotheng.hmp   $(FONTLIB)/gothic.eng
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/gothger.hmp   $(FONTLIB)/gothic.ger
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/gothita.hmp   $(FONTLIB)/gothic.ita
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/greeks.hmp    $(FONTLIB)/greek
+> ffpm run h2v  -- src/data/hersh.or  src/fonts/japan.hmp     $(FONTLIB)/japanese
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/marker.hmp    $(FONTLIB)/markers
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/marker2.hmp   $(FONTLIB)/markers   
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/lowmat.hmp    $(FONTLIB)/math.low
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/uppmat.hmp    $(FONTLIB)/math.upp
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/meteo.hmp     $(FONTLIB)/meteorology
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/music.hmp     $(FONTLIB)/music
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/scriptc.hmp   $(FONTLIB)/script
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/symbol.hmp    $(FONTLIB)/symbolic
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/greekc.hmp    $(FONTLIB)/times.g
+> ffpm run h2v  -- src/data/hersh.or  src/fonts/orall_aa.hmp  $(FONTLIB)/orall_aa
+> ffpm run h2v  -- src/data/hersh.or  src/fonts/orall_ac.hmp  $(FONTLIB)/orall_ac
+> ffpm run h2v  -- src/data/hersh.or  src/fonts/orall_ae.hmp  $(FONTLIB)/orall_ae
+> ffpm run h2v  -- src/data/hersh.or  src/fonts/orall_ag.hmp  $(FONTLIB)/orall_ag
+> ffpm run h2v  -- src/data/hersh.or  src/fonts/orall_ab.hmp  $(FONTLIB)/orall_ab
+> ffpm run h2v  -- src/data/hersh.or  src/fonts/orall_ad.hmp  $(FONTLIB)/orall_ad
+> ffpm run h2v  -- src/data/hersh.or  src/fonts/orall_af.hmp  $(FONTLIB)/orall_af
+> ffpm run h2v  -- src/data/hersh.or  src/fonts/orall_ah.hmp  $(FONTLIB)/orall_ah
+> ffpm run h2v  -- src/data/hersh.or  src/fonts/orall_ai.hmp  $(FONTLIB)/orall_ai
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/italicc.hmp   $(FONTLIB)/times.i
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/italict.hmp   $(FONTLIB)/times.ib
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/romanc.hmp    $(FONTLIB)/times.r
+> ffpm run h2v  -- src/data/hersh.oc  src/fonts/romant.hmp    $(FONTLIB)/times.rb
 > chmod a+Xr $(FONTLIB) $(FONTLIB)/*
 #-------------------------------------------------------------------------------
 clean:

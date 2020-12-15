@@ -3,19 +3,46 @@
 # name of library to build of the form lib$NAME.a
 LIBNAME=M_draw
 # directory to place output files in
-INSTALL=./lib/
+INSTALL=./lib
 LIBRARY=$(INSTALL)lib$(LIBNAME).a
 
 # platform-specific values you will probably change
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# platform-specific values you will probably change
+# 
 LIBS := -Llib -lM_draw -lX11 
 CC := cc
 CFLAGS := -O
 FC := gfortran
-FFLAGS := -O -J $(INSTALL)
-LDFLAGS := -I $(INSTALL)
+FFLAGS := -O
 AR=ar
 ARFLAGS=rU
 RANLIB=ranlib
+LDFLAGS := -I $(INSTALL)
+# 
+# You can either ignore it, or disable the "may be used uninitialized"
+# warnings with -Wno-maybe-uninitialized or compile with optimizations
+# (-O1 and more).
+gfortran: F90=gfortran 
+gfortran: F90FLAGS := -g -O -Wall -std=f2018 -Wextra -Wno-maybe-uninitialized -Wno-uninitialized -J $(INSTALL)
+gfortran: all
+	@echo built with $(F90)
+
+nvfortran: F90=nvfortran
+nvfortran: F90FLAGS := -Minform=inform -Mbackslash -traceback -module $(INSTALL)
+nvfortran: all
+	@echo built with $(F90)
+
+ifort: F90=ifort
+ifort: F90FLAGS := -warn all -traceback -module $(INSTALL)
+ifort: all
+	@echo built with $(F90)
+
+nagfor: F90=nagfor
+nagfor: F90FLAGS := -C all
+nagfor: all
+	@echo built with $(F90)
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 PROGFILES = $(wildcard ../PROGRAMS/DEMOS/*.f90) $(wildcard ../PROGRAMS/EXAMPLES/*.f90)
 CPROGFILES = ../PROGRAMS/MAKE_HERSHEY/h2v.c
@@ -62,7 +89,7 @@ $(OBJS): draw.h
 .phony: clean
 clean:
 >   -rm -f $(PROG) $(CPROG) $(OBJS) *.mod $(INSTALL)/hershey/*
->   -rm -f -i $(LIBRARY) $(INSTALL)/*.mod
+>   -rm -f $(LIBRARY) $(INSTALL)/*.mod
 
 .SUFFIXES: $(SUFFIXES) .f90 .F90 .c
 #.f90.o:
