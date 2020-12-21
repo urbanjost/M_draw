@@ -6,21 +6,17 @@ author = "John S. Urban"
 maintainer = "urbanjost@comcast.net"
 copyright = "2020 John S. Urban"
 description = "basic vector graphics package"
-[build]
-auto-executables = true  # Toggle automatic discovery of executables
-auto-examples = true     # Toggle automatic discovery of example programs
-auto-tests = true        # Toggle automatic discovery of test executables
-link = ["X11"]           # Linking against libraries
 
 [library]
 source-dir = "src"
+build-script = "fpm.mk"
 
-[[executable]]
+[[test]]
 name="make_hershey"
-source-dir="app/make_hershey"
+source-dir="test/make_hershey"
 main="make_hershey.f90"
 
 [[executable]]
 name="h2v"
-source-dir="app/MAKE_HERSHEY"
+source-dir="PROGRAMS/MAKE_HERSHEY"
 main="h2v.c"

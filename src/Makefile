@@ -4,7 +4,7 @@
 LIBNAME=M_draw
 # directory to place output files in
 INSTALL=./lib
-LIBRARY=$(INSTALL)lib$(LIBNAME).a
+LIBRARY=$(INSTALL)/lib$(LIBNAME).a
 
 # platform-specific values you will probably change
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
@@ -14,7 +14,7 @@ LIBS := -Llib -lM_draw -lX11
 CC := cc
 CFLAGS := -O
 FC := gfortran
-FFLAGS := -O
+FFLAGS := -O -J $(INSTALL)
 AR=ar
 ARFLAGS=rU
 RANLIB=ranlib
@@ -44,8 +44,8 @@ nagfor: all
 	@echo built with $(F90)
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-PROGFILES = $(wildcard ../PROGRAMS/DEMOS/*.f90) $(wildcard ../PROGRAMS/EXAMPLES/*.f90)
-CPROGFILES = ../PROGRAMS/MAKE_HERSHEY/h2v.c
+PROGFILES = $(wildcard ../example/*.f90) $(wildcard ../test/*.f90)
+CPROGFILES = ../app/MAKE_HERSHEY/h2v.c
 
 PROG = ${PROGFILES:.f90=}
 CPROG = ${CPROGFILES:.c=}
@@ -97,6 +97,7 @@ clean:
 #.F90.o:
 #>   $(FC) $(FFLAGS) -c $<
 .f90.a:
+>   echo "LIBRARY is $(LIBRARY)"
 >   $(FC) -c $(FFLAGS) $< -o $%
 >   @ $(AR) $(ARFLAGS) $(LIBRARY) $% 
 >   @ $(AR) $(ARFLAGS) $(LIBRARY) $<  # optionally store the source code too
