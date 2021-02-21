@@ -6,6 +6,9 @@ author = "John S. Urban"
 maintainer = "urbanjost@comcast.net"
 copyright = "2020 John S. Urban"
 description = "basic vector graphics package"
+categories = ["graphics"]
+keywords = ["fortran", "draw", "plot", "graphics"]
+homepage = "https://github.com/urbanjost/M_draw.git"
 [build]
 auto-executables = true  # Toggle automatic discovery of executables
 auto-examples = true     # Toggle automatic discovery of example programs

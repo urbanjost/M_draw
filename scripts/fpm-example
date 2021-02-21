@@ -1,0 +1,53 @@
+#!/bin/bash
+#@(#) fpm-example(1) - run fpm example programs from a menu
+################################################################################
+REPORT_STRING(){
+case $retval in
+  $WHIPLASH_OK)
+    echo "Result is $RESULT";;
+  $WHIPLASH_CANCEL)
+    echo "Cancel pressed.";;
+  $WHIPLASH_HELP)
+    echo "Help pressed ($RESULT).";;
+  $WHIPLASH_EXTRA)
+    echo "Extra button pressed.";;
+  $WHIPLASH_ITEM_HELP)
+    echo "Item-help button pressed.";;
+  $WHIPLASH_ESC)
+    if test -n "$RESULT" ; then
+      echo "$RESULT"
+    else
+      echo "ESC pressed."
+    fi
+    ;;
+esac
+}
+################################################################################
+trap "/bin/rm -f $SCRATCH" EXIT
+SCRATCH=scr_$(uuidgen)
+retval=0
+while [ "$retval" = 0 ]
+do
+   exec 3>$SCRATCH
+   whiptail \
+     --backtitle 'fpm examples' \
+     --noitem \
+     --output-fd 3 \
+     --menu 'EXAMPLES' \
+     40 50 30 \
+       $(fpm run --example --list 2>&1|xargs -n 1 basename|sed -e 's/demo_//'|sed -e 's/$/ example/')
+   retval=$?
+   REPORT_STRING
+   echo return value $retval
+   read NAME <$SCRATCH
+   rm -f $SCRATCH
+   [ "$NAME" = '' ] && break
+   env MANWIDTH=80 MANPATH=$(pwd)/man man $NAME
+   fpm run --example demo_$NAME 
+   exec 3>&-
+done
+################################################################################
+exit
+################################################################################
+RESULT=`$WHIPLASH --title "Please choose a file" "$@" --fselect $HOME/ 14 48 2>&1 1>&3`
+
