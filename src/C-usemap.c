@@ -54,9 +54,9 @@ typedef struct {
 
 #define    CMAPSIZE        8192
 #define    CMAPDEPTH       13
-byte *graphics_r; /* the big graphics data */
-byte *graphics_g; /* the big graphics data */
-byte *graphics_b; /* the big graphics data */
+static byte *graphics_r; /* the big graphics data */
+static byte *graphics_g; /* the big graphics data */
+static byte *graphics_b; /* the big graphics data */
 
 static ColorTable coltab[CMAPSIZE];
 /******************************************************************************/

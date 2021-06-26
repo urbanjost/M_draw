@@ -41,7 +41,7 @@ static struct rgb_color carray[MAXCOLOR];
 
 extern  FILE     *draw_fp;
 
-int prefx, prefy, prefxs, prefys;
+static int prefx, prefy, prefxs, prefys;
 
 /* How to convert degrees to radians */
 #ifndef PI

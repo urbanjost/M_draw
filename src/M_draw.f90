@@ -10256,23 +10256,22 @@ end subroutine print
 !===================================================================================================================================
 !()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()=
 !===================================================================================================================================
-function msg(generic1, generic2, generic3, generic4, generic5, generic6, generic7, generic8, generic9,nospace)
+function msg(generic1, generic2, generic3, generic4, generic5, generic6, generic7, generic8, generic9,sep)
 implicit none
 
 class(*),intent(in),optional  :: generic1 ,generic2 ,generic3 ,generic4 ,generic5
 class(*),intent(in),optional  :: generic6 ,generic7 ,generic8 ,generic9
-logical,intent(in),optional   :: nospace
+character(len=*),intent(in),optional :: sep
+character(len=:),allocatable  :: sep_local
 character(len=:), allocatable :: msg
 character(len=4096)           :: line
 integer                       :: istart
 integer                       :: increment
-   if(present(nospace))then
-      if(nospace)then
-         increment=1
-      else
-         increment=2
-      endif
+   if(present(sep))then
+      sep_local=sep
+      increment=1+len(sep_local)
    else
+      sep_local=' '
       increment=2
    endif
 
@@ -10307,6 +10306,7 @@ class(*),intent(in) :: generic
       type is (complex);                write(line(istart:),'("(",1pg0,",",1pg0,")")') generic
    end select
    istart=len_trim(line)+increment
+   line=trim(line)//sep_local
 end subroutine print_generic
 !===================================================================================================================================
 end function msg

@@ -102,7 +102,7 @@ static int      curwid = 1; /* Current pen width */
 static int      curpat  = 0; /* Current fill pattern*/
 static int      pgroup=1; /* groupid reserved for the entire page */
 extern float hardwidth[128]; /* array to store hardware character widths */
-char fontstyle[256];
+static char fontstyle[256];
 /******************************************************************************/
 /* make a line from (x,y) to (x2,y2) */
 static void rtfline(int ix1,int iy1,int ix2,int iy2){

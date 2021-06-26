@@ -136,7 +136,7 @@ static int      curwid = 1; /* Current pen width */
 static int      curpat  = 0; /* Current fill pattern*/
 static int      pgroup=1; /* groupid reserved for the entire page */
 extern float hardwidth[128]; /* array to store hardware character widths */
-char fontstyle[256];
+static char fontstyle[256];
 /******************************************************************************/
 static int VML_header() {
 
