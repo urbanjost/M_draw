@@ -130,4 +130,5 @@ append("vsetflush.3m_draw.html");
 append("window.3m_draw.html");
 append("xcentertext.3m_draw.html");
 append("ycentertext.3m_draw.html");
+append("example_text_justification.7m_draw.html");
 }

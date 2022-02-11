@@ -7,7 +7,7 @@
 !!
 !!    M_draw is a portable public-domain device-independent graphics library
 !!    intended for being called from Fortran that is based on VOGLE (from
-!!    the The University of Melbourne) that is loosely based on the Silicon
+!!    the University of Melbourne) that is loosely based on the Silicon
 !!    Graphics Iris GL library. It was also partly inspired by the DIGS
 !!    library developed at the U.S. Naval Academy under the guidance of
 !!    Prof David Rogers.
@@ -36,7 +36,7 @@
 !!    backfacing. Access to hardware text and double buffering of drawings
 !!    depends on the driver.
 !!
-!!    M_draw is based on VOGLE, which is callable from C, Fortran, and Pascal;
+!!    M_draw is callable from C and Fortran, and Pascal;
 !!    but M_draw is only supported in Fortran (the C components are being converted
 !!    to Fortran).
 !!
@@ -107,7 +107,7 @@
 !!
 !!    On some devices (particularly X11) considerable speedups in display
 !!    can be achieved by not flushing each graphics primitive call to the
-!!    actual display until necessary. VOGL automatically delays flushing in
+!!    actual display until necessary. M_draw automatically delays flushing in
 !!    the following cases:
 !!
 !!      * Within a callobj() call.
@@ -125,7 +125,6 @@
 !!    expandviewport()                       use the entire device viewport
 !!    unexpandviewport()                     undo expandviewport(3f)
 !!
-!!
 !!    Viewpoint routines alter the current transformation matrix.
 !!
 !!    GETTING THE ASPECT DETAILS
@@ -133,7 +132,6 @@
 !!    getfactors(wfact, hfact)         Returns width over min(width of device, height of device) and height over min(width of
 !!                                     device, height of device).
 !!    getdisplaysize(w, h)             Returns width and height of device in device units
-!!
 !!
 !!    Often the screen is not perfectly square and it would be nice to use
 !!    the extra space without having to turn clipping off. The following
@@ -143,7 +141,6 @@
 !!    ATTRIBUTE STACK ROUTINES
 !!    pushattributes()                 Save the current attributes on the attribute stack.
 !!    popattributes()                  Restore attributes to what they were at last pushattributes().
-!!
 !!
 !!    The attribute stack contains details such as current color, filling,
 !!    hatching, centered, fixedwidth, text height, text width, and the
@@ -156,6 +153,12 @@
 !!    perspective(fov, aspect, near, far)         Specify perspective viewing pyramid
 !!    window(left, right, bot, top, near,far)     Specify a perspective viewing pyramid
 !!
+!!    PROJECTION AND VIEWPORT ROUTINES
+!!    subroutine page (left, right, bottom, top)  create a window of the specified size and then
+!!                                                set the viewport to the largest viewport with
+!!                                                that aspect so that output acts much like a
+!!                                                page of paper of the specified size without
+!!                                                distortion.
 !!
 !!    All the projection routines define a new transformation matrix, and
 !!    consequently the world units. Parallel projections are defined by
@@ -264,7 +267,6 @@
 !!                                  best considered as several separate polygons. A polygon that in
 !!                                  not self-intersecting in this way is called a simple polygon.
 !!
-!!
 !!    TEXT ROUTINES
 !!    font(fontname)                   set the current font
 !!    numchars()                       return number of characters in the current SOFTWARE font.
@@ -367,6 +369,8 @@
 !!    loadobj(n, filename)        Load the object in the file filename as object number n.
 !!    saveobj(n, filename)        Save object number n into file filename. Does NOT save objects called inside object n.
 !!
+!!    invokeobj(xt,yt,zt,xs,ys,zs,xr,yr,zr,iobject)  push environment and do a transformation and then pop environment
+!!
 !!    Objects are graphical entities created by the drawing routines called
 !!    between makeobj and closeobj. Objects may be called from within other
 !!    objects. When an object is created most of the calculations required
@@ -394,6 +398,10 @@
 !!    getgp2(x, y)                Gets the current graphics position
 !!    sgetgp2(x, y)               Gets the current screen graphics position in screen coords (-1 to 1)
 !!
+!!    GENERAL STACK ROUTINES
+!!    subroutine pop()            pop
+!!    subroutine push()           push
+!!
 !!##EXAMPLE
 !!
 !!   Sample program:
@@ -403,7 +411,6 @@
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
-!!    use M_drawplus, only : page
 !!    use M_units,    only : cosd, sind
 !!    implicit none
 !!    integer  :: ipaws
@@ -535,7 +542,6 @@
 !!       call textsize(height,height)
 !!       call drawstr(itext)
 !!       end subroutine hershey
-!!
 !!    end program demo_M_draw
 !!
 !!##BUGS
@@ -562,7 +568,6 @@
 !!
 !!    Exactly what attributes should and should not be reset with a
 !!    vnewdev(3f) is questionable.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    prefposition(3f) - [M_draw:WINDOW_SETUP] Specify preferred position of window
@@ -610,7 +615,6 @@
 !!      call vexit()
 !!
 !!      end program demo_prefposition
-!===================================================================================================================================
 !>
 !!##NAME
 !!    prefsize(3f) - [M_draw:WINDOW_SETUP] Specify preferred width and height of window in physical units
@@ -667,7 +671,6 @@
 !!         call draw2(-300.0,200.0)
 !!      end subroutine picture
 !!      end program demo_prefsize
-!===================================================================================================================================
 !>
 !!##NAME
 !!    vinit(3f) - [M_draw:DEVICE] Initialise device
@@ -949,7 +952,6 @@
 !!       call vexit()
 !!
 !!       end program demo_vinit
-!===================================================================================================================================
 !>
 !!##NAME
 !!    vexit(3f) - [M_draw:DEVICE] Reset window/terminal and exit graphics mode. Must be last routine called.
@@ -1011,7 +1013,6 @@
 !!      call vexit()
 !!
 !!      end program demo_vexit
-!===================================================================================================================================
 !>
 !!##NAME
 !!    voutput(3f) - [M_draw:DEVICE] Redirect output from *next* vinit to file
@@ -1029,9 +1030,9 @@
 !!
 !!       The special file names are
 !!
-!!         * - is standard output
-!!         * + is standard error
-!!         * |command will create a pipe to "command"
+!!         * -  is standard output
+!!         * +  is standard error
+!!         * |  command will create a pipe to "command"
 !!
 !!       If the open of the file fails, an attempt is made to append to file
 !!       "M_DRAW_OUTPUT". If this fails, standard output is used.
@@ -1064,7 +1065,6 @@
 !!    !
 !!    call vexit()
 !!    end program demo_voutput
-!===================================================================================================================================
 !>
 !!##NAME
 !!    vnewdev(3f) - [M_draw:DEVICE] Reinitialize to use new device without changing
@@ -1077,7 +1077,6 @@
 !!
 !!    Reinitialize M_draw to use a new device without changing attributes,
 !!    viewport etc. (eg. window and viewport specifications)
-!===================================================================================================================================
 !>
 !!##NAME
 !!    vgetdev(3f) - [M_draw:DEVICE] Get name of current device
@@ -1090,7 +1089,6 @@
 !!
 !!    Gets the name of the current M_draw device. The C version of the routine
 !!    also returns a pointer to its argument.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    getdepth(3f) - [M_draw:DEVICE] Return number of bit planes (color planes)
@@ -1105,7 +1103,6 @@
 !!    device. The number of colors displayable by the device is then
 !!    2**(nplanes); ie. if nplanes=1,then there are two colors (black and
 !!    white).
-!===================================================================================================================================
 !>
 !!##NAME
 !!    pushdev(3f) - [M_draw:DEVICE] push current device onto a stack
@@ -1123,7 +1120,6 @@
 !!    Note, this is intended to completely change the device, it will not work
 !!    if you pushdev() the same device that you are already running. (This will
 !!    be fixed at a later date).
-!===================================================================================================================================
 !>
 !!##NAME
 !!    popdev(3f) - [M_draw:DEVICE] pop device from stack created by pushdev.
@@ -1137,7 +1133,6 @@
 !!
 !!    Pops a device off the device stack and reinstates the previously pushed
 !!    device.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    move(3f) - [M_draw:MOVE] Move current graphics position to (x, y, z)
@@ -1151,7 +1146,6 @@
 !!
 !!    Move current graphics position to (x, y, z). (x, y, z) is a point in
 !!    world coordinates.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    rmove(3f) - [M_draw:MOVE] Relative move
@@ -1165,7 +1159,6 @@
 !!##DESCRIPTION
 !!
 !!    Relative move. deltax, deltay, and deltaz are offsets in world units.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    move2(3f) - [M_draw:MOVE] Move graphics position to point (x, y)
@@ -1211,7 +1204,6 @@
 !!      ipaws=getkey()
 !!      call vexit()
 !!      end program demo_move2
-!===================================================================================================================================
 !>
 !!##NAME
 !!    rmove2(3f) - [M_draw:MOVE] Relative move in world units.
@@ -1237,6 +1229,9 @@
 !!      use M_draw, only: prefsize, vinit, ortho2, clear, getkey
 !!      use M_draw, only: move2, rmove2, rdraw2, vexit
 !!      use M_draw, only: linewidth
+!!      implicit none
+!!      integer :: ipaws
+!!      integer :: i
 !!      call prefsize(500,500)
 !!      call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
 !!      call ortho2(-110.0,110.0,-110.0,110.0)
@@ -1249,7 +1244,6 @@
 !!      ipaws=getkey()
 !!      call vexit()
 !!      end program demo_rmove2
-!===================================================================================================================================
 !>
 !!##NAME
 !!    smove2(3f) - [M_draw:MOVE] Move current graphics position in screen coordinates (-1.0 to 1.0).
@@ -1262,7 +1256,6 @@
 !!
 !!##DESCRIPTION
 !!    Move current graphics position in screen coordinates (-1.0 to 1.0).
-!===================================================================================================================================
 !>
 !!##NAME
 !!    rsmove2(3f) - [M_draw:MOVE] Relative move in screen units (-1.0 to 1.0).
@@ -1277,7 +1270,6 @@
 !!
 !!    Relative smove2. deltax, and deltay are offsets in screen units
 !!    (-1.0 to 1.0).
-!===================================================================================================================================
 !>
 !!##NAME
 !!    draw(3f) - [M_draw:DRAW] Draw from current graphics position to (x, y, z)
@@ -1291,7 +1283,6 @@
 !!
 !!    Draw from current graphics position to (x, y, z). (x, y, z) is a
 !!    point in world coordinates.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    rdraw(3f) - [M_draw:DRAW] Relative draw
@@ -1304,7 +1295,6 @@
 !!
 !!##DESCRIPTION
 !!    Relative draw. deltax, deltay, and deltaz are offsets in world units.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    draw2(3f) - [M_draw:DRAW] Draw from current graphics position to given point (x, y)
@@ -1371,7 +1361,6 @@
 !!       ! exit graphics mode
 !!       call vexit()
 !!    end program demo_draw2
-!===================================================================================================================================
 !>
 !!##NAME
 !!    rdraw2(3f) - [M_draw:DRAW] Relative draw from current position to given point
@@ -1434,7 +1423,6 @@
 !!      end subroutine square
 !!
 !!      end program demo_rdraw2
-!===================================================================================================================================
 !>
 !!##NAME
 !!    sdraw2(3f) - [M_draw:DRAW] Draw in screen coordinates (-1.0 to 1.0).
@@ -1446,7 +1434,6 @@
 !!          real x, y
 !!##DESCRIPTION
 !!    Draw in screen coordinates (-1.0 to 1.0).
-!===================================================================================================================================
 !>
 !!##NAME
 !!    rsdraw2(3f) - [M_draw:DRAW] Relative draw in screen units (-1.0 to 1.0).
@@ -1459,7 +1446,6 @@
 !!
 !!##DESCRIPTION
 !!    Relative sdraw2. delatx and deltay are in screen units (-1.0 to 1.0).
-!===================================================================================================================================
 !>
 !!##NAME
 !!    rect(3f) - [M_draw:POLYGONS] Draw a rectangle given two corners
@@ -1495,7 +1481,6 @@
 !!
 !!    program demo_rect
 !!    use M_draw
-!!    use M_drawplus, only : page
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
@@ -1536,7 +1521,6 @@
 !!    call vexit()
 !!
 !!    end program demo_rect
-!===================================================================================================================================
 !>
 !!##NAME
 !!      polyfill(3f) - [M_draw:POLYGONS] Set the polygon fill flag
@@ -1548,8 +1532,8 @@
 !!       logical onoff
 !!
 !!##DESCRIPTION
-!!    Set the polygon fill flag. This will always turn off hatching. A non-zero
-!!    integer or LOGICAL .true. turns polyfill on.
+!!    Set the polygon fill flag. This will always turn off hatching. A
+!!    LOGICAL .true. turns polyfill on.
 !!##EXAMPLE
 !!
 !!   Sample program:
@@ -1621,7 +1605,6 @@
 !!       idum=getkey()
 !!    end subroutine my_drawpoly
 !!    end program demo_polyfill
-!===================================================================================================================================
 !>
 !!##NAME
 !!    polyhatch(3f) - [M_draw:POLYGONS] Set the polygon hatch flag
@@ -1632,8 +1615,8 @@
 !!     logical onoff
 !!##DESCRIPTION
 !!
-!!    Set the polygon hatch flag. This will always turn off fill. A non-zero
-!!    integer or LOGICAL .true. turns polyhatch on. Note that hatched polygons
+!!    Set the polygon hatch flag. This will always turn off fill. A
+!!    LOGICAL .true. turns polyhatch on. Note that hatched polygons
 !!    must initially be defined parallel to the X-Y plane.
 !!##EXAMPLE
 !!
@@ -1641,7 +1624,7 @@
 !!
 !!    program demo_polyhatch
 !!    use M_draw
-!!    use M_drawplus, only : page, spirograph
+!!    use M_drawplus, only : spirograph
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
@@ -1663,7 +1646,6 @@
 !!    key=getkey()
 !!    call vexit()
 !!    end program demo_polyhatch
-!===================================================================================================================================
 
 !>
 !!##NAME
@@ -1718,7 +1700,6 @@
 !!
 !!    call draw_interpret(DRAW_CMDS,delimiters=';')
 !!    end program demo_hatchang
-!===================================================================================================================================
 !>
 !!##NAME
 !!    hatchpitch(3f) - [M_draw:POLYGONS] Set the distance between hatch lines.
@@ -1759,7 +1740,6 @@
 !!
 !!    call draw_interpret(DRAW_CMDS,delimiters=';')
 !!    end program demo_hatchpitch
-!===================================================================================================================================
 !>
 !!##NAME
 !!    poly2(3f) - [M_draw:POLYGONS] Construct an (x, y) polygon from an array of points
@@ -1780,6 +1760,7 @@
 !!    program demo_poly2
 !!    use M_draw
 !!    integer :: i,j
+!!    integer :: ipaws, icolor
 !!    real    :: xx,yy
 !!       call prefsize(512,512)
 !!       call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
@@ -1829,7 +1810,6 @@
 !!    end subroutine setcolor
 !!
 !!    end program demo_poly2
-!===================================================================================================================================
 !>
 !!##NAME
 !!    poly(3f) - [M_draw:POLYGONS] Construct a polygon from an array of points
@@ -1924,7 +1904,6 @@
 !!    end subroutine drawpoly
 !!
 !!    end program demo_poly
-!===================================================================================================================================
 !>
 !!##NAME
 !!    makepoly(3f) - [M_draw:POLYGONS] opens polygon constructed by a series of move-draws and closed by closepoly
@@ -2049,7 +2028,6 @@
 !!       endif
 !!    end subroutine hypoc
 !!    end program demo_makepoly
-!===================================================================================================================================
 !>
 !!##NAME
 !!    closepoly(3f) - [M_draw:POLYGONS] Terminates a polygon opened by makepoly(3f)
@@ -2062,7 +2040,6 @@
 !!##DESCRIPTION
 !!
 !!    Terminates a polygon opened by makepoly(3f).
-!===================================================================================================================================
 !>
 !!##NAME
 !!    backface(3f) - [M_draw:POLYGONS] Turns on culling of backfacing polygons.
@@ -2094,6 +2071,7 @@
 !!    integer nplanes
 !!    logical fill, back, backdir
 !!    integer :: ios
+!!    integer :: ipaws
 !!
 !!    print*,'Enter output device:'
 !!    read(*,'(a)',iostat=ios)device
@@ -2283,7 +2261,6 @@
 !!    end program demo_backface
 !!
 !! !
-!===================================================================================================================================
 !>
 !!##NAME
 !!    backfacedir(3f) - [M_draw:POLYGONS] Sets backfacing direction to clockwise or anti-clockwise
@@ -2299,7 +2276,6 @@
 !!    on whether clockwise is 1 or 0. 1 = clockwise (in screen coords)
 !!    0 = anticlockwise.
 !!
-!===================================================================================================================================
 !>
 !!##NAME
 !!     circleprecision(3f) - [M_draw:ARCS] Set number of line segments used to approximate a circle
@@ -2310,10 +2286,9 @@
 !!         subroutine circleprecision(nsegs)
 !!         integer,intent(in) :: nsegs
 !!
-!!    Set the number of line segments making up a circle. Default is currently
-!!    32. The number of segments in an arc or sector is calculated from the
-!!    variable "nsegs" according to the span of the arc or sector.
-!!
+!!    Set the number of line segments making up a circle. Default is
+!!    currently 32. The number of segments in an arc or sector is calculated
+!!    from the variable "nsegs" according to the span of the arc or sector.
 !!
 !!##OPTIONS
 !!    NSEGS   number of line segments making up a circle
@@ -2327,8 +2302,6 @@
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
-!!    use M_drawPLUS, only : page
-!!    use M_strings,  only : v2s
 !!    real    :: b=0.5
 !!    real    :: y1,y2,ym,x1,x2
 !!    real    :: width=50.0/8.0,width2
@@ -2354,7 +2327,7 @@
 !!          x2=x1+width2
 !!          call move2((x1+x2)/2.0,ym)
 !!          call circleprecision(ivals(i))
-!!          call drawstr((v2s(ivals(i))))     ! convert number to string and draw it
+!!          call print(ivals(i))     ! convert number to string and draw it
 !!          call circle((x1+x2)/2.0, ym, (x2-x1)/2.10)
 !!          x1=x1+width
 !!       enddo
@@ -2364,7 +2337,6 @@
 !!
 !!##IMAGE
 !!    circles are drawn with various circle precision values.
-!===================================================================================================================================
 !>
 !!##NAME
 !!     arc(3f) - [M_draw:ARCS] Draw an arc in world units.
@@ -2380,7 +2352,7 @@
 !!##DESCRIPTION
 !!
 !!    Draw an arc. x, y, and radius are values in world units
-!!    using  current line width and color
+!!    using current line width and color
 !!
 !!    Angles are in degrees, positive measured counterclockwise from the
 !!    +X axis. The current position after the arc is drawn is at the end
@@ -2398,7 +2370,6 @@
 !!
 !!    program demo_arc
 !!       use M_draw
-!!       use M_drawplus, only : page
 !!       use M_draw,    only  : D_BLACK,   D_WHITE
 !!       use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!       use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
@@ -2451,7 +2422,6 @@
 !!       end subroutine drawit
 !!
 !!    end program demo_arc
-!===================================================================================================================================
 !>
 !!##NAME
 !!    sector(3f) - [M_draw:ARCS] Draw a sector. Note: sectors are polygons.
@@ -2474,7 +2444,6 @@
 !!
 !!    program demo_sector
 !!    use M_draw
-!!    use M_drawplus, only : page
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
@@ -2545,7 +2514,6 @@
 !!       key=getkey()
 !!       call vexit()
 !!    end program demo_sector
-!===================================================================================================================================
 !>
 !!##NAME
 !!    circle(3f) - [M_draw:ARCS] Draw a circle.
@@ -2579,7 +2547,6 @@
 !!
 !!    program demo_circle
 !!       use M_draw
-!!       use M_drawPLUS, only : page
 !!       use M_draw,    only  : D_BLACK,   D_WHITE
 !!       use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!       use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
@@ -2634,7 +2601,6 @@
 !!    ! exit graphics mode
 !!       call vexit()
 !!    end program demo_circle
-!===================================================================================================================================
 !>
 !!##NAME
 !!    point(3f) - [M_draw:POINT] Draw a point at x, y, z
@@ -2654,7 +2620,6 @@
 !!
 !!    program demo_point
 !!    use M_draw
-!!    use M_drawplus, only : page
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
@@ -2686,7 +2651,6 @@
 !!       end subroutine randpoint
 !!
 !!    end program demo_point
-!===================================================================================================================================
 !>
 !!##NAME
 !!    point2(3f) - [M_draw:POINT] Draw a point at x, y.
@@ -2722,7 +2686,6 @@
 !!    ipaws=getkey()
 !!    call vexit()
 !!    end program demo_point2
-!===================================================================================================================================
 !>
 !!##NAME
 !!    curvebasis(3f) - [M_draw:CURVE] Define a basis matrix for a curve.
@@ -2733,7 +2696,6 @@
 !!          real,intent(in) :: basis(4,4)
 !!##DESCRIPTION
 !!    Define a basis matrix for a curve.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    curveprecision(3f) - [M_draw:CURVE] Define number of line segments used to draw a curve.
@@ -2744,7 +2706,6 @@
 !!          integer nsegs
 !!##DESCRIPTION
 !!    Define the number of line segments used to draw a curve.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    rcurve(3f) - [M_draw:CURVE] Draw a rational curve.
@@ -2757,7 +2718,6 @@
 !!
 !!##DESCRIPTION
 !!    Draw a rational curve.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    curve(3f) - [M_draw:CURVE] Draw a curve.
@@ -2954,7 +2914,6 @@
 !!    call vexit()
 !!
 !!    end program demo_curve
-!===================================================================================================================================
 !>
 !!##NAME
 !!    curven(3f) - [M_draw:CURVE] Draw n-3 overlapping curve segments. Note: n must be at least 4.
@@ -2968,7 +2927,6 @@
 !!
 !!##DESCRIPTION
 !!    Draw n-3 overlapping curve segments. Note: n must be at least 4.
-!===================================================================================================================================
 !>
 !!
 !!##NAME
@@ -3009,7 +2967,7 @@
 !!    to have centertext mode on for this to give sensible results when placing
 !!    the markers.
 !!
-!!    If the environment variable "M_draw_FONTPATH" is set M_draw looks for the software
+!!    If the environment variable "M_DRAW_FONTPATH" is set M_draw looks for the software
 !!    fonts in the directory given by this value.
 !!
 !!    WHEN ASKED FOR NON-EXISTENT FONT NAMES, FONT(3f) STOPS THE PROGRAM.
@@ -3023,7 +2981,6 @@
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
-!!    use M_drawplus, only : page
 !!    real    :: left
 !!    real    :: baseline=80.0
 !!    integer :: icolor=1
@@ -3076,7 +3033,6 @@
 !!    end subroutine nextline
 !!
 !!    end program demo_font
-!===================================================================================================================================
 !>
 !!##NAME
 !!    numchars(3f) - [M_draw:TEXT] Return number of characters in the current SOFTWARE font.
@@ -3089,7 +3045,6 @@
 !!##DESCRIPTION
 !!    Return the number of characters in the current font. Applicable only to
 !!    software fonts.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    textsize(3f) - [M_draw:TEXT] Set text size of a character in the current SOFTWARE font in world units.
@@ -3144,7 +3099,6 @@
 !!       call vexit()
 !!
 !!    end program demo_textsize
-!===================================================================================================================================
 !>
 !!##NAME
 !!    textang(3f) - [M_draw:TEXT] Set the SOFTWARE text angle.
@@ -3170,6 +3124,7 @@
 !!    program demo_textang
 !!    use :: M_draw
 !!    use :: M_units, only : cosd, sind
+!!    integer :: ipaws
 !!
 !!    !! set up drawing environment
 !!    call prefsize(600,600)
@@ -3197,7 +3152,6 @@
 !!    call vexit()
 !!
 !!    end program demo_textang
-!===================================================================================================================================
 !>
 !!##NAME
 !!    fixedwidth(3f) - [M_draw:TEXT] Turns fixedwidth mode on or off for SOFTWARE fonts.
@@ -3208,7 +3162,7 @@
 !!         logical onoff
 !!##DESCRIPTION
 !!
-!!    Turns fixedwidth text on or off. Non-zero (.true.) causes all text to
+!!    Turns fixedwidth text on or off. .TRUE. causes all text to
 !!    be printed with a fixed width for each character. Otherwise, the text
 !!    is spaced proportionally, where each character has a unique width less
 !!    than or equal to the current fixed font width. This routine only affects
@@ -3222,7 +3176,6 @@
 !!
 !!    program demo_fixedwidth
 !!       use M_draw
-!!       use M_drawplus, only : page
 !!       implicit none
 !!       real,parameter :: x1=0.0,  x2=40.0,  y1=0.0,  y2=4.0
 !!       real,parameter :: scl=3*0.7
@@ -3248,7 +3201,6 @@
 !!       idum=getkey()
 !!       call vexit()
 !!    end program demo_fixedwidth
-!===================================================================================================================================
 !>
 !!##NAME
 !!    centertext(3f) - [M_draw:TEXT] Turns centertext mode on or off for SOFTWARE fonts.
@@ -3261,7 +3213,7 @@
 !!
 !!##DESCRIPTION
 !!
-!!    Turns centertext text on or off. Non-zero (.true.) is on. This centers
+!!    Turns centertext text on or off. .TRUE. is on. This centers
 !!    strings and chars. This routine only affects software text.
 !!
 !!##OPTIONS
@@ -3318,7 +3270,6 @@
 !!    call vexit()
 !!
 !!    end program demo_centertext
-!===================================================================================================================================
 !>
 !!##NAME
 !!    getcharsize(3f) - [M_draw:TEXT] Get the width and height of a character.
@@ -3334,7 +3285,6 @@
 !!    Get the width and height of a character. At the moment the height
 !!    returned is always that of the difference between the maximum descender
 !!    and ascender.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    getfontdec(3f) - [M_draw:TEXT] Return size of maximum font descender
@@ -3345,7 +3295,6 @@
 !!         real function getfontdec()
 !!##DESCRIPTION
 !!    Get the descender size of a character in a font.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    getfontsize(3f) - [M_draw:TEXT] Get maximum width and height of a character in a font.
@@ -3359,7 +3308,6 @@
 !!##DESCRIPTION
 !!
 !!    Get the maximum width and height of a character in a font.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    drawchar(3f) - [M_draw:TEXT] Draw the character c and update current position.
@@ -3494,7 +3442,6 @@
 !!    end subroutine ShowCircularText
 !!
 !!    end program demo_drawchar
-!===================================================================================================================================
 !>
 !!##NAME
 !!    drawstr(3f) - [M_draw:TEXT] Draw the text in string at the current position.
@@ -3544,16 +3491,6 @@
 !!       call vexit()           !  wrap up and exit graphics mode
 !!
 !!       end program demo_drawstr
-!!   Results:
-!! ================================================================================
-!! *ccall*: MAKING TEMPORARY DIRECTORY /tmp/CCALL_CYGWIN64_GFORTRAN_33416
-!! r - /tmp/_JSU.ff
-!! a - /tmp/CCALL_CYGWIN64_GFORTRAN_33416/_JSU.33416.f90
-!! /home/urbanjs/.twm/scripts_regression/goodbad: _JSU.1 0 _JSU start --section 1
-!! *ccall*: REMOVING /tmp/CCALL_CYGWIN64_GFORTRAN_33416
-!! ================================================================================
-!! ================================================================================
-!===================================================================================================================================
 !>
 !!##NAME
 !!    strlength(3f) - [M_draw:TEXT] return length of string
@@ -3577,7 +3514,6 @@
 !!
 !!    program demo_strlength
 !!    use :: M_draw
-!!    use M_drawplus, only : page
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
@@ -3639,7 +3575,6 @@
 !!    end subroutine nextline
 !!
 !!    end program demo_strlength
-!===================================================================================================================================
 !>
 !!##NAME
 !!    boxtext(3f) - [M_draw:TEXT] stretch and draw the SOFTWARE string s so that it fits in the imaginary box
@@ -3666,14 +3601,13 @@
 !!   Simple program:
 !!
 !!     program demo_boxtext
-!!     use M_draw,     only : vinit,vexit,prefsize,vgetdev,clear
+!!     use M_draw,     only : vinit,vexit,prefsize,vgetdev,clear,page
 !!     use M_draw,     only : centertext,polyfill,font,linewidth,color
 !!     use M_draw,     only : getkey
 !!     use M_draw,     only : color,rect,boxtext
 !!     use M_draw,     only : D_BLACK,   D_WHITE
 !!     use M_draw,     only : D_RED,     D_GREEN,    D_BLUE
 !!     use M_draw,     only : D_YELLOW,  D_MAGENTA,  D_CYAN
-!!     use M_drawplus, only : page
 !!     implicit none
 !!     real              :: x1=0.0,    x2=40.0,    y1=0.0,    y2=7.0
 !!     real              :: xmin=1.0,  xmax=39.0,  ymin=1.0,  ymax=6.0
@@ -3693,7 +3627,6 @@
 !!        idum=getkey()
 !!        call vexit()
 !!     end program demo_boxtext
-!===================================================================================================================================
 !>
 !!##NAME
 !!    boxfit(3f) - [M_draw:TEXT] resize the SOFTWARE text size so it fits in a box
@@ -3709,7 +3642,6 @@
 !!    Set scale for text so that a string of the biggest characters in
 !!    the font will fit in a box l by h. l and h are real values in world
 !!    dimensions. This only applies to software text.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    textjustify(3f) - [M_draw:TEXT] general text justification (C only)
@@ -3746,12 +3678,11 @@
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
-!!    use M_drawplus, only : page
 !!    use iso_c_binding
 !!    implicit none
 !!    real :: x1=-20.0, x2=20.0, y1=-20.0, y2=20.0
 !!       call prefsize(int(x2-x1)*30,int(y2-y1)*30)
-!!       !!call voutput('|ppmtogif >images/textjustify.3M_draw.gif')
+!!       !!call voutput('|ppmtogif >textjustify.3M_draw.gif')
 !!       !!call vinit('p6')
 !!       call vinit(' ')
 !!       call page(x1,x2,y1,y2)
@@ -3794,7 +3725,6 @@
 !!          call rdraw2(+strlength(string),0.0)
 !!       end subroutine seejustify
 !!    end program demo_textjustify
-!===================================================================================================================================
 !>
 !!##NAME
 !!    leftjustify(3f) - [M_draw:TEXT] left justify text
@@ -3815,7 +3745,6 @@
 !!
 !!    program demo_leftjustify
 !!    use M_draw
-!!    use M_drawplus, only : page
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
@@ -3844,7 +3773,6 @@
 !!       key=getkey()
 !!       call vexit()
 !!    end program demo_leftjustify
-!===================================================================================================================================
 !>
 !!##NAME
 !!    rightjustify(3f) - [M_draw:TEXT] right justify text
@@ -3868,7 +3796,6 @@
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
-!!    use M_drawplus, only : page
 !!    implicit none
 !!    real    :: x1, x2, y1, y2
 !!    real    :: scl, ax, bx
@@ -3894,7 +3821,6 @@
 !!       key=getkey()
 !!       call vexit()
 !!    end program demo_rightjustify
-!===================================================================================================================================
 !>
 !!##NAME
 !!    xcentertext(3f) - [M_draw:TEXT] set text centering mode on in X direction
@@ -3919,7 +3845,6 @@
 !!
 !!    program demo_xcentertext
 !!    use M_draw
-!!    use M_drawplus, only : page
 !!    implicit none
 !!    real    :: x1, x2, y1, y2
 !!    real    :: scl, ax, bx
@@ -3945,7 +3870,6 @@
 !!       key=getkey()
 !!       call vexit()
 !!    end program demo_xcentertext
-!===================================================================================================================================
 !>
 !!##NAME
 !!    topjustify(3f) - [M_draw:TEXT] top justify text
@@ -3966,7 +3890,6 @@
 !!
 !!    program demo_topjustify
 !!    use M_draw
-!!    use M_drawplus, only : page
 !!    implicit none
 !!    real    :: x1, x2, y1, y2
 !!    real    :: scl, ax, bx
@@ -3992,7 +3915,6 @@
 !!       key=getkey()
 !!       call vexit()
 !!    end program demo_topjustify
-!===================================================================================================================================
 !>
 !!##NAME
 !!    bottomjustify(3f) - [M_draw:TEXT] bottom justify text
@@ -4013,7 +3935,6 @@
 !!
 !!    program demo_bottomjustify
 !!    use M_draw
-!!    use M_drawplus, only : page
 !!    implicit none
 !!    real    :: x1, x2, y1, y2
 !!    real    :: scl, ax, bx
@@ -4039,7 +3960,6 @@
 !!       key=getkey()
 !!       call vexit()
 !!    end program demo_bottomjustify
-!===================================================================================================================================
 !>
 !!##NAME
 !!    ycentertext(3f) - [M_draw:TEXT] center text in the Y direction
@@ -4060,7 +3980,6 @@
 !!
 !!    program demo_ycentertext
 !!    use M_draw
-!!    use M_drawplus, only : page
 !!    implicit none
 !!    real    :: x1, x2, y1, y2
 !!    real    :: scl, ax, bx
@@ -4089,7 +4008,6 @@
 !!       call vexit()
 !!    end program demo_ycentertext
 !!
-!===================================================================================================================================
 !>
 !!##NAME
 !!    textslant(3f) - [M_draw:TEXT] Defines the obliqueness of the fonts.
@@ -4118,7 +4036,6 @@
 !!
 !!    program demo_textslant
 !!    use M_draw
-!!    use M_drawplus, only : page
 !!    implicit none
 !!    real    :: x1, x2, y1, y2
 !!    real    :: scl
@@ -4146,7 +4063,6 @@
 !!       key=getkey()
 !!       call vexit()
 !!    end program demo_textslant
-!===================================================================================================================================
 !>
 !!##NAME
 !!    textweight(3f) - [M_draw:TEXT] Defines the weight of the fonts.
@@ -4158,11 +4074,11 @@
 !!        integer ival
 !!##DESCRIPTION
 !!
-!!    Defines the weight of the fonts. Currently, the predefined constants
-!!    in C and Fortran are D_NORMAL and D_BOLD; which correspond to 0 and
-!!    1. This is not the same as using linethickess to change the appearance
-!!    of a software font. The font is redrawn multiple times with a slight
-!!    offset to create the bold appearance.
+!!     Defines the weight of the fonts. Currently, the predefined constants
+!!     in C and Fortran are D_NORMAL and D_BOLD; which correspond to 0
+!!     and 1. This is not the same as using linethickess to change the
+!!     appearance of a software font. The font is redrawn multiple times
+!!     with a slight offset to create the bold appearance.
 !!
 !!##EXAMPLE
 !!
@@ -4170,7 +4086,6 @@
 !!
 !!    program demo_textweight
 !!    use M_draw
-!!    use M_drawplus, only : page
 !!    implicit none
 !!    real,parameter :: w=40.0
 !!    integer        :: key
@@ -4200,7 +4115,6 @@
 !!       key=getkey()
 !!       call vexit()
 !!    end program demo_textweight
-!===================================================================================================================================
 !>
 !!##NAME
 !!    linewidth(3f) - [M_draw:LINESTYLE] set line width in rasters
@@ -4220,13 +4134,12 @@
 !!   Sample program:
 !!
 !!    program demo_linewidth
-!!    use M_draw,     only : prefsize, vinit, clear, getkey, drawstr
+!!    use M_draw,     only : prefsize, vinit, clear, getkey, drawstr, page
 !!    use M_draw,     only : textsize, ycentertext, rdraw2, rmove2
 !!    use M_draw,     only : move2, draw2, vexit, color, linewidth, font
 !!    use M_draw,     only : D_BLACK,   D_WHITE
 !!    use M_draw,     only : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,     only : D_YELLOW,  D_MAGENTA,  D_CYAN
-!!    use M_drawPLUS, only : page
 !!    implicit none
 !!    real    :: b=0.5
 !!    integer :: ipaws
@@ -4298,7 +4211,6 @@
 !!    ! exit graphics mode
 !!    call vexit()
 !!    end program demo_linewidth
-!===================================================================================================================================
 !>
 !!##NAME
 !!    dashcode(3f) - [M_draw:LINESTYLE] set dash pattern length
@@ -4325,7 +4237,6 @@
 !!
 !!   program demo_dashcode
 !!   use M_draw
-!!   use M_drawplus, only : page
 !!   implicit none
 !!   integer        :: icolor
 !!   integer        :: ikey
@@ -4372,7 +4283,6 @@
 !!      call drawstr (string)
 !!   end subroutine line
 !!   end program demo_dashcode
-!===================================================================================================================================
 !>
 !!##NAME
 !!     linestyle(3f) - [M_draw:LINESTYLE] set the line dash pattern
@@ -4543,7 +4453,6 @@
 !!           call popmatrix()
 !!           end subroutine drawsine
 !!     end program demo_linestyle
-!===================================================================================================================================
 !>
 !!##NAME
 !!    clear(3f) - [M_draw:COLOR] Clears screen to current color
@@ -4593,7 +4502,6 @@
 !!      call vexit()
 !!
 !!      end program demo_clear
-!===================================================================================================================================
 !>
 !!##NAME
 !!    color(3f) - [M_draw:COLOR] Set current color
@@ -4621,8 +4529,6 @@
 !!
 !!     program demo_color
 !!     use M_draw
-!!     use M_drawPLUS, only : page
-!!     use M_strings,  only : v2s
 !!     real    :: b=0.5
 !!     real    :: y1,y2,ym,x1,x2
 !!     real    :: width=50.0/8.0,width2
@@ -4653,7 +4559,7 @@
 !!           call closepoly()
 !!           call color(mod(i+1,7)+1)
 !!           call move2((x1+x2)/2.0,ym)
-!!           call drawstr((v2s(i)))     ! convert number to string and draw it
+!!           call print(i)     ! convert number to string and draw it
 !!           call polyfill(.false.)
 !!           call circle((x1+x2)/2.0, ym, (x2-x1)/2.10)
 !!           x1=x1+width
@@ -4661,7 +4567,6 @@
 !!        ipaws=getkey()
 !!        call vexit()
 !!     end program demo_color
-!===================================================================================================================================
 !>
 !!##NAME
 !!    mapcolor(3f) - [M_draw:COLOR] set a color index using RGB values
@@ -4695,7 +4600,6 @@
 !!    !   or only has a small color table (a frame in this program takes
 !!    !   at least SLICES*RINGS colors to produce accurately).
 !!    use M_draw
-!!    use M_drawplus, only : page
 !!    use m_color, only : hue
 !!    use M_units, only : cosd, sind
 !!    implicit none
@@ -4848,7 +4752,6 @@
 !!       hue_val=hue_val+ANG_INC
 !!    end subroutine slice
 !!    end program demo_mapcolor
-!===================================================================================================================================
 !>
 !!##NAME
 !!    clipping(3f) - [M_draw:CLIPPING] Turn clipping on or off
@@ -4861,9 +4764,8 @@
 !!          logical onoff
 !!##DESCRIPTION
 !!
-!! Turn clipping on or off. Non-zero is considered on. Note: on some devices
+!! Turn clipping on or off. Note: on some devices
 !! turning clipping off may not be a good idea.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    getkey(3f) - [M_draw:INTERACTIVE] Return ASCII ordinal of next key typed
@@ -4883,8 +4785,6 @@
 !!
 !!      program demo_getkey
 !!      use :: M_draw
-!!      use :: M_units, only : cosd, sind
-!!      use :: M_time, only : system_sleep
 !!      !! set up drawing environment
 !!      call prefsize(600,600)
 !!      call voutput('+')
@@ -4917,7 +4817,6 @@
 !!      enddo
 !!      call vexit()
 !!      end program demo_getkey
-!===================================================================================================================================
 !>
 !!##NAME
 !!    checkkey(3f) - [M_draw:INTERACTIVE] Returns zero if no key is pressed or ASCII ordinal
@@ -4938,7 +4837,6 @@
 !!
 !!    program demo_checkkey
 !!    use :: M_draw
-!!    use :: M_units, only : cosd, sind
 !!    use :: M_time, only : system_sleep
 !!    !! set up drawing environment
 !!    call prefsize(600,600)
@@ -4972,7 +4870,6 @@
 !!    enddo
 !!    call vexit()
 !!    end program demo_checkkey
-!===================================================================================================================================
 !>
 !!##NAME
 !!    getstring(3f) - [M_draw:INTERACTIVE] Read in a string, echoing it in current font
@@ -5070,7 +4967,6 @@
 !!    enddo
 !!
 !!    end program demo_getstring
-!===================================================================================================================================
 !>
 !!##NAME
 !!    locator(3f) - [M_draw:INTERACTIVE] Find out where cursor is
@@ -5082,13 +4978,13 @@
 !!          real xaddr, yaddr
 !!##DESCRIPTION
 !!
-!!    Find out where the cursor is. xaddr and yaddr are set to the current
+!!    Find out where the cursor is. XADDR and YADDR are set to the current
 !!    location in world coordinates. The function returns a bit pattern
-!!    which indicates which buttons are being held down eg. if mouse buttons
-!!    1 and 3 are down locator returns binary 101 (decimal 7). The function
-!!    returns -1 if the device has no locator capability. Note: if you have
-!!    been doing a lot of 3-D transformations xaddr and yaddr may not make a
-!!    lot of sense. In this case use slocator.
+!!    which indicates which buttons are being held down -- eg. if mouse
+!!    buttons 1 and 3 are down locator returns binary 101 (decimal 7). The
+!!    function returns -1 if the device has no locator capability. Note:
+!!    if doing 3-D transformations XADDR and YADDR may not make a lot of
+!!    sense. In that case use slocator.
 !!
 !!##EXAMPLE
 !!
@@ -5265,7 +5161,6 @@
 !!       end subroutine makecube
 !!
 !!       end program demo_locator
-!===================================================================================================================================
 !>
 !!##NAME
 !!    slocator(3f) - [M_draw:INTERACTIVE] Find out where cursor is in screen coordinates
@@ -5365,7 +5260,6 @@
 !!     enddo INFINITE
 !!
 !!     end program demo_slocator
-!===================================================================================================================================
 !>
 !!##NAME
 !!    vsetflush(3f) - [M_draw:FLUSHING] Set global flushing status
@@ -5380,7 +5274,6 @@
 !!    Set global flushing status. If yesno = 0 (.false.) then don't do any
 !!    flushing (except in swapbuffers(), or vflush()). If yesno = 1
 !!    (.true.) then do the flushing as described above.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    vflush(3f) - [M_draw:FLUSHING] Call device flush or syncronisation routine
@@ -5393,7 +5286,6 @@
 !!##DESCRIPTION
 !!
 !!    Call the device flush or syncronisation routine. This forces a flush.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    viewport(3f) - [M_draw:VIEWPORT] Specify which part of screen to draw in
@@ -5527,7 +5419,6 @@
 !!    call vexit()
 !!
 !!    end program demo_viewport
-!===================================================================================================================================
 !>
 !!##NAME
 !!    pushviewport(3f) - [M_draw:VIEWPORT] Save current viewport
@@ -5539,7 +5430,6 @@
 !!##DESCRIPTION
 !!
 !!    Save current viewport.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    popviewport(3f) - [M_draw:VIEWPORT] Retrieve last viewport
@@ -5552,7 +5442,6 @@
 !!##DESCRIPTION
 !!
 !!    Retrieve last viewport.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    getviewport(3f) - [M_draw:VIEWPORT] Returns limits of current viewport in screen coordinates
@@ -5587,7 +5476,6 @@
 !!    RIGHT    value for right side
 !!    BOTTOM   value for bottom side
 !!    TOP      value for top side
-!===================================================================================================================================
 !>
 !!##NAME
 !!    expandviewport(3f) - [M_draw:VIEWPORT] use the entire device viewport
@@ -5611,7 +5499,6 @@
 !!
 !!    program demo_expandviewport
 !!    use M_draw
-!!    use M_drawplus, only : page
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
@@ -5663,7 +5550,6 @@
 !!    call vexit()                  !! wrap up graphics
 !!
 !!    end program demo_expandviewport
-!===================================================================================================================================
 !>
 !!##NAME
 !!    unexpandviewport(3f) - [M_draw:VIEWPORT] undo expandviewport(3f)
@@ -5683,7 +5569,6 @@
 !!
 !!    program demo_unexpandviewport
 !!    use M_draw
-!!    use M_drawplus, only : page
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
@@ -5733,7 +5618,6 @@
 !!    call vexit()                  !! wrap up graphics
 !!
 !!    end program demo_unexpandviewport
-!===================================================================================================================================
 !>
 !!##NAME
 !!    getaspect(3f) - [M_draw:ASPECT] Returns the ratio height over width of the display device.
@@ -5745,7 +5629,6 @@
 !!
 !!##DESCRIPTION
 !!    Returns the ratio height over width of the display device.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    getfactors(3f) - [M_draw:ASPECT] Returns width over min(width of device, height of device) and height over min(width of device, height of device).
@@ -5759,7 +5642,6 @@
 !!    Returns wfact as the width over min(width of device, height of device)
 !!    and hfact as the height over min(width of device, height of
 !!    device).
-!===================================================================================================================================
 !>
 !!##NAME
 !!    getdisplaysize(3f) - [M_draw:ASPECT] Returns width and height of device in device units
@@ -5773,7 +5655,6 @@
 !!##DESCRIPTION
 !!    Returns the width and height of the device in device units in w and h
 !!    respectively.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    pushattributes(3f) - [M_draw:ATTRIBUTE_STACK] Save the current attributes on the attribute stack.
@@ -5787,7 +5668,6 @@
 !!##DESCRIPTION
 !!
 !!    Save the current attributes on the attribute stack.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    popattributes(3f) - [M_draw:ATTRIBUTE_STACK] Restore attributes to what they were at last pushattributes().
@@ -5800,7 +5680,6 @@
 !!##DESCRIPTION
 !!
 !!    Restore the attributes to what they were at the last pushattributes().
-!===================================================================================================================================
 !>
 !!##NAME
 !!    ortho(3f) - [M_draw:PROJECTION] Define x,y,z clipping planes.
@@ -5817,7 +5696,6 @@
 !!    as distances along the line of sight. These distances can also be
 !!    negative. The actual location of the clipping planes is z = -near_d
 !!    and z = -far_d.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    ortho2(3f) - [M_draw:PROJECTION] define the area of the virtual world coordinates to map to the viewport
@@ -5836,7 +5714,6 @@
 !!    All the projection routines define a new transformation
 !!    matrix, and consequently the world units. Parallel projections are
 !!    defined by ortho2.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    perspective(3f) - [M_draw:PROJECTION] Specify perspective viewing pyramid
@@ -6011,7 +5888,6 @@
 !!    end subroutine drawtetra
 !!    !
 !!    end program demo_perspective
-!===================================================================================================================================
 !>
 !!##NAME
 !!    window(3f) - [M_draw:PROJECTION] Specify a perspective viewing pyramid
@@ -6139,7 +6015,6 @@
 !!    end subroutine side
 !!    !=====================================================================
 !!    end program demo_windows
-!===================================================================================================================================
 !>
 !!##NAME
 !!    pushmatrix(3f) - [M_draw:MATRIX_STACK] Save the current transformation matrix on the matrix stack.
@@ -6152,7 +6027,6 @@
 !!##DESCRIPTION
 !!
 !!    Save the current transformation matrix on the matrix stack.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    popmatrix(3f) - [M_draw:MATRIX_STACK] Reinstall the last matrix pushed
@@ -6165,7 +6039,6 @@
 !!##DESCRIPTION
 !!
 !!    Retrieve the last matrix pushed and make it the current transformation matrix.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    polarview(3f) - [M_draw:VIEWPORT] Specify the viewer's position in polar coordinates
@@ -6181,7 +6054,6 @@
 !! from the viewpoint to the world origin, the azimuthal angle in the x-y
 !! plane, measured from the y-axis, the incidence angle in the y-z plane,
 !! measured from the z-axis, and the twist angle about the line of sight.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    up(3f) - [M_draw:VIEWPORT] Specify the world up.
@@ -6196,7 +6068,6 @@
 !! Specify the world up. This can be used to prevent lookat's sometimes
 !! annoying habit of turning everything upside down due to the line of
 !! sight crossing the appropriate axis.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    lookat(3f) - [M_draw:VIEWPORT] Specify the viewer's position
@@ -6275,7 +6146,7 @@
 !!       stop
 !!    endif
 !!    !
-!!    ! here we loop back here ad-naseum until someone hits a non interpreted key
+!!    ! we loop back here ad-nauseam until someone hits a non-interpreted key
 !!    !
 !!    INFINITE: do
 !!    !
@@ -6400,7 +6271,6 @@
 !!     end subroutine maketheobject
 !!
 !!    end program demo_lookat
-!===================================================================================================================================
 !>
 !!##NAME
 !!    translate(3f) - [M_draw:TRANSFORMATION] Set up a translation.
@@ -6555,7 +6425,6 @@
 !!    end subroutine makesphere
 !!
 !!    end program demo_translate
-!===================================================================================================================================
 !>
 !!##NAME
 !!    scale(3f) - [M_draw:TRANSFORMATION] Set up scaling factors in x, y, and z axis.
@@ -6592,7 +6461,7 @@
 !!    'polyfill .true.;color 1; rect 0 0 X Y                               ',&
 !!    'polyfill .false.;linewidth 200;color 2 ;rect 0 0 X Y                ',&
 !!    'closeobj                                                            ',&
-!!    '# draw opbject, rotating coordinate system between instantiations   ',&
+!!    '# draw object, rotating coordinate system between instantiations   ' ,&
 !!    'pushmatrix                                                          ',&
 !!    'scale 1.1 2.0                                                       ',&
 !!    'callobj 1                                                           ',&
@@ -6608,7 +6477,6 @@
 !!
 !!##SEE ALSO
 !!     rotate, translate, pushmatrix, popmatrix
-!===================================================================================================================================
 !>
 !!##NAME
 !!    rotate(3f) - [M_draw:TRANSFORMATION] Set up a rotation in axis axis where axis is one of 'x','y', or 'z'.
@@ -6634,6 +6502,7 @@
 !!##EXAMPLE
 !!
 !!   Sample usage
+!!
 !!    program demo_rotate
 !!    use M_drawplus, only : draw_interpret
 !!    character(len=:),allocatable :: draw_cmds(:)
@@ -6648,7 +6517,7 @@
 !!    'polyfill .true.;color 1; rect 0 0 X Y                               ',&
 !!    'polyfill .false.;linewidth 200;color 2 ;rect 0 0 X Y                ',&
 !!    'closeobj                                                            ',&
-!!    '# draw opbject, rotating coordinate system between instantiations   ',&
+!!    '# draw object, rotating coordinate system between instantiations   ' ,&
 !!    'callobj 1                                                           ',&
 !!    'rotate 45 z                                                         ',&
 !!    'callobj 1                                                           ',&
@@ -6662,7 +6531,6 @@
 !!
 !!##SEE ALSO
 !!     translate, pushmatrix, popmatrix, scale
-!===================================================================================================================================
 !>
 !!##NAME
 !!    patchbasis(3f) - [M_draw:PATCH] Define the t and u basis matrices of a patch.
@@ -6675,7 +6543,6 @@
 !!##DESCRIPTION
 !!
 !!    Define the t and u basis matrices of a patch.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    patchprecision(3f) - [M_draw:PATCH] Set minimum number of line segments making up curves in a patch.
@@ -6688,7 +6555,6 @@
 !!
 !!##DESCRIPTION
 !!    Set the minimum number of line segments making up curves in a patch.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    patchcurves(3f) - [M_draw:PATCH] Set the number of curves making up a patch.
@@ -6702,7 +6568,6 @@
 !!##DESCRIPTION
 !!
 !!    Set the number of curves making up a patch.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    rpatch(3f) - [M_draw:PATCH] Draws a rational patch in the current basis, according to the geometry matrices gx, gy, gz, and gw.
@@ -6716,7 +6581,6 @@
 !!
 !!    Draws a rational patch in the current basis, according to the geometry
 !!    matrices gx, gy, gz, and gw.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    patch(3f) - [M_draw:PATCH] Draws a patch in the current basis, according to the geometry matrices gx, gy, and gz.
@@ -6975,7 +6839,6 @@
 !!       end subroutine axes
 !!    !
 !!    end program demo_patch
-!===================================================================================================================================
 !>
 !!##NAME
 !!    makeobj(3f) - [M_draw:OBJECT] Commence the object number n.
@@ -6987,7 +6850,6 @@
 !!
 !!##DESCRIPTION
 !!    Commence the object number n.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    closeobj(3f) - [M_draw:OBJECT] Close the current object.
@@ -6999,7 +6861,6 @@
 !!##DESCRIPTION
 !!
 !!    Close the current object.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    genobj(3f) - [M_draw:OBJECT] Returns a unique object identifier.
@@ -7010,7 +6871,6 @@
 !!         integer function genobj()
 !!##DESCRIPTION
 !!    Returns a unique object identifier.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    getopenobj(3f) - [M_draw:OBJECT] Return the number of the current object.
@@ -7022,7 +6882,6 @@
 !!
 !!##DESCRIPTION
 !!    Return the number of the current object.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    callobj(3f) - [M_draw:OBJECT] Draw object number n.
@@ -7040,7 +6899,6 @@
 !!
 !!    program demo_callobj
 !!       use M_draw
-!!       use M_drawplus, only : page
 !!       implicit none
 !!       integer :: ipaws
 !!       integer :: ix, iy
@@ -7380,10 +7238,9 @@
 !!          call linewidth(iwidth*5)
 !!       end subroutine rasters
 !!    end program demo_callobj
-!===================================================================================================================================
 !>
 !!##NAME
-!!    isobj(3f) - [M_draw:OBJECT] Returns non-zero if there is an object of number n.
+!!    isobj(3f) - [M_draw:OBJECT] Returns .FALSE. if there is an object of number n.
 !!    (LICENSE:PD)
 !!
 !!##SYNOPSIS
@@ -7393,7 +7250,7 @@
 !!
 !!
 !!##DESCRIPTION
-!!    Returns non-zero if there is an object of number n.
+!!    Returns .FALSE. if there is an object of number n.
 !!
 !!##EXAMPLE
 !!
@@ -7438,7 +7295,6 @@
 !!
 !!      3 is an object (CORRECT)
 !!      4 is not an object (CORRECT)
-!===================================================================================================================================
 !>
 !!##NAME
 !!    delobj(3f) - [M_draw:OBJECT] Delete the object number n.
@@ -7450,7 +7306,6 @@
 !!         integer n
 !!##DESCRIPTION
 !!    Delete the object number n.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    loadobj(3f) - [M_draw:OBJECT] Load the object in the file filename as object number n.
@@ -7515,7 +7370,6 @@
 !!       call vexit()  !  set the screen back to its original state
 !!       !------------------------------------------------------------
 !!    end program demo_loadobj
-!===================================================================================================================================
 !>
 !!##NAME
 !!    saveobj(3f) - [M_draw:OBJECT] Save object number n into file filename. Does NOT save objects called inside object n.
@@ -7538,7 +7392,6 @@
 !!    program demo_saveobj
 !!    ! create object in file "circle.obj" for use with loadobj(3f)
 !!    use M_draw
-!!    use M_drawplus, only : invokeobj,page, pop, push
 !!    implicit none
 !!    character(len=:),allocatable :: env
 !!    integer :: ipaws
@@ -7585,7 +7438,6 @@
 !!       call vexit() ! set the screen back to its original state
 !!       !
 !!    end program demo_saveobj
-!===================================================================================================================================
 !>
 !!##NAME
 !!    backbuffer(3f) - [M_draw:DOUBLE_BUFFERING] Draw in the backbuffer. Returns -1 if the device is not up to it.
@@ -7597,7 +7449,6 @@
 !!
 !!##DESCRIPTION
 !!    Make M_draw draw in the backbuffer. Returns -1 if the device is not up to it.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    frontbuffer(3f) - [M_draw:DOUBLE_BUFFERING] Draw in the front buffer. This will always work.
@@ -7610,7 +7461,6 @@
 !!##DESCRIPTION
 !!
 !!    Make M_draw draw in the front buffer. This will always work.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    swapbuffers(3f) - [M_draw:DOUBLE_BUFFERING] Swap the front and back buffers.
@@ -7622,7 +7472,6 @@
 !!
 !!##DESCRIPTION
 !!    Swap the front and back buffers.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    getgp(3f) - [M_draw:POSITION] Gets the current graphics position
@@ -7635,7 +7484,6 @@
 !!##DESCRIPTION
 !!
 !!    Gets the current graphics position in world coords.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    getgpt(3f) - [M_draw:POSITION] Gets the current transformed graphics position in world coords.
@@ -7648,7 +7496,6 @@
 !!##DESCRIPTION
 !!
 !!    Gets the current transformed graphics position in world coords.
-!===================================================================================================================================
 !>
 !!##NAME
 !!    getgp2(3f) - [M_draw:POSITION] Gets the current graphics position in world coordinates
@@ -7688,7 +7535,6 @@
 !!   Results
 !!
 !!    CURRENT POSITION (X,Y)=   96.5000000       98.3330002
-!===================================================================================================================================
 !>
 !!##NAME
 !!    sgetgp2(3f) - [M_draw:POSITION] Gets the current screen graphics position in screen coords (-1 to 1)
@@ -7701,7 +7547,6 @@
 !!
 !!##DESCRIPTION
 !!    Gets the current screen graphics position in screen coords (-1 to 1)
-!===================================================================================================================================
 !>
 !!##NAME
 !!    example_text_justification(7) - [M_draw:EXAMPLE] example program showing text justification
@@ -7915,7 +7760,6 @@
 !!    end subroutine drawstuff2
 !!
 !!    end program demo_example_text_justification
-!===================================================================================================================================
 !----------------------------------------------------------------------------------------------------------------------------------!
 !()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()!
 !----------------------------------------------------------------------------------------------------------------------------------!
@@ -7927,6 +7771,8 @@ module M_draw
 !
 use ISO_C_BINDING
 implicit none
+
+! ident_1="@(#)M_draw::M_draw(3fm):: The M_draw graphics library module"
 
 private
 !-------------------------------------------------------------------------------
@@ -7986,7 +7832,6 @@ end type MATRIX
  public :: draw2
  public :: drawchar
  public :: drawstr
- public :: print
  public :: expandviewport
  public :: fixedwidth
  public :: font
@@ -8103,6 +7948,7 @@ end type MATRIX
  public :: ycentertext
  public :: yobbarays
 !public :: verror
+
 ! integer,parameter :: C_BOOL = SELECTED_INT_KIND(1) ! _Bool ! integer*1
 !-------------------------------------------------------------------------------
 ! ==========  function definitions
@@ -9646,11 +9492,20 @@ end type MATRIX
 !-------------------------------------------------------------------------------
 ! extern int    hershfont(char *fontname);
 !----------------------------------------------------------------------------------------------------------------------------------!
+!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()!
+!----------------------------------------------------------------------------------------------------------------------------------!
+! extensions in Fortran
+
+public  :: page
+public  :: invokeobj
+public  :: pop
+public  :: push
+public  :: print
+
 interface page
    module procedure :: biggest_ortho2
    module procedure :: page_rri
 end interface page
-public :: page
 !----------------------------------------------------------------------------------------------------------------------------------!
 !()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()!
 !----------------------------------------------------------------------------------------------------------------------------------!
@@ -10006,78 +9861,125 @@ character(len=*),intent(in)     :: string
    enddo
    array(size(array):)=achar(0)
 end function s2c
-!===================================================================================================================================
-!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()=
-!===================================================================================================================================
-!>
-!!##NAME
-!!       page_rri(3fp) - [M_drawplus] - new world window with viewport set to largest area with same aspect ratio
-!!       (LICENSE:MIT)
-!!
-!!##SYNOPSIS
-!!
-!!   subroutine page_rri(xsize,ysize,icolor)
-!!
-!!    integer,intent(in)          :: xsize
-!!    integer,intent(in)          :: ysize
-!!    integer,intent(in)          :: icolor
-!!
-!!##DESCRIPTION
-!!    Given a horizontal size and vertical size and color set the window to
-!!    the rectangle defined by the corner points <0.0,0.0> and <xsize,ysize>
-!!    and set the viewport to the largest viewport on the display with the
-!!    same aspect ratio and start a new page with the specified background
-!!    color if background color is supported on the device.
-!!
-!!##OPTIONS
-!!    XSIZE    X size of requested window
-!!    YSIZE    Y size of requested window
-!!    ICOLOR   Color to set background.
-!!
-!!##EXAMPLE
-!!
-!!   Sample program:
-!!
-!!      program demo_page_rri
-!!      use M_draw
-!!      use M_drawplus, only : polyline2, page
-!!      implicit none
-!!      integer :: ipaws
-!!      call prefsize(300,300)
-!!      call vinit(' ')
-!!      call page(8.5,11.0,3)
-!!      call color(2)
-!!      call linewidth(100)
-!!      call circle(8.5/0.0,11.0/0.0,8.5/2.0)
-!!      call color(1)
-!!      call polyline2([0.0,0,0,8.5,11.0]
-!!      call polyline2([8.5,0,0,0.0,11.0]
-!!      ipaws=getkey()
-!!      call vexit()
-!!      end
-!!      program demo_page_rri
-!!##AUTHOR
-!!    John S. Urban
-!!##LICENSE
-!!    MIT License
-!===================================================================================================================================
-subroutine page_rri(xsize,ysize,icolor)
-real,intent(in)             :: xsize
-real,intent(in)             :: ysize
-integer                     :: icolor
-   call page(0.0,xsize,0.0,ysize)
-   call pushattributes()
-      call color(icolor)
-      call clear()
-   call popattributes()
-end subroutine page_rri
+!----------------------------------------------------------------------------------------------------------------------------------!
+!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()!
+!----------------------------------------------------------------------------------------------------------------------------------!
 !----------------------------------------------------------------------------------------------------------------------------------!
 !()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()!
 !----------------------------------------------------------------------------------------------------------------------------------!
 !>
 !!##NAME
-!!    page(3f) - [M_drawplus] set window into largest viewport available
-!!    (LICENSE:MIT)
+!!    invokeobj(3f) - [M_draw] invoke object with specified transformations
+!!    (LICENSE:PD)
+!!
+!!##SYNOPSIS
+!!
+!!    subroutine invokeobj(xt,yt,zt,xs,ys,zs,xr,yr,zr,iobject)
+!!
+!!     real,intent(in)    :: xt,yt,zt
+!!     real,intent(in)    :: xs,ys,zs
+!!     real,intent(in)    :: xr,yr,zr
+!!     integer,intent(in) :: iobject
+!!
+!!##DESCRIPTION
+!!    save and restore the coordinate system while invoking an object with
+!!    specified translation, rotation, and scaling.
+!!
+!!##OPTIONS
+!!    xt,yt,zt    linear transforms
+!!    xs,ys,zs    scaling
+!!    xr,yr,zr    rotation in degrees
+!!    iobject     object to invoke
+!!##EXAMPLE
+!!
+!!  Sample program
+!!
+!!    program demo_invokeobj
+!!    use M_draw
+!!    implicit none
+!!    real :: a, angle, step
+!!    integer :: i, idum
+!!    ! set window size
+!!       call prefsize(700,700)
+!!       call prefposition( 0, 0)
+!!       call vinit ('X11')
+!!       a=1.0
+!!    ! make an object to draw ( a disk with an arrow on it)
+!!       call makeobj(12345)
+!!       call polyfill(.TRUE.)
+!!       call color( 5)
+!!       call circle( 0.0, 0.0, a)
+!!       call color( 3)
+!!       call makepoly()
+!!       call move2( 0.00*a, 0.80*a)
+!!       call draw2( 0.50*a, 0.30*a)
+!!       call draw2( 0.20*a, 0.30*a)
+!!       call draw2( 0.20*a,-0.80*a)
+!!       call draw2(-0.20*a,-0.80*a)
+!!       call draw2(-0.20*a, 0.30*a)
+!!       call draw2(-0.50*a, 0.30*a)
+!!       call draw2( 0.00*a, 0.80*a)
+!!       call closepoly()
+!!       call polyfill(.FALSE.)
+!!       call color(7)
+!!       call linewidth(20)
+!!       call circleprecision(200)
+!!       call circle( 0.0, 0.0, a)
+!!       call vflush()
+!!       call closeobj()
+!!    ! draw the disk invoking different rotation
+!!       ANGLE=0.0
+!!       STEP=0.4
+!!       idum=backbuffer()
+!!       idum=-1
+!!       if(idum.ne.-1)then
+!!          do i=1,int(360/STEP*10)
+!!             idum=backbuffer()
+!!             call clear()
+!!             call invokeobj( 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, ANGLE, ANGLE, ANGLE,12345)
+!!             ANGLE=ANGLE+STEP
+!!             call swapbuffers()
+!!          enddo
+!!       else
+!!          ANGLE=45.0
+!!          call invokeobj( 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, ANGLE, ANGLE, ANGLE,12345)
+!!          idum=getkey()
+!!       endif
+!!       call vexit()
+!!    end program demo_invokeobj
+!!##AUTHOR
+!!    John S. Urban
+!!##LICENSE
+!!    Public Domain
+subroutine invokeobj(xt,yt,zt,xs,ys,zs,xr,yr,zr,iobject)
+
+! ident_2="@(#)M_draw::invokeobj(3f): invoke object with specified transformation applied and then restored"
+
+real,intent(in)    :: xt,yt,zt  ! linear transforms
+real,intent(in)    :: xs,ys,zs  ! scaling
+real,intent(in)    :: xr,yr,zr  ! rotation
+integer,intent(in) :: iobject
+
+   call pushmatrix()
+   call translate(xt,yt,zt)
+   call scale(xs,ys,zs)
+   call rotate(xr,'x')
+   call rotate(yr,'y')
+   call rotate(zr,'z')
+   call callobj(iobject)
+   call popmatrix()
+
+end subroutine invokeobj
+!----------------------------------------------------------------------------------------------------------------------------------!
+!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()!
+!----------------------------------------------------------------------------------------------------------------------------------!
+!----------------------------------------------------------------------------------------------------------------------------------!
+!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()!
+!----------------------------------------------------------------------------------------------------------------------------------!
+!>
+!!##NAME
+!!    page(3f) - [M_draw] set window into largest viewport available
+!!    (LICENSE:PD)
 !!
 !!##SYNOPSIS
 !!
@@ -10116,7 +10018,6 @@ end subroutine page_rri
 !!
 !!    program demo_page
 !!    use M_draw
-!!    use M_drawplus, only : page
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
@@ -10124,7 +10025,7 @@ end subroutine page_rri
 !!    integer :: ipaws
 !!    real,parameter :: radius=25.0
 !!       call prefsize(600,600)
-!!       call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
+!!       call vinit(' ') ! start graphics using device $M_draw_DEVICE
 !!       call page(-radius, radius, -radius, radius)
 !!       call linewidth(200)
 !!       call clear()
@@ -10143,11 +10044,10 @@ end subroutine page_rri
 !!##AUTHOR
 !!    John S. Urban
 !!##LICENSE
-!!    MIT License
-!===================================================================================================================================
+!!    Public Domain
 subroutine biggest_ortho2(xsmall,xlarge,ysmall,ylarge)
 
-! @(#)M_drawplus::page(3f): given a window size, find and set to largest accommodating viewport"
+! ident_3="@(#)M_draw::page(3f): given a window size, find and set to largest accommodating viewport"
 
 real,intent(in)  :: xsmall
 real,intent(in)  :: xlarge
@@ -10180,7 +10080,7 @@ real             :: ysplit
       if(xlarge-xsmall.ne.0.0)then
          tryy=vwide*(ylarge-ysmall)/(xlarge-xsmall) ! calculate required height
       else                             ! ERROR: do something desperate
-         write(*,*)'*page* window has a zero X dimension'
+         call journal('*page* window has a zero X dimension')
          tryy=vhigh
       endif
       if(tryy.gt.vhigh)then ! if required height too great, fit with y maximized
@@ -10188,7 +10088,7 @@ real             :: ysplit
          if(ylarge-ysmall.ne.0.0)then
             tryx=vhigh*(xlarge-xsmall)/(ylarge-ysmall)
          else                          ! ERROR: do something desperate
-            write(*,*)'*page* window has a zero Y dimension'
+            call journal('*page* window has a zero Y dimension')
             tryx=vwide
          endif
       endif
@@ -10230,7 +10130,7 @@ real             :: ysplit
       if(xmin.ne.xmax.and.ymin.ne.ymax)then
          call viewport(xmin,xmax,ymin,ymax)
       else
-         write(*,*)'*page* window has zero dimension,no viewport set'
+         call journal('*page* window has zero dimension,no viewport set')
       endif
 !     to prevent clipping lines that are right on edge of window fudge a bit
       !bugx=.001*(xlarge-xsmall)
@@ -10243,40 +10143,208 @@ real             :: ysplit
       if(xsmall.ne.xlarge.and.ysmall.ne.ylarge)then
          call ortho2(xsmall,xlarge,ysmall,ylarge)
       else    ! ERROR: do something desperate
-         write(*,*)'*page* window has zero dimension, no window set'
+         call journal('*page* window has zero dimension, no window set')
       endif
 end subroutine biggest_ortho2
 !===================================================================================================================================
 !()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()=
 !===================================================================================================================================
+!>
+!!##NAME
+!!       page_rri(3fp) - [M_draw] - new world window with viewport set to largest area with same aspect ratio
+!!       (LICENSE:PD)
+!!
+!!##SYNOPSIS
+!!
+!!   subroutine page_rri(xsize,ysize,icolor)
+!!
+!!    integer,intent(in)          :: xsize
+!!    integer,intent(in)          :: ysize
+!!    integer,intent(in)          :: icolor
+!!
+!!##DESCRIPTION
+!!    Given a horizontal size and vertical size and color set the window to
+!!    the rectangle defined by the corner points <0.0,0.0> and <xsize,ysize>
+!!    and set the viewport to the largest viewport on the display with the
+!!    same aspect ratio and start a new page with the specified background
+!!    color if background color is supported on the device.
+!!
+!!##OPTIONS
+!!    XSIZE    X size of requested window
+!!    YSIZE    Y size of requested window
+!!    ICOLOR   Color to set background.
+!!
+!!##EXAMPLE
+!!
+!!   Sample program:
+!!
+!!      program demo_page_rri
+!!      use M_draw
+!!      use M_drawplus, only : polyline2
+!!      implicit none
+!!      integer :: ipaws
+!!      call prefsize(300,300)
+!!      call vinit(' ')
+!!      call page(8.5,11.0,3)
+!!      call color(2)
+!!      call linewidth(100)
+!!      call circle(8.5/0.0,11.0/0.0,8.5/2.0)
+!!      call color(1)
+!!      call polyline2([0.0,0,0,8.5,11.0]
+!!      call polyline2([8.5,0,0,0.0,11.0]
+!!      ipaws=getkey()
+!!      call vexit()
+!!      end
+!!      program demo_page_rri
+!!##AUTHOR
+!!    John S. Urban
+!!##LICENSE
+!!    Public Domain
+subroutine journal(string)
+character(len=*),intent(in) :: string
+write(*,'(a)')string
+end subroutine journal
+subroutine page_rri(xsize,ysize,icolor)
+real,intent(in)             :: xsize
+real,intent(in)             :: ysize
+integer                     :: icolor
+   call page(0.0,xsize,0.0,ysize)
+   call pushattributes()
+      call color(icolor)
+      call clear()
+   call popattributes()
+end subroutine page_rri
+!----------------------------------------------------------------------------------------------------------------------------------!
+!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()!
+!----------------------------------------------------------------------------------------------------------------------------------!
+!----------------------------------------------------------------------------------------------------------------------------------!
+!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()!
+!----------------------------------------------------------------------------------------------------------------------------------!
+!>
+!!##NAME
+!!    pop(3f) - [M_draw] call popviewport(), popmatrix(), popattributes()
+!!    (LICENSE:PD)
+!!##SYNOPSIS
+!!
+!!    subroutine pop()
+!!##DESCRIPTION
+!!    call popviewport(), popmatrix(), popattributes()
+!!##EXAMPLE
+!!
+!!##AUTHOR
+!!    John S. Urban
+!!##LICENSE
+!!    Public Domain
+subroutine pop()
+
+! ident_4="@(#)M_draw::pop(3f): call popviewport(), popmatrix(), popattributes()"
+
+   call popviewport()
+   call popmatrix()
+   call popattributes()
+end subroutine pop
+!----------------------------------------------------------------------------------------------------------------------------------!
+!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()!
+!----------------------------------------------------------------------------------------------------------------------------------!
+!===================================================================================================================================
+!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()=
+!===================================================================================================================================
+!>
+!!##NAME
+!!    print(3f) - [M_draw] call DRAWSTR(3f) with up to nine arbitrary intrinsic scalar values
+!!
+!!##SYNOPSIS
+!!
+!!    subroutine print(g1, g2, g3, g4, g5, g6, g7, g8, g9)
+!!
+!!    class(*),intent(in),optional :: g1 ,g2 ,g3 ,g4 ,g5, g6 ,g7 ,g8 ,g9
+!!
+!!##DESCRIPTION
+!!    Call DRAWSTR(3f) with up to nine intrinsic scalar values. They will be composed into a
+!!    string with spaces between the argument values. Trailing spaces of strings
+!!    are trimmed unless the entire variable is blank.
+!!##OPTIONS
+!!    g1-g9  intrinsic scalar values to plot at the current point.
+!!##EXAMPLE
+!!
+!!   Sample program:
+!!
+!!    program demo_print
+!!    use M_draw
+!!    implicit none
+!!    real :: angle
+!!    integer :: idum
+!!    character(len=*),parameter :: space='       '
+!!       ! set window size
+!!       call prefsize(700,700)
+!!       call prefposition( 0, 0)
+!!       call vinit('X11')
+!!       call page(-5.0,5.0,-5.0,5.0)
+!!       call textsize(0.3,0.3)
+!!       call color(D_BLUE)
+!!       angle=0.0
+!!       call turn()
+!!       call print(space,'a logical such as ',.true.)
+!!       call turn()
+!!       call print(space,'a real value',3.1416)
+!!       call turn()
+!!       call print(space,'double precision',7890.123456d0)
+!!       call turn()
+!!       call print(space,'integer ',1234)
+!!       call turn()
+!!       call print(space,'lots of stuff',1234,.false.,cmplx(20.0,30.0))
+!!       idum=getkey()
+!!       call vexit()
+!!    contains
+!!       subroutine turn()
+!!          call move2(-4.0,-3.5)
+!!          call textang(angle)
+!!          angle=angle+15.0
+!!       end subroutine turn
+!!    end program demo_print
+!!
+!!##AUTHOR
+!!    John S. Urban
+!!##LICENSE
+!!    Public Domain
+!===================================================================================================================================
+!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()=
+!===================================================================================================================================
 subroutine print(g1, g2, g3, g4, g5, g6, g7, g8, g9)
 class(*),intent(in),optional :: g1 ,g2 ,g3 ,g4 ,g5, g6 ,g7 ,g8 ,g9
-   call drawstr(msg(g1, g2, g3, g4, g5, g6, g7, g8, g9))
+   call drawstr(str(g1, g2, g3, g4, g5, g6, g7, g8, g9))
 end subroutine print
 !===================================================================================================================================
 !()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()=
 !===================================================================================================================================
-function msg(generic1, generic2, generic3, generic4, generic5, generic6, generic7, generic8, generic9,sep)
+function str(generic0, generic1, generic2, generic3, generic4, generic5, generic6, generic7, generic8, generic9, &
+                  & generica, genericb, genericc, genericd, generice, genericf, genericg, generich, generici, genericj, &
+                  & sep)
 implicit none
 
-class(*),intent(in),optional  :: generic1 ,generic2 ,generic3 ,generic4 ,generic5
-class(*),intent(in),optional  :: generic6 ,generic7 ,generic8 ,generic9
-character(len=*),intent(in),optional :: sep
-character(len=:),allocatable  :: sep_local
-character(len=:), allocatable :: msg
+! ident_2="@(#)M_msg::str(3fp): writes a message to a string composed of any standard scalar types"
+
+class(*),intent(in),optional  :: generic0, generic1, generic2, generic3, generic4
+class(*),intent(in),optional  :: generic5, generic6, generic7, generic8, generic9
+class(*),intent(in),optional  :: generica, genericb, genericc, genericd, generice
+class(*),intent(in),optional  :: genericf, genericg, generich, generici, genericj
+character(len=:),allocatable  :: str
 character(len=4096)           :: line
 integer                       :: istart
 integer                       :: increment
+character(len=*),intent(in),optional :: sep
+character(len=:),allocatable  :: sep_local
    if(present(sep))then
+      increment=len(sep)+1
       sep_local=sep
-      increment=1+len(sep_local)
    else
-      sep_local=' '
       increment=2
+      sep_local=' '
    endif
 
    istart=1
-   line=' '
+   line=''
+   if(present(generic0))call print_generic(generic0)
    if(present(generic1))call print_generic(generic1)
    if(present(generic2))call print_generic(generic2)
    if(present(generic3))call print_generic(generic3)
@@ -10286,9 +10354,19 @@ integer                       :: increment
    if(present(generic7))call print_generic(generic7)
    if(present(generic8))call print_generic(generic8)
    if(present(generic9))call print_generic(generic9)
-   msg=trim(line)
+   if(present(generica))call print_generic(generica)
+   if(present(genericb))call print_generic(genericb)
+   if(present(genericc))call print_generic(genericc)
+   if(present(genericd))call print_generic(genericd)
+   if(present(generice))call print_generic(generice)
+   if(present(genericf))call print_generic(genericf)
+   if(present(genericg))call print_generic(genericg)
+   if(present(generich))call print_generic(generich)
+   if(present(generici))call print_generic(generici)
+   if(present(genericj))call print_generic(genericj)
+   str=trim(line)
 contains
-!===================================================================================================================================
+
 subroutine print_generic(generic)
 !use, intrinsic :: iso_fortran_env, only : int8, int16, int32, biggest=>int64, real32, real64, dp=>real128
 use,intrinsic :: iso_fortran_env, only : int8, int16, int32, int64, real32, real64, real128
@@ -10301,15 +10379,47 @@ class(*),intent(in) :: generic
       type is (real(kind=real32));      write(line(istart:),'(1pg0)') generic
       type is (real(kind=real64));      write(line(istart:),'(1pg0)') generic
       type is (real(kind=real128));     write(line(istart:),'(1pg0)') generic
-      type is (logical);                write(line(istart:),'(1l)') generic
+      type is (logical);                write(line(istart:),'(l1)') generic
       type is (character(len=*));       write(line(istart:),'(a)') trim(generic)
       type is (complex);                write(line(istart:),'("(",1pg0,",",1pg0,")")') generic
    end select
    istart=len_trim(line)+increment
    line=trim(line)//sep_local
 end subroutine print_generic
+
+end function str
 !===================================================================================================================================
-end function msg
+!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()=
+!===================================================================================================================================
+!----------------------------------------------------------------------------------------------------------------------------------!
+!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()!
+!----------------------------------------------------------------------------------------------------------------------------------!
+!>
+!!##NAME
+!!    push(3f) - [M_draw] call pushviewport(), pushmatrix(), pushattributes()
+!!    (LICENSE:PD)
+!!##SYNOPSIS
+!!
+!!     subroutine push()
+!!##DESCRIPTION
+!!    call pushattributes(), pushmatrix(), pushviewport()
+!!##EXAMPLE
+!!
+!!##AUTHOR
+!!    John S. Urban
+!!##LICENSE
+!!    Public Domain
+subroutine push()
+
+! ident_5="@(#)M_draw::push(3f): call pushattributes(), pushmatrix(), pushviewport()"
+
+   call pushattributes()
+   call pushmatrix()
+   call pushviewport()
+end subroutine push
+!----------------------------------------------------------------------------------------------------------------------------------!
+!()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()!
+!----------------------------------------------------------------------------------------------------------------------------------!
 !===================================================================================================================================
 !()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()()=
 !===================================================================================================================================

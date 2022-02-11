@@ -63,7 +63,8 @@ anyone is interested about the CygWin/PC driver let me know; but it is
 relatively easy to install X11 Windows with CygWin and installing X11
 Windows allows you to use many more CygWin utilities as well.
 
-## USER DOCUMENTATION
+## DOCUMENTATION   ![docs](docs/images/docs.gif)
+### USER 
    - a simple [index](https://urbanjost.github.io/M_draw/) to
      the individual manpages in HTML form
 
@@ -98,4 +99,3 @@ and demo programs ensures the library is functioning.
    There are a number of programs already using this low-level library
    to generate higher-level graphics:
                  ![sample](images/M_slices.3.gif)
-
