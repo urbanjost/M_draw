@@ -8,7 +8,7 @@ although largely written in C. It is based on the public domain
 VOGLE graphics library. It allows for creating vector-based 
 graphics with a variety of output devices.
 
-## BUILDING THE MODULES
+## DOWNLOAD and BUILD with make(1) ![gmake](docs/images/gnu.gif)
      git clone https://github.com/urbanjost/M_draw.git
      cd M_draw/src
      # change Makefile if not using one of the listed compilers
@@ -27,6 +27,27 @@ graphics with a variety of output devices.
 
 This will compile the Fortran module and C code  and basic example
 programs that exercise the routines.
+
+## DOWNLOAD AND BUILD WITH fpm(1) ![fpm](docs/images/fpm_logo.gif)
+
+Alternatively, download the github repository and build it with
+fpm ( as described at [Fortran Package Manager](https://github.com/fortran-lang/fpm) )
+
+```bash
+     git clone https://github.com/urbanjost/M_draw.git
+     cd M_draw
+     fpm build
+     fpm test  # run unit tests
+```
+
+or just list it as a dependency in your fpm.toml project file.
+
+```toml
+     [dependencies]
+     M_draw        = { git = "https://github.com/urbanjost/M_draw.git" }
+```
+
+Note that M_draw.f90 is registered at the [fpm(1) registry](https://github.com/fortran-lang/fpm-registry)
 
 ## RUNNING AN EXAMPLE
 Before running the example programs you must specify the location
