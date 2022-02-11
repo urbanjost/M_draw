@@ -77,15 +77,19 @@ or /usr/local/lib on GNU/Linux platforms. Just remember to set
 the environment variable M_DRAW_FONTPATH to the directory name.
 
 The build assumes you have the X11 libraries, and does not include
-the PC driver often used with Cygwin. It is relatively easy to remove a
-driver such as C-X11.c by going into C-drivers.c and changing a line like
-"#define X11" to "#undef X11" and removing C-X11.c from the Makefile. If
-anyone is interested about the CygWin/PC driver let me know; but it is
-relatively easy to install X11 Windows with CygWin and installing X11
-Windows allows you to use many more CygWin utilities as well.
+the PC driver often used with Cygwin. 
+
+It is relatively easy to remove a driver such as C-X11.c by going into
+C-drivers.c and changing a line like "#define X11" to "#undef X11" and
+removing C-X11.c from the Makefile. If anyone is interested about the
+CygWin/PC driver let me know; but it is relatively easy to install X11
+Windows with CygWin and installing X11 Windows allows you to use many
+more CygWin utilities as well.
 
 ## DOCUMENTATION   ![docs](docs/images/docs.gif)
 ### USER 
+   - [An overview in HTML](https://urbanjost.github.io/M_draw/M_draw.html)
+
    - a simple [index](https://urbanjost.github.io/M_draw/) to
      the individual manpages in HTML form
 
@@ -93,18 +97,25 @@ Windows allows you to use many more CygWin utilities as well.
      descriptions of the manpages is at 
      [BOOK_M_draw](https://urbanjost.github.io/M_draw/BOOK_M_draw.html).
 
-   - Or all the HTML appended together is in 
-     [M_draw](https://urbanjost.github.io/M_draw/M_draw.html)
+The overview is maintained manually and may be out of date but covers
+the core routines (which are very stable). The other documentation
+is auto-generated during a rebuild of this repository, and will
+automatically have the latest routines.
 
-## ADDITIONAL DIRECTORY DESCRIPTIONS
-There are 
-    - manpages in the man/man3 directory 
-    - HTML documentation in the docs/ directory.
-    - demo programs extracted from the man pages in the src/PROGRAMS/DEMOS/ directory
+## MANPAGES ![manpages](docs/images/manpages.gif) 
+Literal man-pages for use on GNU/Linux, Unix and CygWin platforms:
+    + [manpages.zip](https://urbanjost.github.io/M_draw/manpages.zip)
+    + [manpages.tgz](https://urbanjost.github.io/M_draw/manpages.tgz)
 
-## UNIT TESTS
+
+## EXAMPLES AND UNIT TESTS
 There are no automated unit tests per-se. Running the example programs
-and demo programs ensures the library is functioning.
+and demo programs ensures the library is functioning. Available 
+programs include:
+
+    - confidence tests in the test/ directory use basic programs and are
+      a good resource for new users.
+    - demo programs extracted from the man pages in the example/ directory
 
 ## FUTURE
    There are higher-level routines based on this library not yet available
@@ -120,3 +131,8 @@ and demo programs ensures the library is functioning.
    There are a number of programs already using this low-level library
    to generate higher-level graphics:
                  ![sample](images/M_slices.3.gif)
+
+---
+
+ + [CHANGELOG](docs/CHANGELOG.md) provides a history of significant changes
+ + [CI/CD BUILD STATUS](docs/STATUS.md)
