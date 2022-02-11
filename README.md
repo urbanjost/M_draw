@@ -104,8 +104,8 @@ automatically have the latest routines.
 
 ## MANPAGES ![manpages](docs/images/manpages.gif) 
 Literal man-pages for use on GNU/Linux, Unix and CygWin platforms:
-    + [manpages.zip](https://urbanjost.github.io/M_draw/manpages.zip)
-    + [manpages.tgz](https://urbanjost.github.io/M_draw/manpages.tgz)
+  - [manpages.zip](https://urbanjost.github.io/M_draw/manpages.zip)
+  - [manpages.tgz](https://urbanjost.github.io/M_draw/manpages.tgz)
 
 
 ## EXAMPLES AND UNIT TESTS
@@ -113,23 +113,23 @@ There are no automated unit tests per-se. Running the example programs
 and demo programs ensures the library is functioning. Available 
 programs include:
 
-    - confidence tests in the test/ directory use basic programs and are
-      a good resource for new users.
-    - demo programs extracted from the man pages in the example/ directory
+  - confidence tests in the test/ directory use basic programs and are
+    a good resource for new users.
+  - demo programs extracted from the man pages in the example/ directory
 
 ## FUTURE
-   There are higher-level routines based on this library not yet available
-   on github. Ultimately the hope is to release this as an fpm package
-   as described at [https://fortran-lang.org](https://fortran-lang.org)
-   and then to release the higher-level routines as separate distributions
-   on top of this.
+There are higher-level routines based on this library not yet available
+on github. Ultimately the hope is to release this as an fpm package
+as described at [https://fortran-lang.org](https://fortran-lang.org)
+and then to release the higher-level routines as separate distributions
+on top of this.
 
-   This version is essentially C code based on the public-domain Vogle
-   graphics library but the intent is to convert it to a native Fortran
-   library, which it is very amenable to.
+This version is essentially C code based on the public-domain Vogle
+graphics library but the intent is to convert it to a native Fortran
+library, which it is very amenable to.
 
-   There are a number of programs already using this low-level library
-   to generate higher-level graphics:
+There are a number of programs already using this low-level library
+to generate higher-level graphics:
                  ![sample](images/M_slices.3.gif)
 
 ---
