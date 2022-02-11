@@ -47,7 +47,7 @@ or just list it as a dependency in your fpm.toml project file.
      M_draw        = { git = "https://github.com/urbanjost/M_draw.git" }
 ```
 
-Note that M_draw.f90 is registered at the [fpm(1) registry](https://github.com/fortran-lang/fpm-registry)
+Note that M_draw.f90 is registered at the [fpm(1) registry](https://fortran-lang.org/packages/fpm)
 
 ## RUNNING AN EXAMPLE
 Before running the example programs you must specify the location
