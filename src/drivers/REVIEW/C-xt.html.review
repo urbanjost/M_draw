@@ -1,0 +1,2261 @@
+<html>
+<body bgcolor="white">
+<p>
+  This driver uses an X11 xterm(1) terminal emulator that obeys colors
+  as a pixmap display.
+</p>
+
+<ul>
+   <li> Useful at low resolutions for making form-like input requests
+   <li> Graphics are more legible as font size decreases. A 2-point font
+        is (always?) available on X11. A 1-point font is possible.
+</ul>
+<font size="1">
+<!--C--><xmp>
+/* this code is licensed as public domain */
+#ident "@(#)M_DRAW:driver/xt.c - M_DRAW driver for color xterm character pixmap"
+#ident "@(#)M_DRAW:author - John S. Urban"
+#ident "@(#)M_DRAW:version - 1.0"
+/*
+   *-----------------------------------------------------------------*
+   | Author: John S. Urban                                           |
+   *-----------------------------------*-----------------------------*
+   | Westinghouse Electric Corporation | osjsu@westinghouse.com      | NO
+   | Cray Research                     | urban@cray.com              | NO
+   | Silicon Graphics, Incorporated    | urban@sgi.com               | NO
+   | Digital Equipment Corporation     | John.Urban@digital.com      | NO
+   | Compaq                            | John.Urban@compaq.com       | NO
+   | Hewlett-Packard                   | John.Urban@hp.com           | NO
+   | Betchtel                          | urbanjs@bettis.gov          |
+   *-----------------------------------*-----------------------------*
+================================================================================
+   USAGE NOTES ON THE XT DRIVER:
+
+Line thickness is supported with filled rectangular  polygons  when  the  line
+thickness  is  greater  than  1.  Square  ends  are  used  that go only to the
+endpoints unless line thickness is greater than  5,  in  which  case  complete
+circles  are  added  to the endpoints.  If very short polylines are drawn with
+the circles on the ends slight errors can occur.
+
+================================================================================
+   NOTES FOR LATER:
+
+If could define a pixel-addressable region in xterm area and increase
+drawing speed in this region this could be very useful. Variations could
+allow cursor/locator control via mouse, via arrow keys; could change
+font size automatically; allow control of size of scrolling area; allow
+control of color table;
+
+Any way to avoid slow repaint ? Use alternate screen buffer? Color rectangles?
+unbuffered I/O?
+
+Store in tree and resize?
+
+Use xterm(1) alternate screen as backbuffer?
+
+mouse coordinates are limited in range because return as an ASCII character?
+what about 2-point font, in particular?
+================================================================================
+
+References: 1) Fundamentals of Interactive Computer Graphics, Foley & Van Dam,
+               Addison Wesley Publishing Company, 1982
+
+ 1996, 1997, 2004, 2005, 2006  John S. Urban
+
+ This  software  is  public  domain  and  may be  used  for  any  purpose
+ commercial or otherwise.  It is offered  without any guarantee as to its
+ suitability  for any purpose or as to the sanity of its  writers.  We do
+ ask that the  source is passed on to anyone  that  requests  a copy, and
+ that people who get copies don't go round claiming they wrote it.
+
+================================================================================
+ */
+/*--------------------------*/
+#include <sys/ioctl.h>
+#if BSD
+#include <sgtty.h>
+#elif Linux
+#include <termio.h>
+#elif CYGWIN
+#include <termio.h>
+#elif Darwin
+#include <termios.h>
+#elif HPUX
+#include <sys/termio.h>
+#else
+#include <termio.h>
+#endif
+/*--------------------------*/
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <math.h>
+#include "draw.h"
+#include <signal.h>
+
+extern FILE     *_draw_outfile();
+extern FILE     *draw_fp;
+
+#define MAX(x,y)  ((x) > (y) ? (x) : (y))
+#define MIN(x,y)  ((x) < (y) ? (x) : (y))
+#define ABS(x)    ((x) < 0 ? -(x) : (x))
+
+#ifndef PI
+#define PI      3.14159265358979323846264338327950288419716939937510
+#endif
+
+static int X_SIZE, Y_SIZE, LAST; /* size of graphics array */
+#define SCROLL 5                 /* number of lines for scrolling region */
+
+#define UNDRAWN 0
+#define DRAWN   1
+static int GLOBAL_font = 0;
+static int GLOBAL_color = 0;
+static int GLOBAL_drawn = UNDRAWN; /* flag whether page is blank or not */
+static int GLOBAL_rasters = 1; /* line thickness */
+static int GLOBAL_lastx, GLOBAL_lasty;     /* position of last draw */
+
+/* NB: to fit in a byte CMAPSIZE HAS to be 256 MAX */
+#define    CMAPSIZE        256
+#define    CMAPDEPTH       8
+typedef struct {
+   int     r, g, b;
+} ColorTable;
+static ColorTable coltab[CMAPSIZE];
+
+#define byte unsigned char
+byte *graphics_rgb; /* the graphics data */
+
+/* The  macro  SET_PIXEL will set a given pixel in the graphics arrays WITH MINIMAL BOUNDS CHECK */
+#define SET_PIXEL(x,y) ( *(graphics_rgb + MAX(MIN((x) * Y_SIZE + (y),LAST),0) ) = (char)(GLOBAL_color) )
+
+static int      GLOBAL_lastx, GLOBAL_lasty;
+
+/******************************************************************************/
+/* The X11-Window system public domain 8x13 fixed font. */
+#define NUMCHARS 95
+#define FROW 13
+#define FCOL 8
+
+static unsigned char font8x13[NUMCHARS][FROW] = {
+{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+{0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x00, 0x10, 0x00, 0x00},
+{0x24, 0x24, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+{0x00, 0x24, 0x24, 0x7e, 0x24, 0x7e, 0x24, 0x24, 0x00, 0x00, 0x00},
+{0x00, 0x10, 0x3c, 0x50, 0x38, 0x14, 0x78, 0x10, 0x00, 0x00, 0x00},
+{0x22, 0x52, 0x24, 0x08, 0x08, 0x10, 0x24, 0x2a, 0x44, 0x00, 0x00},
+{0x00, 0x00, 0x30, 0x48, 0x48, 0x30, 0x4a, 0x44, 0x3a, 0x00, 0x00},
+{0x38, 0x30, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+{0x04, 0x08, 0x08, 0x10, 0x10, 0x10, 0x08, 0x08, 0x04, 0x00, 0x00},
+{0x20, 0x10, 0x10, 0x08, 0x08, 0x08, 0x10, 0x10, 0x20, 0x00, 0x00},
+{0x00, 0x00, 0x24, 0x18, 0x7e, 0x18, 0x24, 0x00, 0x00, 0x00, 0x00},
+{0x00, 0x00, 0x10, 0x10, 0x7c, 0x10, 0x10, 0x00, 0x00, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x38, 0x30, 0x40, 0x00},
+{0x00, 0x00, 0x00, 0x00, 0x7e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x38, 0x10, 0x00},
+{0x02, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x80, 0x00, 0x00},
+{0x18, 0x24, 0x42, 0x42, 0x42, 0x42, 0x42, 0x24, 0x18, 0x00, 0x00},
+{0x10, 0x30, 0x50, 0x10, 0x10, 0x10, 0x10, 0x10, 0x7c, 0x00, 0x00},
+{0x3c, 0x42, 0x42, 0x02, 0x04, 0x18, 0x20, 0x40, 0x7e, 0x00, 0x00},
+{0x7e, 0x02, 0x04, 0x08, 0x1c, 0x02, 0x02, 0x42, 0x3c, 0x00, 0x00},
+{0x04, 0x0c, 0x14, 0x24, 0x44, 0x44, 0x7e, 0x04, 0x04, 0x00, 0x00},
+{0x7e, 0x40, 0x40, 0x5c, 0x62, 0x02, 0x02, 0x42, 0x3c, 0x00, 0x00},
+{0x1c, 0x20, 0x40, 0x40, 0x5c, 0x62, 0x42, 0x42, 0x3c, 0x00, 0x00},
+{0x7e, 0x02, 0x04, 0x08, 0x08, 0x10, 0x10, 0x20, 0x20, 0x00, 0x00},
+{0x3c, 0x42, 0x42, 0x42, 0x3c, 0x42, 0x42, 0x42, 0x3c, 0x00, 0x00},
+{0x3c, 0x42, 0x42, 0x46, 0x3a, 0x02, 0x02, 0x04, 0x38, 0x00, 0x00},
+{0x00, 0x00, 0x10, 0x38, 0x10, 0x00, 0x00, 0x10, 0x38, 0x10, 0x00},
+{0x00, 0x00, 0x10, 0x38, 0x10, 0x00, 0x00, 0x38, 0x30, 0x40, 0x00},
+{0x02, 0x04, 0x08, 0x10, 0x20, 0x10, 0x08, 0x04, 0x02, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x7e, 0x00, 0x00, 0x7e, 0x00, 0x00, 0x00, 0x00},
+{0x40, 0x20, 0x10, 0x08, 0x04, 0x08, 0x10, 0x20, 0x40, 0x00, 0x00},
+{0x3c, 0x42, 0x42, 0x02, 0x04, 0x08, 0x08, 0x00, 0x08, 0x00, 0x00},
+{0x3c, 0x42, 0x42, 0x4e, 0x52, 0x56, 0x4a, 0x40, 0x3c, 0x00, 0x00},
+{0x18, 0x24, 0x42, 0x42, 0x42, 0x7e, 0x42, 0x42, 0x42, 0x00, 0x00},
+{0xfc, 0x42, 0x42, 0x42, 0x7c, 0x42, 0x42, 0x42, 0xfc, 0x00, 0x00},
+{0x3c, 0x42, 0x40, 0x40, 0x40, 0x40, 0x40, 0x42, 0x3c, 0x00, 0x00},
+{0xfc, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0xfc, 0x00, 0x00},
+{0x7e, 0x40, 0x40, 0x40, 0x78, 0x40, 0x40, 0x40, 0x7e, 0x00, 0x00},
+{0x7e, 0x40, 0x40, 0x40, 0x78, 0x40, 0x40, 0x40, 0x40, 0x00, 0x00},
+{0x3c, 0x42, 0x40, 0x40, 0x40, 0x4e, 0x42, 0x46, 0x3a, 0x00, 0x00},
+{0x42, 0x42, 0x42, 0x42, 0x7e, 0x42, 0x42, 0x42, 0x42, 0x00, 0x00},
+{0x7c, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x7c, 0x00, 0x00},
+{0x1e, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x44, 0x38, 0x00, 0x00},
+{0x42, 0x44, 0x48, 0x50, 0x60, 0x50, 0x48, 0x44, 0x42, 0x00, 0x00},
+{0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x7e, 0x00, 0x00},
+{0x82, 0x82, 0xc6, 0xaa, 0x92, 0x92, 0x82, 0x82, 0x82, 0x00, 0x00},
+{0x42, 0x42, 0x62, 0x52, 0x4a, 0x46, 0x42, 0x42, 0x42, 0x00, 0x00},
+{0x3c, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x3c, 0x00, 0x00},
+{0x7c, 0x42, 0x42, 0x42, 0x7c, 0x40, 0x40, 0x40, 0x40, 0x00, 0x00},
+{0x3c, 0x42, 0x42, 0x42, 0x42, 0x42, 0x52, 0x4a, 0x3c, 0x02, 0x00},
+{0x7c, 0x42, 0x42, 0x42, 0x7c, 0x50, 0x48, 0x44, 0x42, 0x00, 0x00},
+{0x3c, 0x42, 0x40, 0x40, 0x3c, 0x02, 0x02, 0x42, 0x3c, 0x00, 0x00},
+{0xfe, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x00, 0x00},
+{0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x3c, 0x00, 0x00},
+{0x82, 0x82, 0x44, 0x44, 0x44, 0x28, 0x28, 0x28, 0x10, 0x00, 0x00},
+{0x82, 0x82, 0x82, 0x82, 0x92, 0x92, 0x92, 0xaa, 0x44, 0x00, 0x00},
+{0x82, 0x82, 0x44, 0x28, 0x10, 0x28, 0x44, 0x82, 0x82, 0x00, 0x00},
+{0x82, 0x82, 0x44, 0x28, 0x10, 0x10, 0x10, 0x10, 0x10, 0x00, 0x00},
+{0x7e, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x40, 0x7e, 0x00, 0x00},
+{0x3c, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x3c, 0x00, 0x00},
+{0x80, 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x02, 0x00, 0x00},
+{0x78, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x78, 0x00, 0x00},
+{0x10, 0x28, 0x44, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0x00},
+{0x38, 0x18, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x3c, 0x02, 0x3e, 0x42, 0x46, 0x3a, 0x00, 0x00},
+{0x40, 0x40, 0x40, 0x5c, 0x62, 0x42, 0x42, 0x62, 0x5c, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x3c, 0x42, 0x40, 0x40, 0x42, 0x3c, 0x00, 0x00},
+{0x02, 0x02, 0x02, 0x3a, 0x46, 0x42, 0x42, 0x46, 0x3a, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x3c, 0x42, 0x7e, 0x40, 0x40, 0x3c, 0x00, 0x00},
+{0x1c, 0x22, 0x20, 0x20, 0x7c, 0x20, 0x20, 0x20, 0x20, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x3a, 0x44, 0x44, 0x38, 0x40, 0x3c, 0x42, 0x3c},
+{0x40, 0x40, 0x40, 0x5c, 0x62, 0x42, 0x42, 0x42, 0x42, 0x00, 0x00},
+{0x00, 0x10, 0x00, 0x30, 0x10, 0x10, 0x10, 0x10, 0x7c, 0x00, 0x00},
+{0x00, 0x04, 0x00, 0x0c, 0x04, 0x04, 0x04, 0x04, 0x44, 0x44, 0x38},
+{0x40, 0x40, 0x40, 0x44, 0x48, 0x70, 0x48, 0x44, 0x42, 0x00, 0x00},
+{0x30, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x7c, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0xec, 0x92, 0x92, 0x92, 0x92, 0x82, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x5c, 0x62, 0x42, 0x42, 0x42, 0x42, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x3c, 0x42, 0x42, 0x42, 0x42, 0x3c, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x5c, 0x62, 0x42, 0x62, 0x5c, 0x40, 0x40, 0x40},
+{0x00, 0x00, 0x00, 0x3a, 0x46, 0x42, 0x46, 0x3a, 0x02, 0x02, 0x02},
+{0x00, 0x00, 0x00, 0x5c, 0x22, 0x20, 0x20, 0x20, 0x20, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x3c, 0x42, 0x30, 0x0c, 0x42, 0x3c, 0x00, 0x00},
+{0x00, 0x20, 0x20, 0x7c, 0x20, 0x20, 0x20, 0x22, 0x1c, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x44, 0x44, 0x44, 0x44, 0x44, 0x3a, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x44, 0x44, 0x44, 0x28, 0x28, 0x10, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x82, 0x82, 0x92, 0x92, 0xaa, 0x44, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x00, 0x00},
+{0x00, 0x00, 0x00, 0x42, 0x42, 0x42, 0x46, 0x3a, 0x02, 0x42, 0x3c},
+{0x00, 0x00, 0x00, 0x7e, 0x04, 0x08, 0x10, 0x20, 0x7e, 0x00, 0x00},
+{0x0e, 0x10, 0x10, 0x08, 0x30, 0x08, 0x10, 0x10, 0x0e, 0x00, 0x00},
+{0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x00, 0x00},
+{0x70, 0x08, 0x08, 0x10, 0x0c, 0x10, 0x08, 0x08, 0x70, 0x00, 0x00},
+{0x24, 0x54, 0x48, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+};
+
+/******************************************************************************/
+static void XT_POSITION_CURSOR(int x,int y) {
+/* Position cursor at specified location */
+   fprintf(draw_fp,"\033[%d;%dH",(Y_SIZE-y)+SCROLL+1,x);
+   GLOBAL_lastx=vdevice.cpVx=x;
+   GLOBAL_lasty=vdevice.cpVy=y;
+}
+/******************************************************************************/
+static void XT_RETURN_TO_SCROLL(){
+   (void) fprintf(draw_fp,"\033[%d;%dH",SCROLL,1);    /* go to last line of scroll region */
+   (void) fprintf(draw_fp,"\033]10;rgb:f/f/f\007");      /* set background color */
+   (void) fprintf(draw_fp,"\033]11;rgb:0/0/0\007");      /* set text color */
+
+   if (draw_fp == stdout || draw_fp == stderr){
+      fflush(draw_fp);
+   }
+}
+/******************************************************************************/
+static void XT_COLOR_BYTE(int x,int y,char c) {
+   int indx;
+      if(c == (char)NULL ){                                           /* drawing lines */
+         (void) fprintf(draw_fp,"\033[48;5;%dm ",GLOBAL_color);
+      } else {                                                  /* printing hardware text */
+         indx = Y_SIZE * x + y;
+         (void) fprintf(draw_fp,"\033[48;5;%dm",graphics_rgb[indx]); /* Set background color */
+         (void) fprintf(draw_fp,"\033[38;5;%dm%c",GLOBAL_color,c);   /* Set foreground color */
+      }
+}
+/*******************************************************************************/
+static void XT_DRAW_PIXEL(int x, int y){
+      XT_POSITION_CURSOR(x,y);
+      XT_COLOR_BYTE(x,y,'\0');
+}
+/******************************************************************************/
+static int XT_MEMSET(void) { /* set graphics array to all zero */
+   int i;
+
+   /*--- IF YOU HAVE IT, MEMSET IS PROBABLY FASTER
+    memset(graphics_rgb, (char)GLOBAL_color, sizeof(byte) * Y_SIZE * X_SIZE);
+     ---*/
+
+   for ( i=0; i< (X_SIZE * Y_SIZE); i++) {
+      *(graphics_rgb + i) = (char)GLOBAL_color;
+   }
+   return(0);
+}
+/******************************************************************************/
+static int XT_MEM_PRINT() /* print_graphics -- print the graphics bit array as an xterm ASCII file */
+{
+   int x; /* current x BYTE */
+   int y; /* current y location */
+   int indx;
+   int pix;
+   FILE     *fpchar = (FILE *)NULL;
+
+
+   if( (fpchar=fopen("xt.txt","a")) != (FILE *)NULL){
+
+      (void) fprintf(fpchar,"\033[8;%d;%dt\n",Y_SIZE,X_SIZE);  /* set xterm size to array size if possible */
+
+      fprintf(fpchar,"\033]4");  /* do this as one command because screen is repainted per change */
+      for(indx=0;indx<CMAPSIZE;indx++){  /* print current color table */
+         fprintf(fpchar,";%d;rgb:%2.2x/%2.2x/%2.2x",indx,coltab[indx].r,coltab[indx].g,coltab[indx].b);
+      }
+      fprintf(fpchar,"\007");
+
+      /* notice going from bottom to top because putting out in a right handed coordinate system, was assuming left-handed */
+      for (y = (Y_SIZE-1); y >= 0; y--) { /* Loop for each byte in the array */
+         for ( x = 0; x < X_SIZE ; x++){
+            indx = Y_SIZE * x + y;
+            pix = (int)*(graphics_rgb + indx);
+            (void) fprintf(fpchar,"\033[48;5;%dm ",pix);
+         }
+
+      (void) fprintf(fpchar,"\n"); /* end of writing a row */
+      }
+
+      (void) fprintf(fpchar,"\033[37;40m\n");
+      fclose(fpchar);
+   }
+   GLOBAL_drawn = UNDRAWN;
+   return(0);
+}
+/******************************************************************************/
+static int XT_PRINT(void) {
+/*
+   MAYBE PUT IN WRITE OF STANDARD PIXMAPS THAT CAN BE READ IN
+*/
+/* print the current array to a file.  */
+   if( GLOBAL_drawn ){
+      XT_MEM_PRINT();
+      /*
+      static int GLOBAL_driver = 0;
+      GLOBAL_driver = CHAR;
+      switch(GLOBAL_driver) {
+      case 1:
+         break;
+      case 2:
+         break;
+      case 3:
+         break;
+      default:
+         fprintf(stderr, "ppm driver: UNKNOWN DRIVER NAME\n");
+      }
+      */
+   }
+   fflush(draw_fp); /* flush the output file */
+   return(0);
+}
+/******************************************************************************/
+static int XT_DRAW_LINE(int x,int y) { /* draws a line across a graphics array */
+   int runcount;
+   int dx,dy;
+   int xinc,yinc;
+   int xplot,yplot;
+
+   SET_PIXEL(GLOBAL_lastx,GLOBAL_lasty); /* move to initial spot */
+   XT_DRAW_PIXEL(GLOBAL_lastx,GLOBAL_lasty); /* move to initial spot */
+
+   runcount=0;
+
+   dx = abs(GLOBAL_lastx-x);
+
+   xinc=0;
+   if (x > GLOBAL_lastx)  xinc=  1;
+   if (x == GLOBAL_lastx) xinc=  0;
+   if (x < GLOBAL_lastx)  xinc= -1;
+
+   dy = abs(GLOBAL_lasty-y);
+
+   yinc=0;
+   if (y > GLOBAL_lasty)  yinc=  1;
+   if (y == GLOBAL_lasty) yinc=  0;
+   if (y < GLOBAL_lasty)  yinc= -1;
+
+   xplot = GLOBAL_lastx;
+   yplot = GLOBAL_lasty;
+
+   if (dx>dy) {
+      /* iterate x */
+      while (xplot != x) {
+         xplot += xinc;
+         runcount += dy;
+         if (runcount >= (dx-runcount)) {
+            yplot += yinc;
+            runcount -= dx;
+         }
+         SET_PIXEL(xplot,yplot);
+         XT_DRAW_PIXEL(xplot,yplot);
+      }
+   } else {
+      /* iterate y */
+      while (yplot != y) {
+         yplot += yinc;
+         runcount += dx;
+         if (runcount >= (dy-runcount)) {
+            xplot += xinc;
+            runcount -= dy;
+         }
+         SET_PIXEL(xplot,yplot);
+         XT_DRAW_PIXEL(xplot,yplot);
+      }
+   }
+
+   GLOBAL_lastx = xplot;
+   GLOBAL_lasty = yplot;
+
+   return(0);
+}
+/******************************************************************************/
+static int XT_YINTERCEPT(int yscan, int x1, int y1, int x2, int y2,int  *xintercept, int *yprev) {
+/*
+Determine if scan line intercepts the line segment. If it does, return the x intercept.
+*/
+   int deltay, yprevious;
+   float   t;
+   yprevious = *yprev; /* the value we need to use in this pass */
+   *yprev = y1;        /* store the value for the next call to (probably) use */
+   deltay = y2 - y1;
+   if ( deltay == 0 ){
+      /* horizontal lines do not contribute to scan line intercepts */
+      *yprev=yprevious;
+      return(0);
+   }
+   t = (float)(yscan - y1) / deltay;
+   if (t > 0.0 && t <= 1.0) {
+      /* scan line and line segment intersect but not at leading vertex */
+      *xintercept = x1 + t*(x2 - x1) + 0.5;
+      return (1);
+   } else if ( t == 0.0 ){
+      /* scan line and line segment intersect at leading vertex */
+      *xintercept = x1 + t*(x2 - x1) + 0.5;
+      if(yprevious <= y1 && y2 <= y1 ){
+         /* local maximum */
+         return (1);
+      } else if(yprevious >= y1 && y2 >= y1 ){
+         /* local minimum */
+         return (1);
+      } else{
+         /* ignore duplicate at vertex that is not a local maximum or minimum */
+         return (0);
+      }
+   }
+   /* scan line and line segment did not intersect */
+   return (0);
+}
+/*******************************************************************************/
+static void XT_SOLID_FILL(int n, int x[], int y[]) { /* fill polygon of n points drawn by polyline <x,y>.  */
+   int i, j, sorted, yhorizontal, xint, tmp, xmin, xmax, ymax, ymin, xi[MAXVERTS], yprev;
+
+   if ( n > MAXVERTS) {
+      fprintf(stderr,"*XT_SOLID_FILL* more than %d vertices in a polygon\n",MAXVERTS);
+      return;
+   }
+
+   /* find clip range */
+   ymin = ymax = y[0];
+   xmin = xmax = x[0];
+   for (i = 0; i < n; i++) {
+      ymax = MAX(ymax, y[i]);
+      ymin = MIN(ymin, y[i]);
+      xmax = MAX(xmax, x[i]);
+      xmin = MIN(xmin, x[i]);
+   }
+   /* ensure scan lines are generated that do not cause out-of-bound problems in the y direction */
+   ymin=MAX(ymin,0);
+   ymax=MIN(ymax,Y_SIZE);
+
+   /* For each y value, get a list of X intersections... */
+   yhorizontal = ymax ;
+   while (yhorizontal >= ymin) {
+      j = 0;
+      yprev = y[n-1];
+      for (i = 0; i < n-1; i++)
+         if (XT_YINTERCEPT(yhorizontal, x[i], y[i], x[i+1], y[i+1], &xint, &yprev)){
+            xi[j] = xint;
+            j++;
+         }
+      /* Last one. */
+      if (XT_YINTERCEPT(yhorizontal, x[n-1], y[n-1], x[0], y[0], &xint, &yprev)){
+         xi[j] = xint;
+          j++; 
+      }
+
+      /* odd pairs means something went wrong in figuring out whether to count vertices or not */
+      /*
+      if( 2 * (j/2) != j){
+         fprintf(stderr,"*XT_SOLID_FILL* Internal error: odd number of intersection points (%d) \n",j);
+      }
+      */
+
+      /* Sort the X intersections... */
+      sorted = 0;
+      while (!sorted) {
+         sorted = 1;
+         for (i = 0; i < j-1; i++)
+            if (xi[i] > xi[i+1]) {
+               tmp = xi[i];
+               xi[i] = xi[i+1];
+               xi[i+1] = tmp;
+               sorted = 0;
+            }
+      }
+
+      /* Draw the horizontal lines */
+      /* should make sure within X clipping range */
+      for (i = 0; i < j-1; i += 2) {
+         GLOBAL_lastx=MAX(0,MIN(xi[i],X_SIZE));
+         GLOBAL_lasty=yhorizontal;
+         XT_DRAW_LINE(MAX(0,MIN(xi[i+1],X_SIZE)), yhorizontal);
+      }
+      yhorizontal -= 1;
+   }
+}
+/******************************************************************************/
+static int XT_ENDCAP_CIRCLE(int x, int y){ /* Draw a circle on thick line segment end point */
+   /* there are more efficient ways to do this */
+   /* circle precision */
+#define nsegs 15
+   /* static int nsegs= 15; */
+   float cx, cy, dx, dy, angle, cosine, sine ;
+   /* array to place circle points on */
+   int cxras[nsegs], cyras[nsegs];
+   int i;
+
+
+   angle = 2.0 * PI / nsegs;
+   cosine = cos((double)angle);
+   sine = sin((double)angle);
+
+   /* first point on circle */
+   cxras[0] = cx =  x + GLOBAL_rasters/2.0;
+   cyras[0] = cy = y;
+   for (i = 1; i < nsegs; i++) {
+      dx = cx - x;
+      dy = cy - y;
+      cxras[i] = ( cx = x + dx * cosine - dy * sine) ;
+      cyras[i] = ( cy = y + dx * sine   + dy * cosine) ;
+   }
+   XT_SOLID_FILL(nsegs,cxras,cyras); /* fill polygon of n points drawn by polyline <x,y>.  */
+   return(0);
+}
+/*******************************************************************************/
+static int XT_setlw(int w){ /* Set the line width */
+   GLOBAL_rasters = w*vdevice.sizeX/10000.0;
+   GLOBAL_rasters = MAX(1,GLOBAL_rasters);
+   return(0);
+}
+/******************************************************************************/
+static int XT_color(int col){ /* change the current color */
+   if(col < 0){
+      XT_setlw(abs(col));  /* for compatibility, negative colors set line thickness */
+   }else{
+      GLOBAL_color = ABS(col % CMAPSIZE) ;
+   }
+   return(0);
+}
+/******************************************************************************/
+static int XT_mapcolor(int indx, int r, int g, int b){  /* set values in pseudo color map.  */
+   if (indx < CMAPSIZE && indx >= 0) {
+      coltab[indx].r = ABS(r % CMAPSIZE) ;
+      coltab[indx].g = ABS(g % CMAPSIZE) ;
+      coltab[indx].b = ABS(b % CMAPSIZE) ;
+   }
+   fprintf(draw_fp,"\033]4;%d;rgb:%2.2x/%2.2x/%2.2x\007",indx,r,g,b);
+   return(0);
+}
+/******************************************************************************/
+static int XT_getkey(void) /* XT_getkey return the next key typed in raw mode.  */
+{
+#ifdef BSD
+        struct sgttyb   oldtty, newtty;
+        char            c;
+
+        ioctl(0, TIOCGETP, &oldtty);
+        newtty = oldtty;
+        newtty.sg_flags = RAW;
+        ioctl(0, TIOCSETP, &newtty);
+        read(0, &c, 1);
+        ioctl(0, TIOCSETP, &oldtty);
+#else
+        struct termio   oldtty, newtty;
+        char            c;
+
+        ioctl(0, TCGETA, &oldtty);
+        newtty = oldtty;
+        newtty.c_iflag = BRKINT | IXON | ISTRIP;
+        newtty.c_lflag = 0;
+        newtty.c_cc[VEOF] = 1;
+        ioctl(0, TCSETA, &newtty);
+        read(0, &c, 1);
+        ioctl(0, TCSETA, &oldtty);
+#endif
+
+        return(c);
+}
+/******************************************************************************/
+static void XT_GETSCREENSIZE(int *rows,int *columns){  /* query screen size */
+   char buf[100];
+   int i;
+
+   *rows=400;
+   *columns=600;
+
+   fprintf(stdout,"\033[18t"); /* report size as \033[8 ; height ; width t*/
+   fflush(stdout);
+   for (i = 0; i < 100; i++){
+      switch(XT_getkey()) { case '\033': break; default: continue; }
+      switch(XT_getkey()) { case '['   : break; default: continue; }
+      switch(XT_getkey()) { case '8'   : break; default: continue; }
+
+      for (i = 0; i < 100; i++){  /* look for height ; width t */
+           if((buf[i]=XT_getkey())==EOF)break;
+           if(buf[i]=='t')break;
+      }
+      buf[i+1]=0;
+      sscanf(buf,";%d;%dt",rows,columns);
+      if (*rows <=0) *rows=400;
+      if (*columns <=0) *columns=600;
+      return;
+      break;
+   }
+   if (*rows <=0) *rows=400;
+   if (*columns <=0) *columns=600;
+}
+/******************************************************************************/
+static int XT_init(void) { /* set up the graphics mode.  */
+   int prefx, prefy, prefxs, prefys;
+   int i;
+   int rows;
+   int columns;
+
+   /* DETERMINE SIZE OF GRAPHICS PIXMAP */
+   /* see if a size was user-specified using the prefsize procedure */
+   draw_getprefposandsize(&prefx, &prefy, &prefxs, &prefys);
+   if (prefxs != -1 ) {
+      if (prefys <= 0 ){
+         fprintf(stderr,"*XT_init* y size of %d set to 400\n",prefys);
+         prefys = 400;
+      }
+      else{
+         vdevice.sizeSy = prefys;
+      }
+      if (prefxs <= 0 ){
+         fprintf(stderr,"*XT_init* y size of %d set to 600\n",prefys);
+         prefxs = 600;
+      }
+      else{
+         vdevice.sizeSx = prefxs;
+      }
+   }
+   else{
+      /* nice default value */
+
+      prefx = 0;
+      prefy = 0;
+
+      XT_GETSCREENSIZE(&rows,&columns); /* default is to use as found at this point */
+
+      vdevice.sizeSx = columns;
+      vdevice.sizeSy = rows-SCROLL;
+   }
+   vdevice.sizeX = vdevice.sizeY = MIN(vdevice.sizeSy,vdevice.sizeSx);
+   X_SIZE=vdevice.sizeSx;
+   Y_SIZE=vdevice.sizeSy;
+   LAST=X_SIZE*Y_SIZE-1;
+
+   graphics_rgb=(byte *)malloc( X_SIZE * Y_SIZE * sizeof(byte) ); /* the graphics array */
+
+   XT_MEMSET(); /* set the graphics array to 0 */
+
+   vdevice.depth = CMAPDEPTH;
+
+   draw_fp = _draw_outfile();
+
+   /* Cause scaling to be 0 to maxX maxY: prefx, vdevice.sizeSx+prefx, prefy, vdevice.sizeSy+prefy */
+
+   GLOBAL_lastx = -1111111;
+   GLOBAL_lasty = -1111111;
+
+   GLOBAL_drawn = UNDRAWN;
+
+   XT_mapcolor(  0, 255, 255, 255);
+   XT_mapcolor(  1, 255,   0,   0);
+   XT_mapcolor(  2,   0, 255,   0);
+   XT_mapcolor(  3, 255, 255,   0);
+   XT_mapcolor(  4,   0,   0, 255);
+   XT_mapcolor(  5, 255,   0, 255);
+   XT_mapcolor(  6,   0, 255, 255);
+   XT_mapcolor(  7,   0,   0,   0);
+   XT_mapcolor(  8, 155,   0,   0);
+   XT_mapcolor(  9,   0, 155,   0);
+   XT_mapcolor( 10, 155, 255, 255);
+   XT_mapcolor( 11, 155, 155,   0);
+   XT_mapcolor( 12,   0,   0, 155);
+   XT_mapcolor( 13, 155,   0, 155);
+   XT_mapcolor( 14,   0, 155, 155);
+   XT_mapcolor( 15, 100, 100, 100);
+
+   /* FLASHES AND REPAINTS WITH EACH CHANGE
+   for(i=16; i<CMAPSIZE; i++){
+      XT_mapcolor(i, 255, 255, 255);
+   }
+   */
+
+   fprintf(draw_fp,"\033]4");
+   for(i=16; i<CMAPSIZE; i++){
+      fprintf(draw_fp,";%d;rgb:ff/ff/ff",i);
+   }
+   fprintf(draw_fp,"\007");
+
+   return(1);
+}
+/******************************************************************************/
+static int XT_exit(void) { /* exit from driver printing the buffer.  */
+
+   XT_PRINT();
+
+   (void) fprintf(draw_fp,"\033c");  /* Full Reset (RIS) */
+
+   if (draw_fp != stdout && draw_fp != stderr ){
+                fflush(draw_fp);
+                if(vdevice.writestoprocess == 2){
+                   pclose(draw_fp);
+                }else{
+                   fclose(draw_fp);
+                }
+   }
+
+   /* release the graphics data */
+
+   free(graphics_rgb);
+
+   return(0);
+}
+/******************************************************************************/
+static int XT_draw(int x, int y) { /* print the commands to draw a line from the current graphics position to (x, y).  */
+   int     holdx, holdy;
+   int xwide[4], ywide[4];
+   float cosa, sina;
+   double angle;
+
+   GLOBAL_lastx = x;
+   GLOBAL_lasty = y;
+
+
+   if (GLOBAL_lastx != vdevice.cpVx || GLOBAL_lasty != vdevice.cpVy){
+      GLOBAL_lastx=vdevice.cpVx;
+      GLOBAL_lasty=vdevice.cpVy;
+   }
+
+   if ( GLOBAL_rasters <= 1){
+      XT_DRAW_LINE(x,y);
+   } else{
+      /* thick lines are made from filled polygon(s) */
+      /* add a circle to ends of really thick lines */
+      if( GLOBAL_rasters >= 6){
+         holdx=GLOBAL_lastx;
+         holdy=GLOBAL_lasty;
+         XT_ENDCAP_CIRCLE(GLOBAL_lastx,GLOBAL_lasty);
+         XT_ENDCAP_CIRCLE(x,y);
+         GLOBAL_lastx=holdx;
+         GLOBAL_lasty=holdy;
+      }
+      angle=atan2((double)(y-GLOBAL_lasty),(double)(x-GLOBAL_lastx)) + PI/2.0;
+      cosa=(GLOBAL_rasters/2.0)*cos(angle);
+      sina=(GLOBAL_rasters/2.0)*sin(angle);
+      xwide[0]=x+cosa;
+      xwide[1]=GLOBAL_lastx+cosa;
+      xwide[2]=GLOBAL_lastx-cosa;
+      xwide[3]=x-cosa;
+
+      ywide[0]=y+sina;
+      ywide[1]=GLOBAL_lasty+sina;
+      ywide[2]=GLOBAL_lasty-sina;
+      ywide[3]=y-sina;
+
+      XT_SOLID_FILL(4,xwide,ywide);
+   }
+   GLOBAL_drawn = DRAWN;
+
+   XT_RETURN_TO_SCROLL();
+
+   return(0);
+}
+/******************************************************************************/
+/*
+ * Get the position of the mouse. This gets a bit sticky.
+ * some older xterms may not support mouse; but could use text cursor position
+ * position is returned in a character value, which limits its range to less than a large window,
+ * especially if 2-point or 1-point font is used.
+ * Mouse escape sequences do not work the way I expected; need to experiment or find reference material
+ * The locator routine is very hardware specific; but the pre-exisiting X11 locator routine ...
+
+     1) samples. That is, it is always reading. It does not wait for a keypress to respond
+     2) returns 1 for mouse 1, 2 for 2, 4 for 3 or sum  when mouse keys are pressed
+     3) does not appear to indicate when modifier keys are pressed
+     4) returns a zero when no mouse is pressed
+
+ */
+static int XT_locator(int *x, int *y) {
+        int buf[6];
+        int i;
+        int xread;
+        int yread;
+        int button;
+        int return_button;
+        FILE     *fplog = (FILE *)NULL;
+
+#ifdef BSD
+        struct sgttyb   oldtty, newtty;
+#else
+        struct termio   oldtty, newtty;
+#endif
+
+#ifdef BSD
+        ioctl(0, TIOCGETP, &oldtty);
+        newtty = oldtty;
+        newtty.sg_flags = RAW;
+        ioctl(0, TIOCSETP, &newtty);
+#else
+        ioctl(0, TCGETA, &oldtty);
+        newtty = oldtty;
+        newtty.c_iflag = BRKINT | IXON | ISTRIP;
+        newtty.c_lflag = 0;
+        newtty.c_cc[VEOF] = 1;
+        ioctl(0, TCSETA, &newtty);
+#endif
+
+        fputs( "\033[?1003h",draw_fp);  /* Activate mouse mode */
+        /*
+        fputs( "\033[1;3'{",draw_fp);   /@ Enable button transitions               @/
+        fputs( "\033[2;2'z",draw_fp);   /@ Enable locator reporting for one report @/
+        fputs( "\033[1'|",draw_fp);     /@ Request Locator Position                @/
+        */
+
+        if (draw_fp == stdout || draw_fp == stderr){
+           fflush(draw_fp);
+        }
+
+        /* xterm(1) returns 6 bytes upon mouse read: */
+
+        buf[5]=-9999;   /* if does not change must be error */
+        /* so no infinite loop, try up to next 100 characters for pattern */
+        for (i = 0; i < 100; i++){  /* look for esc[MCbCxCy */
+
+           switch(buf[0]=getchar()) { case '\033': break; default: continue; }
+           switch(buf[1]=getchar()) { case '['   : break; default: continue; }
+           switch(buf[2]=getchar()) { case 'M'   : break; default: continue; }
+
+           buf[3]=getchar();  /* mouse button information */
+           buf[4]=getchar();  /* x coordinate */
+           buf[5]=getchar();  /* y coordinate */
+           break;
+        }
+
+        if(buf[5] == -9999 ){
+           buf[3] = -1+32;
+           buf[4] =  0+32;
+           buf[5] =  0+32;
+           XT_RETURN_TO_SCROLL();
+           fprintf(stderr,"could not get return from locator\n");
+        }
+
+#ifdef BSD
+        ioctl(0, TIOCFLUSH, (char *)NULL);
+        ioctl(0, TIOCSETP, &newtty);
+#else
+        ioctl(0, TCFLSH, (char *)NULL);
+        ioctl(0, TCSETA, &oldtty);
+#endif
+
+/*
+   on button press and release, xterm sends CSI M CbCxCy.  The low two
+   bits of Cb encode button information: 0=MB1 pressed, 1=MB2 pressed,
+   2=MB3 pressed, 3=release.  The next three bits encode the modifiers
+   which were down when the button was pressed and are added together:
+   4=Shift, 8=Meta, 16=Control.
+
+   Wheel mice may return buttons 4 and 5.  Those buttons are represented
+   by the same event codes as buttons 1 and 2 respectively, except that
+   64 is added to the event code.  Release events for the wheel buttons
+   are not reported.
+
+*/
+        fputs( "\033[?1003l",draw_fp);  /* Inactivate mouse mode */
+
+        button=buf[3] - 32;
+
+        xread = buf[4]-32;
+        yread = buf[5]-32;
+        yread = (Y_SIZE+SCROLL)-yread;
+        return_button = ( button + 1 ) % 4 ;
+
+        *x = xread;
+        *y = yread;
+
+        GLOBAL_lastx = xread;
+        GLOBAL_lasty = yread;
+
+        fplog=fopen("rel.txt","a") ;
+        for (i = 0; i < 6; i++){
+           fprintf(fplog,"%d=%x ",i,buf[i]);
+        }
+        fprintf(fplog,"B=%d RETURN=%d ",button,return_button);
+        fprintf(fplog,"x=%d y=%d\n",xread,yread);
+        fclose(fplog) ;
+
+        return(return_button);
+}
+/******************************************************************************/
+static int XT_clear(void) { /* flush current page and clear graphics array */
+
+
+   (void) fprintf(draw_fp,"\033[8;%d;%dt\n",Y_SIZE+SCROLL,X_SIZE);  /* set xterm size to array size if possible */
+   (void) fprintf(draw_fp,"\033[1;%dr\n",SCROLL);                   /* set xterm scroll area */
+
+   XT_PRINT();
+   XT_MEMSET(); /* set graphics array to all zero */
+
+   (void) fprintf(draw_fp,"\033[4%dm ",GLOBAL_color);               /* set color */
+   (void) fprintf(draw_fp,"\033[2J");                               /* clear all */
+
+   XT_RETURN_TO_SCROLL();
+
+   GLOBAL_lastx = GLOBAL_lasty = -1;
+   return(0);
+}
+/******************************************************************************/
+static int XT_font(char *fontname) { /* load in large or small */
+        if (strcmp(fontname, "small") == 0) {  /* regular hardware text */
+                vdevice.hwidth = 1.00; /* Size in plotter resolution units */
+                vdevice.hheight = 1.0;
+                GLOBAL_font = 0;
+        } else if (strcmp(fontname, "large") == 0) {
+                vdevice.hwidth = 8.00;
+                vdevice.hheight = 13.00;
+                GLOBAL_font = 1;
+        } else
+                return(0);
+
+        return(1);
+}
+/******************************************************************************/
+static int XT_fill(int n, int x[], int y[]) { /* "fill" a polygon */
+   int     i;
+
+   /* update current position if needed */
+   GLOBAL_lastx=x[0];
+   GLOBAL_lasty=y[0];
+
+   for (i = 1; i < n; i++){
+      XT_DRAW_LINE(x[i],y[i]); /* draw outline across graphics array */
+   }
+   if ( x[n-1] != x[0] || y[n-1] != y[0] ) /* close the polygon if not closed */
+      XT_DRAW_LINE(x[0],y[0]);
+
+   XT_SOLID_FILL(n, x, y);
+
+   /* update current position */
+   GLOBAL_lastx = vdevice.cpVx = x[n - 1];
+   GLOBAL_lasty = vdevice.cpVy = y[n - 1];
+
+   GLOBAL_drawn = DRAWN;
+
+   XT_RETURN_TO_SCROLL();
+
+   return(0);
+}
+/******************************************************************************/
+/* flush the device */
+static int XT_sync(void) {
+
+        fflush(draw_fp);
+        XT_RETURN_TO_SCROLL();
+        return(UNUSED);
+}
+/******************************************************************************/
+static void XT_char0(char c) { /* XT_char output a small character */
+
+  int             i,j,k;
+  char            wrd;
+/*
+HARDWARE first draft
+check to make sure do not exceed arrays bounds
+make sure in proper location
+hardcodes to just use font 8x13 should go to any font bitmap
+rotate font
+*/
+        k=(int)c-32; /* get which row to use out of the bitpatterns */
+        if(k < 0 || k > 95 ){
+           return;
+        }
+        for (i=0;i<11;i++){
+           wrd=font8x13[k][i];
+           for ( j=0; j<8; j++ ){
+              if ((wrd & (0x80 >> j)) != 0){
+                  SET_PIXEL((int)(j+vdevice.cpVx),(int)(vdevice.cpVy-i+13));
+                  XT_DRAW_PIXEL((int)(j+vdevice.cpVx),(int)(vdevice.cpVy-i+13));
+              }else{
+              }
+           }
+        }
+        vdevice.cpVx+= 8;
+        GLOBAL_lastx=vdevice.cpVx;
+        GLOBAL_lasty=vdevice.cpVy;
+        GLOBAL_drawn = DRAWN;
+}
+/******************************************************************************/
+static int XT_char(char c) { /* output a hardware character */
+
+   if (GLOBAL_lastx != vdevice.cpVx || GLOBAL_lasty != vdevice.cpVy) {
+      XT_POSITION_CURSOR(vdevice.cpVx, vdevice.cpVy);
+   }
+
+
+   if (GLOBAL_font == 1){
+      XT_char0(c);
+   }else{
+      XT_POSITION_CURSOR(vdevice.cpVx, vdevice.cpVy);
+      XT_COLOR_BYTE(vdevice.cpVx,vdevice.cpVy,c);
+      XT_RETURN_TO_SCROLL();
+      vdevice.cpVx++;
+      GLOBAL_lastx=vdevice.cpVx;
+      GLOBAL_lasty=vdevice.cpVy;
+   }
+
+   GLOBAL_lastx = GLOBAL_lasty = -1;
+
+   if (draw_fp == stdout || draw_fp == stderr){
+      fflush(draw_fp);
+   }
+   return(UNUSED);
+}
+/******************************************************************************/
+static int XT_string(char *s) { /* output a string.  */
+        int i;
+
+        if (GLOBAL_lastx != vdevice.cpVx || GLOBAL_lasty != vdevice.cpVy){
+                GLOBAL_lastx=vdevice.cpVx;
+                GLOBAL_lasty=vdevice.cpVy;
+
+                XT_POSITION_CURSOR(vdevice.cpVx, vdevice.cpVy);
+        }
+
+        for(i=0; s[i]!='\0'; i++){
+          XT_char(s[i]);
+        }
+        XT_RETURN_TO_SCROLL();
+
+        return(0);
+}
+/******************************************************************************/
+/* no operations - do nothing but return -1 */
+static int noop(void) { return(-1); }
+/******************************************************************************/
+static DevEntry xtdev = {
+   "xt",          /* name of device */
+   "large",       /* name of large font */
+   "small",       /* name of small font */
+   noop,          /* Set drawing in back buffer */
+   XT_char,       /* Draw a hardware character */
+   noop,          /* Check if a key was hit */
+   XT_clear,      /* Clear the screen to current color */
+   XT_color,      /* Set current color */
+   XT_draw,       /* Draw a line */
+   XT_exit,       /* Exit graphics */
+   XT_fill,       /* Fill a polygon */
+   XT_font,       /* Set hardware font */
+   noop,          /* Set drawing in front buffer */
+   XT_getkey,     /* Wait for and get the next key hit */
+   XT_init,       /* Initialize the device */
+   XT_locator,    /* Get mouse/cross hair position */
+   XT_mapcolor,   /* Set color indices */
+   XT_setlw,      /* Set line width */
+   XT_string,     /* Draw a hardware string */
+   noop,          /* Swap front and back buffers */
+   XT_sync        /* Syncronize the display */
+};
+/******************************************************************************/
+int _XT_draw_devcpy(void) {       /* copy the device into vdevice.dev.  */
+   vdevice.dev = xtdev;
+   vdevice.dev.Vinit = XT_init;
+   vdevice.dev.devname = "xt";
+   return(UNUSED);
+}
+/******************************************************************************/
+</xmp><!--/C-->
+<xmp>
+</xmp>
+</font>
+<a name="xterm">
+<h1>Xterm Control Sequences</h1>
+
+<xmp>
+
+                        Xterm Control Sequences
+
+                               Edward Moy
+                   University of California, Berkeley
+
+                               Revised by
+
+                             Stephen Gildea
+                          X Consortium (1994)
+
+                             Thomas Dickey
+                      XFree86 Project (1996-2006)
+
+
+
+Definitions
+
+c    The literal character c.
+
+C    A single (required) character.
+
+Ps   A single (usually optional) numeric parameter, composed of one of
+     more digits.
+
+Pm   A multiple numeric parameter composed of any number of single
+     numeric parameters, separated by ;  character(s).  Individual val-
+     ues for the parameters are listed with Ps .
+
+Pt   A text parameter composed of printable characters.
+
+C1 (8-Bit) Control Characters
+
+The xterm program recognizes both 8-bit and 7-bit control characters.
+It generates 7-bit controls (by default) or 8-bit if S8C1T is enabled.
+The following pairs of 7-bit and 8-bit control characters are equiva-
+lent:
+
+ESC D  Index (IND is 0x84)
+ESC E  Next Line (NEL is 0x85)
+ESC H  Tab Set (HTS is 0x88)
+ESC M  Reverse Index (RI is 0x8d)
+ESC N  Single Shift Select of G2 Character Set (SS2  is 0x8e): affects
+       next character only
+ESC O  Single Shift Select of G3 Character Set (SS3  is 0x8f): affects
+       next character only
+ESC P  Device Control String (DCS        is 0x90)
+ESC V  Start of Guarded Area (SPA        is 0x96)
+ESC W  End of Guarded Area (EPA  is 0x97)
+ESC X  Start of String (SOS  is 0x98)
+ESC Z  Return Terminal ID (DECID is 0x9a).  Obsolete form of CSI c  (DA).
+ESC [  Control Sequence Introducer (CSI  is 0x9b)
+ESC \  String Terminator (ST  is 0x9c)
+ESC ]  Operating System Command (OSC  is 0x9d)
+ESC ^  Privacy Message (PM  is 0x9e)
+ESC _  Application Program Command (APC  is 0x9f)
+
+These control characters are used in the vtXXX emulation.
+
+VT100 Mode
+Most of these control sequences are standard VT102 control sequences,
+but there is support for later DEC VT terminals (i.e., VT220, VT320,
+VT420), as well as ISO 6429 and aixterm color controls.  The only VT102
+features not supported is auto-repeat, since the only way X provides for
+this will affect all windows.  There are additional control sequences to
+provide xterm-dependent functions, such as the scrollbar or window size.
+Where the function is specified by DEC or ISO 6429, the code assigned to
+it is given in parentheses.  The escape codes to designate and invoke
+character sets are specified by ISO 2022; see that document for a dis-
+cussion of character sets.
+
+Single-character functions
+BEL            Bell (Ctrl-G)
+BS             Backspace (Ctrl-H)
+CR             Carriage Return (Ctrl-M)
+ENQ            Return Terminal Status (Ctrl-E).  Default response is an
+               empty string, but may be overridden by a resource answer-
+               backString.
+FF             Form Feed or New Page (NP) (Ctrl-L) same as LF
+LF             Line Feed or New Line (NL) (Ctrl-J)
+SO             Shift Out (Ctrl-N) -&gt; Switch to Alternate Character Set:
+               invokes the G1 character set.
+SP             Space.
+TAB            Horizontal Tab (HT) (Ctrl-I)
+VT             Vertical Tab (Ctrl-K) same as LF
+SI             Shift In (Ctrl-O) -&gt; Switch to Standard Character Set:
+               invokes the G0 character set (the default).
+
+Controls beginning with ESC (other than those where ESC is part of a
+7-bit equivalent to 8-bit C1 controls), ordered by the final charac-
+ter(s).
+ESC SP F       7-bit controls (S7C1T).
+ESC SP G       8-bit controls (S8C1T).
+ESC SP L       Set ANSI conformance level 1 (dpANS X3.134.1).
+ESC SP M       Set ANSI conformance level 2 (dpANS X3.134.1).
+ESC SP N       Set ANSI conformance level 3 (dpANS X3.134.1).
+ESC # 3        DEC double-height line, top half (DECDHL)
+ESC # 4        DEC double-height line, bottom half (DECDHL)
+ESC # 5        DEC single-width line (DECSWL)
+ESC # 6        DEC double-width line (DECDWL)
+ESC # 8        DEC Screen Alignment Test (DECALN)
+ESC % @        Select default character set, ISO 8859-1 (ISO 2022)
+ESC % G        Select UTF-8 character set (ISO 2022)
+ESC ( C        Designate G0 Character Set (ISO 2022)
+ESC ) C        Designate G1 Character Set (ISO 2022)
+ESC * C        Designate G2 Character Set (ISO 2022)
+ESC + C        Designate G3 Character Set (ISO 2022)
+               Final character C for designating character sets (0 , A
+               and B  apply to VT100 and up, the remainder to VT220 and
+               up):
+                 C = 0  -&gt; DEC Special Character and Line Drawing Set
+                 C = A  -&gt; United Kingdom (UK)
+                 C = B  -&gt; United States (USASCII)
+                 C = 4  -&gt; Dutch
+                 C = C  or 5  -&gt; Finnish
+                 C = R  -&gt; French
+                 C = Q  -&gt; French Canadian
+                 C = K  -&gt; German
+                 C = Y  -&gt; Italian
+                 C = E  or 6  -&gt; Norwegian/Danish
+                 C = Z  -&gt; Spanish
+                 C = H  or 7  -&gt; Swedish
+                 C = =  -&gt; Swiss
+ESC 7          Save Cursor (DECSC)
+ESC 8          Restore Cursor (DECRC)
+ESC =          Application Keypad (DECPAM)
+ESC &gt;               Normal Keypad (DECPNM)
+ESC F          Cursor to lower left corner of screen (if enabled by the
+               hpLowerleftBugCompat resource).
+ESC c          Full Reset (RIS)
+ESC l          Memory Lock (per HP terminals).  Locks memory above the
+               cursor.
+ESC m          Memory Unlock (per HP terminals)
+ESC n          Invoke the G2 Character Set as GL (LS2).
+ESC o          Invoke the G3 Character Set as GL (LS3).
+ESC |          Invoke the G3 Character Set as GR (LS3R).
+ESC }          Invoke the G2 Character Set as GR (LS2R).
+ESC ~          Invoke the G1 Character Set as GR (LS1R).
+
+Application Program-Control functions
+APC Pt ST      xterm implements no APC  functions; Pt is ignored.  Pt
+               need not be printable characters.
+
+Device-Control functions
+DCS Ps; Ps| Pt ST
+               User-Defined Keys (DECUDK).  The first parameter:
+                 Ps = 0  -&gt; Clear all UDK definitions before starting
+               (default)
+                 Ps = 1  -&gt; Erase Below (default)
+               The second parameter:
+                 Ps = 0  -&gt; Lock the keys (default)
+                 Ps = 1  -&gt; Do not lock.
+               The third parameter is a ';'-separated list of strings
+               denoting the key-code separated by a '/' from the hex-
+               encoded key value.  The key codes correspond to the DEC
+               function-key codes (e.g., F6=17).
+DCS $ q Pt ST  Request Status String (DECRQSS).  The string following
+               the &quot;q&quot; is one of the following:
+                 &quot; q        -&gt; DECSCA
+                 &quot; p        -&gt; DECSCL
+                 r       -&gt; DECSTBM
+                 m       -&gt; SGR
+               xterm responds with DCS 1 $ r Pt ST for valid requests,
+               replacing the Pt with the corresponding CSI string, or
+               DCS 0 $ r Pt ST for invalid requests.
+DCS + q Pt ST  Request Termcap/Terminfo String (xterm, experimental).
+               The string following the &quot;q&quot; is a list of names encoded
+               in hexadecimal (2 digits per character) separated by ;
+               which correspond to termcap or terminfo key names.
+               xterm responds with DCS 1 + r Pt ST for valid requests,
+               adding to Pt an = , and the value of the corresponding
+               string that xterm would send, or DCS 0 + r Pt ST for
+               invalid requests.  The strings are encoded in hexadecimal
+               (2 digits per character).
+
+Functions using CSI , ordered by the final character(s)
+CSI Ps @       Insert Ps (Blank) Character(s) (default = 1) (ICH)
+CSI Ps A       Cursor Up Ps Times (default = 1) (CUU)
+CSI Ps B       Cursor Down Ps Times (default = 1) (CUD)
+CSI Ps C       Cursor Forward Ps Times (default = 1) (CUF)
+CSI Ps D       Cursor Backward Ps Times (default = 1) (CUB)
+CSI Ps E       Cursor Next Line Ps Times (default = 1) (CNL)
+CSI Ps F       Cursor Preceding Line Ps Times (default = 1) (CPL)
+CSI Ps G       Cursor Character Absolute  [column] (default = [row,1])
+               (CHA)
+CSI Ps ; Ps H  Cursor Position [row;column] (default = [1,1]) (CUP)
+CSI Ps I       Cursor Forward Tabulation Ps tab stops (default = 1)
+               (CHT)
+CSI Ps J       Erase in Display (ED)
+                 Ps = 0  -&gt; Erase Below (default)
+                 Ps = 1  -&gt; Erase Above
+                 Ps = 2  -&gt; Erase All
+                 Ps = 3  -&gt; Erase Saved Lines (xterm)
+CSI ? Ps J     Erase in Display (DECSED)
+                 Ps = 0  -&gt; Selective Erase Below (default)
+                 Ps = 1  -&gt; Selective Erase Above
+                 Ps = 2  -&gt; Selective Erase All
+CSI Ps K       Erase in Line (EL)
+                 Ps = 0  -&gt; Erase to Right (default)
+                 Ps = 1  -&gt; Erase to Left
+                 Ps = 2  -&gt; Erase All
+CSI ? Ps K     Erase in Line (DECSEL)
+                 Ps = 0  -&gt; Selective Erase to Right (default)
+                 Ps = 1  -&gt; Selective Erase to Left
+                 Ps = 2  -&gt; Selective Erase All
+CSI Ps L       Insert Ps Line(s) (default = 1) (IL)
+CSI Ps M       Delete Ps Line(s) (default = 1) (DL)
+CSI Ps P       Delete Ps Character(s) (default = 1) (DCH)
+CSI Ps S       Scroll up Ps lines (default = 1) (SU)
+CSI Ps T       Scroll down Ps lines (default = 1) (SD)
+CSI Ps ; Ps ; Ps ; Ps ; Ps T
+               Initiate highlight mouse tracking.  Parameters are
+               [func;startx;starty;firstrow;lastrow].  See the section
+               Mouse Tracking.
+CSI Ps X       Erase Ps Character(s) (default = 1) (ECH)
+CSI Ps Z       Cursor Backward Tabulation Ps tab stops (default = 1)
+               (CBT)
+CSI Pm `       Character Position Absolute  [column] (default = [row,1])
+               (HPA)
+CSI Ps b       Repeat the preceding graphic character Ps times (REP)
+CSI Ps c       Send Device Attributes (Primary DA)
+                 Ps = 0  or omitted -&gt; request attributes from terminal.
+               The response depends on the decTerminalID resource set-
+               ting.
+                 -&gt; CSI ? 1 ; 2 c  (``VT100 with Advanced Video
+               Option'')
+                 -&gt; CSI ? 1 ; 0 c  (``VT101 with No Options'')
+                 -&gt; CSI ? 6 c  (``VT102'')
+                 -&gt; CSI ? 6 0 ; 1 ; 2 ; 6 ; 8 ; 9 ; 1 5 ; c  (``VT220'')
+               The VT100-style response parameters do not mean anything
+               by themselves.  VT220 parameters do, telling the host
+               what features the terminal supports:
+                 -&gt; 1  132-columns
+                 -&gt; 2  Printer
+                 -&gt; 6  Selective erase
+                 -&gt; 8  User-defined keys
+                 -&gt; 9  National replacement character sets
+                 -&gt; 1 5       Technical characters
+                 -&gt; 2 2       ANSI color, e.g., VT525
+                 -&gt; 2 9       ANSI text locator (i.e., DEC Locator mode)
+CSI &gt; Ps c     Send Device Attributes (Secondary DA)
+                 Ps = 0  or omitted -&gt; request the terminal's identifi-
+               cation code.  The response depends on the decTerminalID
+               resource setting.  It should apply only to VT220 and up,
+               but xterm extends this to VT100.
+                 -&gt; CSI       &gt; Pp ; Pv ; Pc c
+               where Pp denotes the terminal type
+                 -&gt; 0  (``VT100'')
+                 -&gt; 1  (``VT220'')
+               and Pv is the firmware version (for xterm, this is the
+               XFree86 patch number, starting with 95).  In a DEC termi-
+               nal, Pc indicates the ROM cartridge registration number
+               and is always zero.
+CSI Pm d       Line Position Absolute  [row] (default = [1,column])
+               (VPA)
+CSI Ps ; Ps f  Horizontal and Vertical Position [row;column] (default =
+               [1,1]) (HVP)
+CSI Ps g       Tab Clear (TBC)
+                 Ps = 0  -&gt; Clear Current Column (default)
+                 Ps = 3  -&gt; Clear All
+CSI Pm h       Set Mode (SM)
+                 Ps = 2  -&gt; Keyboard Action Mode (AM)
+                 Ps = 4  -&gt; Insert Mode (IRM)
+                 Ps = 1 2  -&gt; Send/receive (SRM)
+                 Ps = 2 0  -&gt; Automatic Newline (LNM)
+CSI ? Pm h     DEC Private Mode Set (DECSET)
+                 Ps = 1  -&gt; Application Cursor Keys (DECCKM)
+                 Ps = 2  -&gt; Designate USASCII for character sets G0-G3 (DECANM), and set VT100 mode.
+                 Ps = 3  -&gt; 132 Column Mode (DECCOLM)
+                 Ps = 4  -&gt; Smooth (Slow) Scroll (DECSCLM)
+                 Ps = 5  -&gt; Reverse Video (DECSCNM)
+                 Ps = 6  -&gt; Origin Mode (DECOM)
+                 Ps = 7  -&gt; Wraparound Mode (DECAWM)
+                 Ps = 8  -&gt; Auto-repeat Keys (DECARM)
+                 Ps = 9  -&gt; Send Mouse X &amp; Y on button press.  See the section Mouse Tracking.
+                 Ps = 1 0  -&gt; Show toolbar (rxvt)
+                 Ps = 1 2  -&gt; Start Blinking Cursor (att610)
+                 Ps = 1 8  -&gt; Print form feed (DECPFF)
+                 Ps = 1 9  -&gt; Set print extent to full screen (DECPEX)
+                 Ps = 2 5  -&gt; Show Cursor (DECTCEM)
+                 Ps = 3 0  -&gt; Show scrollbar (rxvt).
+                 Ps = 3 5  -&gt; Enable font-shifting functions (rxvt).
+                 Ps = 3 8  -&gt; Enter Tektronix Mode (DECTEK)
+                 Ps = 4 0  -&gt; Allow 80 -&gt; 132 Mode
+                 Ps = 4 1  -&gt; more(1) fix (see curses resource)
+                 Ps = 4 2  -&gt; Enable Nation Replacement Character sets (DECNRCM)
+                 Ps = 4 4  -&gt; Turn On Margin Bell
+                 Ps = 4 5  -&gt; Reverse-wraparound Mode
+                 Ps = 4 6  -&gt; Start Logging (normally disabled by a compile-time option)
+                 Ps = 4 7  -&gt; Use Alternate Screen Buffer (unless disabled by the titeInhibit resource)
+                 Ps = 6 6  -&gt; Application keypad (DECNKM)
+                 Ps = 6 7  -&gt; Backarrow key sends backspace (DECBKM)
+                 Ps = 1 0 0 0  -&gt; Send Mouse X &amp; Y on button press and release.  See the section Mouse Tracking.
+                 Ps = 1 0 0 1  -&gt; Use Hilite Mouse Tracking.
+                 Ps = 1 0 0 2  -&gt; Use Cell Motion Mouse Tracking.
+                 Ps = 1 0 0 3  -&gt; Use All Motion Mouse Tracking.
+                 Ps = 1 0 1 0  -&gt; Scroll to bottom on tty output (rxvt).
+                 Ps = 1 0 1 1  -&gt; Scroll to bottom on key press (rxvt).
+                 Ps = 1 0 3 5  -&gt; Enable special modifiers for Alt and NumLock keys.
+                 Ps = 1 0 3 6  -&gt; Send ESC when Meta modifies a key (enables the metaSendsEscape resource).
+                 Ps = 1 0 3 7  -&gt; Send DEL from the editing-keypad Delete key
+                 Ps = 1 0 4 7  -&gt; Use Alternate Screen Buffer (unless disabled by the titeInhibit resource)
+                 Ps = 1 0 4 8  -&gt; Save cursor as in DECSC (unless disabled by the titeInhibit resource)
+                 Ps = 1 0 4 9  -&gt; Save cursor as in DECSC and use Alternate Screen Buffer, clearing it first (unless disabled by
+               the titeInhibit resource).  This combines the effects of the 1 0 4 7  and 1 0 4 8  modes.  Use this with terminfo-
+               based applications rather than the 4 7  mode.
+                 Ps = 1 0 5 1  -&gt; Set Sun function-key mode.
+                 Ps = 1 0 5 2  -&gt; Set HP function-key mode.
+                 Ps = 1 0 5 3  -&gt; Set SCO function-key mode.
+                 Ps = 1 0 6 0  -&gt; Set legacy keyboard emulation (X11R6).
+                 Ps = 1 0 6 1  -&gt; Set Sun/PC keyboard emulation of VT220 keyboard.
+                 Ps = 2 0 0 4  -&gt; Set bracketed paste mode.
+CSI Pm i       Media Copy (MC)
+                 Ps = 0  -&gt; Print screen (default)
+                 Ps = 4  -&gt; Turn off printer controller mode
+                 Ps = 5  -&gt; Turn on printer controller mode
+CSI ? Pm i     Media Copy (MC, DEC-specific)
+                 Ps = 1  -&gt; Print line containing cursor
+                 Ps = 4  -&gt; Turn off autoprint mode
+                 Ps = 5  -&gt; Turn on autoprint mode
+                 Ps = 1  0  -&gt; Print composed display, ignores DECPEX
+                 Ps = 1  1  -&gt; Print all pages
+CSI Pm l       Reset Mode (RM)
+                 Ps = 2  -&gt; Keyboard Action Mode (AM)
+                 Ps = 4  -&gt; Replace Mode (IRM)
+                 Ps = 1 2  -&gt; Send/receive (SRM)
+                 Ps = 2 0  -&gt; Normal Linefeed (LNM)
+CSI ? Pm l     DEC Private Mode Reset (DECRST)
+                 Ps = 1  -&gt; Normal Cursor Keys (DECCKM)
+                 Ps = 2  -&gt; Designate VT52 mode (DECANM).
+                 Ps = 3  -&gt; 80 Column Mode (DECCOLM)
+                 Ps = 4  -&gt; Jump (Fast) Scroll (DECSCLM)
+                 Ps = 5  -&gt; Normal Video (DECSCNM)
+                 Ps = 6  -&gt; Normal Cursor Mode (DECOM)
+                 Ps = 7  -&gt; No Wraparound Mode (DECAWM)
+                 Ps = 8  -&gt; No Auto-repeat Keys (DECARM)
+                 Ps = 9  -&gt; Don't Send Mouse X &amp; Y on button press
+                 Ps = 1 0  -&gt; Hide toolbar (rxvt)
+                 Ps = 1 2  -&gt; Stop Blinking Cursor (att610)
+                 Ps = 1 8  -&gt; Don't print form feed (DECPFF)
+                 Ps = 1 9  -&gt; Limit print to scrolling region (DECPEX)
+                 Ps = 2 5  -&gt; Hide Cursor (DECTCEM)
+                 Ps = 3 0  -&gt; Don't show scrollbar (rxvt).
+                 Ps = 3 5  -&gt; Disable font-shifting functions (rxvt).
+                 Ps = 4 0  -&gt; Disallow 80 -&gt; 132 Mode
+                 Ps = 4 1  -&gt; No more(1) fix (see curses resource)
+                 Ps = 4 2  -&gt; Disable Nation Replacement Character sets
+               (DECNRCM)
+                 Ps = 4 4  -&gt; Turn Off Margin Bell
+                 Ps = 4 5  -&gt; No Reverse-wraparound Mode
+                 Ps = 4 6  -&gt; Stop Logging (normally disabled by a com-
+               pile-time option)
+                 Ps = 4 7  -&gt; Use Normal Screen Buffer
+                 Ps = 6 6  -&gt; Numeric keypad (DECNKM)
+                 Ps = 6 7  -&gt; Backarrow key sends delete (DECBKM)
+                 Ps = 1 0 0 0  -&gt; Don't Send Mouse X &amp; Y on button press
+               and release.  See the section Mouse Tracking.
+                 Ps = 1 0 0 1  -&gt; Don't Use Hilite Mouse Tracking
+                 Ps = 1 0 0 2  -&gt; Don't Use Cell Motion Mouse Tracking
+                 Ps = 1 0 0 3  -&gt; Don't Use All Motion Mouse Tracking
+                 Ps = 1 0 1 0  -&gt; Don't scroll to bottom on tty output
+               (rxvt).
+                 Ps = 1 0 1 1  -&gt; Don't scroll to bottom on key press
+               (rxvt).
+                 Ps = 1 0 3 5  -&gt; Disable special modifiers for Alt and
+               NumLock keys.
+                 Ps = 1 0 3 6  -&gt; Don't send ESC when Meta modifies a
+               key (disables the metaSendsEscape resource).
+                 Ps = 1 0 3 7  -&gt; Send VT220 Remove from the editing-
+               keypad Delete key
+                 Ps = 1 0 4 7  -&gt; Use Normal Screen Buffer, clearing screen first if in the Alternate Screen (unless disabled
+               by the titeInhibit resource)
+                 Ps = 1 0 4 8  -&gt; Restore cursor as in DECRC (unless disabled by the titeInhibit resource)
+                 Ps = 1 0 4 9  -&gt; Use Normal Screen Buffer and restore cursor as in DECRC (unless disabled by the titeInhibit
+               resource).  This combines the effects of the 1 0 4 7  and
+               1 0 4 8  modes.  Use this with terminfo-based applica-
+               tions rather than the 4 7  mode.
+                 Ps = 1 0 5 1  -&gt; Reset Sun function-key mode.
+                 Ps = 1 0 5 2  -&gt; Reset HP function-key mode.
+                 Ps = 1 0 5 3  -&gt; Reset SCO function-key mode.
+                 Ps = 1 0 6 0  -&gt; Reset legacy keyboard emulation
+               (X11R6).
+                 Ps = 1 0 6 1  -&gt; Reset Sun/PC keyboard emulation of
+               VT220 keyboard.
+                 Ps = 2 0 0 4  -&gt; Reset bracketed paste mode.
+CSI Pm m       Character Attributes (SGR)
+                 Ps = 0  -&gt; Normal (default)
+                 Ps = 1  -&gt; Bold
+                 Ps = 4  -&gt; Underlined
+                 Ps = 5  -&gt; Blink (appears as Bold)
+                 Ps = 7  -&gt; Inverse
+                 Ps = 8  -&gt; Invisible, i.e., hidden (VT300)
+                 Ps = 2 2  -&gt; Normal (neither bold nor faint)
+                 Ps = 2 4  -&gt; Not underlined
+                 Ps = 2 5  -&gt; Steady (not blinking)
+                 Ps = 2 7  -&gt; Positive (not inverse)
+                 Ps = 2 8  -&gt; Visible, i.e., not hidden (VT300)
+                 Ps = 3 0  -&gt; Set foreground color to Black
+                 Ps = 3 1  -&gt; Set foreground color to Red
+                 Ps = 3 2  -&gt; Set foreground color to Green
+                 Ps = 3 3  -&gt; Set foreground color to Yellow
+                 Ps = 3 4  -&gt; Set foreground color to Blue
+                 Ps = 3 5  -&gt; Set foreground color to Magenta
+                 Ps = 3 6  -&gt; Set foreground color to Cyan
+                 Ps = 3 7  -&gt; Set foreground color to White
+                 Ps = 3 9  -&gt; Set foreground color to default (original)
+                 Ps = 4 0  -&gt; Set background color to Black
+                 Ps = 4 1  -&gt; Set background color to Red
+                 Ps = 4 2  -&gt; Set background color to Green
+                 Ps = 4 3  -&gt; Set background color to Yellow
+                 Ps = 4 4  -&gt; Set background color to Blue
+                 Ps = 4 5  -&gt; Set background color to Magenta
+                 Ps = 4 6  -&gt; Set background color to Cyan
+                 Ps = 4 7  -&gt; Set background color to White
+                 Ps = 4 9  -&gt; Set background color to default (origi-
+               nal).
+
+               If 16-color support is compiled, the following apply.
+               Assume that xterm's resources are set so that the ISO
+               color codes are the first 8 of a set of 16.  Then the
+               aixterm colors are the bright versions of the ISO colors:
+                 Ps = 9 0  -&gt; Set foreground color to Black
+                 Ps = 9 1  -&gt; Set foreground color to Red
+                 Ps = 9 2  -&gt; Set foreground color to Green
+                 Ps = 9 3  -&gt; Set foreground color to Yellow
+                 Ps = 9 4  -&gt; Set foreground color to Blue
+                 Ps = 9 5  -&gt; Set foreground color to Magenta
+                 Ps = 9 6  -&gt; Set foreground color to Cyan
+                 Ps = 9 7  -&gt; Set foreground color to White
+                 Ps = 1 0 0  -&gt; Set background color to Black
+                 Ps = 1 0 1  -&gt; Set background color to Red
+                 Ps = 1 0 2  -&gt; Set background color to Green
+                 Ps = 1 0 3  -&gt; Set background color to Yellow
+                 Ps = 1 0 4  -&gt; Set background color to Blue
+                 Ps = 1 0 5  -&gt; Set background color to Magenta
+                 Ps = 1 0 6  -&gt; Set background color to Cyan
+                 Ps = 1 0 7  -&gt; Set background color to White
+
+               If xterm is compiled with the 16-color support disabled,
+               it supports the following, from rxvt:
+                 Ps = 1 0 0  -&gt; Set foreground and background color to
+               default
+
+               If 88- or 256-color support is compiled, the following
+               apply.
+                 Ps = 3 8  ; 5  ; Ps -&gt; Set foreground color to the sec-
+               ond Ps
+                 Ps = 4 8  ; 5  ; Ps -&gt; Set background color to the sec-
+               ond Ps
+
+CSI Ps n       Device Status Report (DSR)
+                 Ps = 5  -&gt; Status Report CSI 0 n  (``OK'')
+                 Ps = 6  -&gt; Report Cursor Position (CPR) [row;column] as
+               CSI r ; c R
+CSI ? Ps n     Device Status Report (DSR, DEC-specific)
+                 Ps = 6  -&gt; Report Cursor Position (CPR) [row;column] as
+               CSI ? r ; c R (assumes page is zero).
+                 Ps = 1 5  -&gt; Report Printer status as CSI ? 1 0  n
+               (ready) or CSI ? 1 1  n  (not ready)
+                 Ps = 2 5  -&gt; Report UDK status as CSI ? 2 0  n
+               (unlocked) or CSI ? 2 1  n  (locked)
+                 Ps = 2 6  -&gt; Report Keyboard status as
+               CSI ? 2 7  ;  1  ;  0  ;  0  n  (North American)
+               The last two parameters apply to VT400 &amp; up, and denote
+               keyboard ready and LK01 respectively.
+                 Ps = 5 3  -&gt; Report Locator status as
+               CSI ? 5 3  n  Locator available, if compiled-in, or
+               CSI ? 5 0  n  No Locator, if not.
+CSI ! p        Soft terminal reset (DECSTR)
+CSI Ps ; Ps &quot; p
+               Set conformance level (DECSCL) Valid values for the first
+               parameter:
+                 Ps = 6 1  -&gt; VT100
+                 Ps = 6 2  -&gt; VT200
+                 Ps = 6 3  -&gt; VT300
+               Valid values for the second parameter:
+                 Ps = 0  -&gt; 8-bit controls
+                 Ps = 1  -&gt; 7-bit controls (always set for VT100)
+                 Ps = 2  -&gt; 8-bit controls
+CSI Ps &quot; q     Select character protection attribute (DECSCA).     Valid
+               values for the parameter:
+                 Ps = 0  -&gt; DECSED and DECSEL can erase (default)
+                 Ps = 1  -&gt; DECSED and DECSEL cannot erase
+                 Ps = 2  -&gt; DECSED and DECSEL can erase
+CSI Ps ; Ps r  Set Scrolling Region [top;bottom] (default = full size of
+               window) (DECSTBM)
+CSI ? Pm r     Restore DEC Private Mode Values.  The value of Ps previ-
+               ously saved is restored.  Ps values are the same as for
+               DECSET.
+CSI Pt; Pl; Pb; Pr; Ps$ r
+               Change Attributes in Rectangular Area (DECCARA).
+                 Pt; Pl; Pb; Pr denotes the rectangle.
+                 Ps denotes the SGR attributes to change: 0, 1, 4, 5, 7
+CSI s          Save cursor (ANSI.SYS)
+CSI ? Pm s     Save DEC Private Mode Values.  Ps values are the same as
+               for DECSET.
+CSI Ps ; Ps ; Ps t
+               Window manipulation (from dtterm, as well as extensions).
+               These controls may be disabled using the allowWindowOps
+               resource.  Valid values for the first (and any additional
+               parameters) are:
+                 Ps = 1  -&gt; De-iconify window.
+                 Ps = 2  -&gt; Iconify window.
+                 Ps = 3  ; x ; y -&gt; Move window to [x, y].
+                 Ps = 4  ; height ; width -&gt; Resize the xterm window to height and width in pixels.
+                 Ps = 5  -&gt; Raise the xterm window to the front of the stacking order.
+                 Ps = 6  -&gt; Lower the xterm window to the bottom of the stacking order.
+                 Ps = 7  -&gt; Refresh the xterm window.
+                 Ps = 8  ; height ; width -&gt; Resize the text area to [height;width] in characters.
+                 Ps = 9  ; 0  -&gt; Restore maximized window.
+                 Ps = 9  ; 1  -&gt; Maximize window (i.e., resize to screen size).
+                 Ps = 1 1  -&gt; Report xterm window state.  If the xterm
+               window is open (non-iconified), it returns CSI 1 t .  If
+               the xterm window is iconified, it returns CSI 2 t .
+                 Ps = 1 3  -&gt; Report xterm window position as CSI 3 ; x; yt
+                 Ps = 1 4  -&gt; Report xterm window in pixels as CSI  4  ; height ; width t
+                 Ps = 1 8  -&gt; Report the size of the text area in characters as CSI  8        ;  height ;  width t
+                 Ps = 1 9  -&gt; Report the size of the screen in characters as CSI  9  ;  height ;  width t
+                 Ps = 2 0  -&gt; Report xterm window's icon label as OSC  L label ST
+                 Ps = 2 1  -&gt; Report xterm window's title as OSC l title ST
+                 Ps &gt;= 2 4  -&gt; Resize to Ps lines (DECSLPP)
+CSI Pt; Pl; Pb; Pr; Ps$ t
+               Reverse Attributes in Rectangular Area (DECRARA).
+                 Pt; Pl; Pb; Pr denotes the rectangle.
+                 Ps denotes the attributes to reverse. 1, 4, 5, 7
+CSI u          Save cursor (ANSI.SYS)
+CSI Pt; Pl; Pb; Pr; Pp; Pt; Pl; Pp$ v
+               Copy Rectangular Area (DECCRA)
+                 Pt; Pl; Pb; Pr denotes the rectangle.
+                 Pp denotes the source page.
+                 Pt; Pl denotes the target location.
+                 Pp denotes the target page.
+CSI Pt ; Pl ; Pb ; Pr ' w
+               Enable Filter Rectangle (DECEFR)
+               Parameters are [top;left;bottom;right].
+               Defines the coordinates of a filter rectangle and acti-
+               vates it.  Anytime the locator is detected outside of the
+               filter rectangle, an outside rectangle event is generated
+               and the rectangle is disabled.  Filter rectangles are
+               always treated as &quot;one-shot&quot; events.  Any parameters that
+               are omitted default to the current locator position.  If
+               all parameters are omitted, any locator motion will be
+               reported.  DECELR always cancels any prevous rectangle
+               definition.
+CSI Ps x       Request Terminal Parameters (DECREQTPARM)
+               if Ps is a &quot;0&quot; (default) or &quot;1&quot;, and xterm is emulating
+               VT100, the control sequence elicits a response of the
+               same form whose parameters describe the terminal:
+                 Ps -&gt; the given Ps incremented by 2.
+                 1  -&gt; no parity
+                 1  -&gt; eight bits
+                 1  2  8  -&gt; transmit 38.4k baud
+                 1  2  8  -&gt; receive 38.4k baud
+                 1  -&gt; clock multiplier
+                 0  -&gt; STP flags
+CSI Ps x       Select Attribute Change Extent (DECSACE).
+                 Ps = 0  -&gt; from start to end position, wrapped
+                 Ps = 1  -&gt; from start to end position, wrapped
+                 Ps = 2  -&gt; rectangle (exact).
+CSI Pc; Pt; Pl; Pb; Pr$ x
+               Fill Rectangular Area (DECFRA).
+                 Pc is the character to use.
+                 Pt; Pl; Pb; Pr denotes the rectangle.
+CSI Ps ; Pu ' z
+               Enable Locator Reporting (DECELR)
+               Valid values for the first parameter:
+                 Ps = 0  -&gt; Locator disabled (default)
+                 Ps = 1  -&gt; Locator enabled
+                 Ps = 2  -&gt; Locator enabled for one report, then dis-
+               abled
+               The second parameter specifies the coordinate unit for
+               locator reports.
+               Valid values for the second parameter:
+                 Pu = 0  or omitted -&gt; default to character cells
+                 Pu = 1  -&gt; device physical pixels
+                 Pu = 2  -&gt; character cells
+CSI Pt; Pl; Pb; Pr$ z
+               Erase Rectangular Area (DECERA).
+                 Pt; Pl; Pb; Pr denotes the rectangle.
+CSI Pm ' {     Select Locator Events (DECSLE)
+               Valid values for the first (and any additional parame-
+               ters) are:
+                 Ps = 0  -&gt; only respond to explicit host requests
+               (DECRQLP)
+                            (default) also cancels any filter rectangle
+                 Ps = 1  -&gt; report button down transitions
+                 Ps = 2  -&gt; do not report button down transitions
+                 Ps = 3  -&gt; report button up transitions
+                 Ps = 4  -&gt; do not report button up transitions
+CSI Pt; Pl; Pb; Pr$ {
+               Selective Erase Rectangular Area (DECSERA).
+                 Pt; Pl; Pb; Pr denotes the rectangle.
+CSI Ps ' |     Request Locator Position (DECRQLP)
+               Valid values for the parameter are:
+                 Ps = 0 , 1 or omitted -&gt; transmit a single DECLRP loca-
+               tor report
+
+               If Locator Reporting has been enabled by a DECELR, xterm
+               will respond with a DECLRP Locator Report.  This report
+               is also generated on button up and down events if they
+               have been enabled with a DECSLE, or when the locator is
+               detected outside of a filter rectangle, if filter rectan-
+               gles have been enabled with a DECEFR.
+
+                 -&gt; CSI Pe ; Pb ; Pr ; Pc ; Pp &amp;  w
+
+               Parameters are [event;button;row;column;page].
+               Valid values for the event:
+                 Pe = 0  -&gt; locator unavailable - no other parameters
+               sent
+                 Pe = 1  -&gt; request - xterm received a DECRQLP
+                 Pe = 2  -&gt; left button down
+                 Pe = 3  -&gt; left button up
+                 Pe = 4  -&gt; middle button down
+                 Pe = 5  -&gt; middle button up
+                 Pe = 6  -&gt; right button down
+                 Pe = 7  -&gt; right button up
+                 Pe = 8  -&gt; M4 button down
+                 Pe = 9  -&gt; M4 button up
+                 Pe = 1 0  -&gt; locator outside filter rectangle
+               ``button'' parameter is a bitmask indicating which but-
+               tons are pressed:
+                 Pb = 0  -&gt; no buttons down
+                 Pb &amp; 1      -&gt; right button down
+                 Pb &amp; 2      -&gt; middle button down
+                 Pb &amp; 4      -&gt; left button down
+                 Pb &amp; 8      -&gt; M4 button down
+               ``row'' and ``column'' parameters are the coordinates of
+               the locator position in the xterm window, encoded as
+               ASCII decimal.
+               The ``page'' parameter is not used by xterm, and will be
+               omitted.
+
+Operating System Controls
+OSC Ps ; Pt ST
+OSC Ps ; Pt BEL
+               Set Text Parameters.  For colors and font, if Pt is a
+               &quot;?&quot;, the control sequence elicits a response which con-
+               sists of the control sequence which would set the corre-
+               sponding value.  The dtterm control sequences allow you
+               to determine the icon name and window title.
+                 Ps = 0  -&gt; Change Icon Name and Window Title to Pt
+                 Ps = 1  -&gt; Change Icon Name to Pt
+                 Ps = 2  -&gt; Change Window Title to Pt
+                 Ps = 3  -&gt; Set X property on top-level window. Pt
+               should be in the form &quot;prop=value&quot;, or just &quot;prop&quot; to
+               delete the property
+                 Ps = 4  ; c ; spec -&gt; Change Color Number c to the
+               color specified by spec, i.e., a name or RGB specifica-
+               tion as per XParseColor.  Any number of c name pairs may
+               be given.  The color numbers correspond to the ANSI col-
+               ors 0-7, their bright versions 8-15, and if supported,
+               the remainder of the 88-color or 256-color table.
+
+               If a &quot;?&quot; is given rather than a name or RGB specifica-
+               tion, xterm replies with a control sequence of the same
+               form which can be used to set the corresponding color.
+               Because more than one pair of color number and specifica-
+               tion can be given in one control sequence, xterm can make
+               more than one reply.
+
+               The 8 colors which may be set using 1 0  through 1 7  are
+               denoted dynamic colors, since the corresponding control
+               sequences were the first means for setting xterm's colors
+               dynamically, i.e., after it was started.  They are not
+               the same as the ANSI colors.  One or more parameters is
+               expected for Pt.  Each successive parameter changes the
+               next color in the list.  The value of Ps tells the start-
+               ing point in the list.  The colors are specified by name
+               or RGB specification as per XParseColor.
+
+               If a &quot;?&quot; is given rather than a name or RGB specifica-
+               tion, xterm replies with a control sequence of the same
+               form which can be used to set the corresponding dynamic
+               color.  Because more than one pair of color number and
+               specification can be given in one control sequence, xterm
+               can make more than one reply.
+
+                 Ps = 1 0  -&gt; Change VT100 text foreground color to Pt
+                 Ps = 1 1  -&gt; Change VT100 text background color to Pt
+                 Ps = 1 2  -&gt; Change text cursor color to Pt
+                 Ps = 1 3  -&gt; Change mouse foreground color to Pt
+                 Ps = 1 4  -&gt; Change mouse background color to Pt
+                 Ps = 1 5  -&gt; Change Tektronix foreground color to Pt
+                 Ps = 1 6  -&gt; Change Tektronix background color to Pt
+                 Ps = 1 7  -&gt; Change highlight color to Pt
+                 Ps = 1 8  -&gt; Change Tektronix cursor color to Pt
+
+                 Ps = 4 6  -&gt; Change Log File to Pt (normally disabled
+               by a compile-time option)
+
+                 Ps = 5 0  -&gt; Set Font to Pt If Pt begins with a &quot;#&quot;,
+               index in the font menu, relative (if the next character
+               is a plus or minus sign) or absolute.  A number is
+               expected but not required after the sign (the default is
+               the current entry for relative, zero for absolute index-
+               ing).
+
+                 Ps = 5 1  (reserved for Emacs shell)
+
+                 Ps = 5 2  -&gt; Manipulate Selection Data.  These controls
+               may be disabled using the allowWindowOps resource.  The
+               parameter Pt is parsed as
+                    Pc; Pd
+               The first, Pc, may contain any character from the set c
+               p  s  0  1  2  3  4  5  6  7 .  It is used to construct a
+               list of selection parameters for clipboard, primary,
+               select, or cut buffers 0 through 8 respectively, in the
+               order given.  If the parameter is empty, xterm uses s 0 ,
+               to specify the configurable primary/clipboard selection
+               and cut buffer 0.
+               The second parameter, Pd, gives the selection data.  Nor-
+               mally this is a string encoded in base64.  The data
+               becomes the new selection, which is then available for
+               pasting by other applications.
+               If the second parameter is a ? , xterm replies to the
+               host with the selection data encoded using the same pro-
+               tocol.
+
+Privacy Message
+PM Pt ST       xterm implements no PM  functions; Pt is ignored.  Pt
+               need not be printable characters.
+
+PC-Style Function Keys
+If xterm does minimal translation of the function keys, it usually does
+this with a PC-style keyboard, so PC-style function keys result.  Sun
+keyboards are similar to PC keyboards.  Both have cursor and scrolling
+operations printed on the keypad, which duplicate the smaller cursor and
+scrolling keypads.
+X does not predefine NumLock (used for VT220 keyboards) or Alt (used as
+an extension for the Sun/PC keyboards) as modifiers.  These keys are
+recognized as modifiers when enabled by the numLock resource, or by the
+DECSET 1 0 3 5  control sequence.
+The cursor keys transmit the following escape sequences depending on the
+mode specified via the DECCKM escape sequence.
+
+                      Key         Normal    Application
+                  --------------------------------------
+                  Cursor Up      CSI A      SS3 A
+                  Cursor Down    CSI B      SS3 B
+                  Cursor Right   CSI C      SS3 C
+                  Cursor Left    CSI D      SS3 D
+                  --------------------------------------
+
+The home- and end-keys (unlike PageUp and other keys also on the 6-key
+editing keypad) are considered &quot;cursor keys&quot; by xterm.        Their mode is
+also controlled by the DECCKM escape sequence:
+
+                      Key       Normal    Application
+                    ----------------------------------
+                    Home       CSI H      SS3 H
+                    End        CSI F      SS3 F
+                    ----------------------------------
+
+The application keypad transmits the following escape sequences depend-
+ing on the mode specified via the DECPNM and DECPAM escape sequences.
+Use the NumLock key to override the application mode.
+Not all keys are present on the Sun/PC keypad (e.g., PF1, Tab), but are
+supported by the program.
+
+           Key         Numeric    Application   Terminfo   Termcap
+      --------------------------------------------------------------
+      Space            SP         SS3 SP        -          -
+      Tab              TAB        SS3 I         -          -
+      Enter            CR         SS3 M         kent       @8
+      PF1              SS3 P      SS3 P         kf1        k1
+      PF2              SS3 Q      SS3 Q         kf2        k2
+      PF3              SS3 R      SS3 R         kf3        k3
+      PF4              SS3 S      SS3 S         kf4        k4
+      * (multiply)     *          SS3 j         -          -
+      + (add)          +          SS3 k         -          -
+      , (comma)        ,          SS3 l         -          -
+      - (minus)        -          SS3 m         -          -
+      . (Delete)       .          CSI 3 ~       -          -
+      / (divide)       /          SS3 o         -          -
+      0 (Insert)       0          CSI 2 ~       -          -
+      1 (End)          1          SS3 F         kc1        K4
+      2 (DownArrow)    2          CSI B         -          -
+      3 (PageDown)     3          CSI 6 ~       kc3        K5
+      4 (LeftArrow)    4          CSI D         -          -
+      5 (Begin)        5          CSI E         kb2        K2
+      6 (RightArrow)   6          CSI C         -          -
+      7 (Home)         7          SS3 H         ka1        K1
+      8 (UpArrow)      8          CSI A         -          -
+      9 (PageUp)       9          CSI 5 ~       ka3        K3
+      = (equal)        =          SS3 X         -          -
+      --------------------------------------------------------------
+
+They also provide 12 function keys, as well as a few other special-pur-
+pose keys.
+
+                         Key      Escape Sequence
+                       ---------------------------
+                       F1         SS3 P
+                       F2         SS3 Q
+                       F3         SS3 R
+                       F4         SS3 S
+                       F5         CSI 1 5 ~
+                       F6         CSI 1 7 ~
+                       F7         CSI 1 8 ~
+                       F8         CSI 1 9 ~
+                       F9         CSI 2 0 ~
+                       F10        CSI 2 1 ~
+                       F11        CSI 2 3 ~
+                       F12        CSI 2 4 ~
+                       ---------------------------
+
+Older versions of xterm implement different escape sequences for F1
+through F4.  These can be activated by setting the oldXtermFKeys
+resource.  However, since they do not correspond to any hardware termi-
+nal, they have been deprecated.  (The DEC VT220 reserves F1 through F5
+for local functions such as Setup).
+
+                         Key      Escape Sequence
+                       ---------------------------
+                       F1         CSI 1 1 ~
+                       F2         CSI 1 2 ~
+                       F3         CSI 1 3 ~
+                       F4         CSI 1 4 ~
+                       ---------------------------
+
+In normal mode, i.e., a Sun/PC keyboard when the sunKeyboard resource is
+false, xterm recognizes function key modifiers which are parameters
+appended before the final character of the control sequence.
+
+                      Code     Modifiers
+                    ---------------------------------
+                       2       Shift
+                       3       Alt
+                       4       Shift + Alt
+                       5       Control
+                       6       Shift + Control
+                       7       Alt + Control
+                       8       Shift + Alt + Control
+                    ---------------------------------
+
+For example, shift-F5 would be sent as CSI 1 5 ; 2 ~
+
+If the alwaysUseMods resource is set, the Meta modifier also is recog-
+nized, making parameters 9 through 16.
+
+VT220-Style Function Keys
+However, xterm is most useful as a DEC VT102 or VT220 emulator.  Set the
+sunKeyboard resource to true to force a Sun/PC keyboard to act like a
+VT220 keyboard.
+The VT102/VT220 application keypad transmits unique escape sequences in
+application mode, which are distinct from the cursor and scrolling key-
+pad:
+
+                      Key        Numeric    Application
+                  --------------------------------------
+                  Space          SP         SS3 SP
+                  Tab            TAB        SS3 I
+                  Enter          CR         SS3 M
+                  PF1            SS3 P      SS3 P
+                  PF2            SS3 Q      SS3 Q
+                  PF3            SS3 R      SS3 R
+                  PF4            SS3 S      SS3 S
+                  * (multiply)   *          SS3 j
+                  + (add)        +          SS3 k
+                  , (comma)      ,          SS3 l
+                  - (minus)      -          SS3 m
+                  . (period)     .          SS3 n
+                  / (divide)     /          SS3 o
+                  0              0          SS3 p
+                  1              1          SS3 q
+                  2              2          SS3 r
+                  3              3          SS3 s
+                  4              4          SS3 t
+                  5              5          SS3 u
+                  6              6          SS3 v
+                  7              7          SS3 w
+                  8              8          SS3 x
+                  9              9          SS3 y
+                  = (equal)      =          SS3 X
+                  --------------------------------------
+
+The VT220 provides a 6-key editing keypad, which is analogous to that on
+the PC keyboard.  It is not affected by DECCKM or DECPNM/DECPAM:
+
+                     Key       Normal    Application
+                   ----------------------------------
+                   Insert     CSI 2 ~    CSI 2 ~
+                   Delete     CSI 3 ~    CSI 3 ~
+                   Home       CSI 1 ~    CSI 1 ~
+                   End        CSI 4 ~    CSI 4 ~
+                   PageUp     CSI 5 ~    CSI 5 ~
+                   PageDown   CSI 6 ~    CSI 6 ~
+                   ----------------------------------
+
+The VT220 provides 8 additional function keys.  With a Sun/PC keyboard,
+access these keys by Control/F1 for F13, etc.
+
+                         Key      Escape Sequence
+                       ---------------------------
+                       F13        CSI 2 5 ~
+                       F14        CSI 2 6 ~
+                       F15        CSI 2 8 ~
+                       F16        CSI 2 9 ~
+                       F17        CSI 3 1 ~
+                       F18        CSI 3 2 ~
+                       F19        CSI 3 3 ~
+                       F20        CSI 3 4 ~
+                       ---------------------------
+
+
+VT52-Style Function Keys
+A VT52 does not have function keys, but it does have a numeric keypad
+and cursor keys.  They differ from the other emulations by the prefix.
+Also, the cursor keys do not change:
+
+                       Key        Normal/Application
+                   ----------------------------------
+                   Cursor Up      ESC A
+                   Cursor Down    ESC B
+                   Cursor Right   ESC C
+                   Cursor Left    ESC D
+                   ----------------------------------
+
+The keypad is similar:
+
+                      Key        Numeric    Application
+                  --------------------------------------
+                  Space          SP         ESC ? SP
+                  Tab            TAB        ESC ? I
+                  Enter          CR         ESC ? M
+                  PF1            ESC P      ESC P
+                  PF2            ESC Q      ESC Q
+                  PF3            ESC R      ESC R
+                  PF4            ESC S      ESC S
+                  * (multiply)   *          ESC ? j
+                  + (add)        +          ESC ? k
+                  , (comma)      ,          ESC ? l
+                  - (minus)      -          ESC ? m
+                  . (period)     .          ESC ? n
+                  / (divide)     /          ESC ? o
+                  0              0          ESC ? p
+                  1              1          ESC ? q
+                  2              2          ESC ? r
+                  3              3          ESC ? s
+                  4              4          ESC ? t
+                  5              5          ESC ? u
+                  6              6          ESC ? v
+                  7              7          ESC ? w
+                  8              8          ESC ? x
+                  9              9          ESC ? y
+                  = (equal)      =          ESC ? X
+                  --------------------------------------
+
+
+Sun-Style Function Keys
+The xterm program provides support for Sun keyboards more directly, by a
+menu toggle that causes it to send Sun-style function key codes rather
+than VT220.  Note, however, that the sun and VT100 emulations are not
+really compatible.  For example, their wrap-margin behavior differs.
+Only function keys are altered; keypad and cursor keys are the same.
+The emulation responds identically.  See the xterm-sun terminfo entry
+for details.
+
+HP-Style Function Keys
+Similarly, xterm can be compiled to support HP keyboards.  See the
+xterm-hp terminfo entry for details.
+
+The Alternate Screen Buffer
+Xterm maintains two screen buffers.  The normal screen buffer allows you
+to scroll back to view saved lines of output up to the maximum set by
+the saveLines resource.  The alternate screen buffer is exactly as large
+as the display, contains no additional saved lines.  When the alternate
+screen buffer is active, you cannot scroll back to view saved lines.
+Xterm provides control sequences and menu entries for switching between
+the two.
+Most full-screen applications use terminfo or termcap to obtain strings
+used to start/stop full-screen mode, i.e., smcup and rmcup for terminfo,
+or the corresponding ti and te for termcap.  The titeInhibit resource
+removes the ti and te strings from the TERMCAP string which is set in
+the environment for some platforms.  That is not done when xterm is
+built with terminfo libraries because terminfo does not provide the
+whole text of the termcap data in one piece.  It would not work for ter-
+minfo anyway, since terminfo data is not passed in environment vari-
+ables; setting an environment variable in this manner would have no
+effect on the application's ability to switch between normal and alter-
+nate screen buffers.  Instead, the newer private mode controls (such as
+1 0 4 9 ) for switching between normal and alternate screen buffers sim-
+ply disable the switching.  They add other features such as clearing the
+display for the same reason: to make the details of switching indepen-
+dent of the application that requests the switch.
+
+Bracketed Paste Mode
+When bracketed paste mode is set, pasted text is bracketed with control
+sequences so that the program can differentiate pasted text from typed-
+in text.  When bracketed paste mode is set, the program will receive:
+ESC [ 200 ~, followed by the pasted text, followed by ESC [ 201 ~.
+
+Mouse Tracking
+The VT widget can be set to send the mouse position and other informa-
+tion on button presses.  These modes are typically used by editors and
+other full-screen applications that want to make use of the mouse.
+
+There are six mutually exclusive modes.  One is DEC Locator mode,
+enabled by the DECELR CSI Ps ; Ps  'z control sequence, and is not
+described here (control sequences are summarized above).  The remaining
+five modes are each enabled (or disabled) by a different parameter in
+DECSET CSI ? Pm h or DECRST CSI ? Pm l control sequence.
+
+Manifest constants for the parameter values are defined in xcharmouse.h
+as follows:
+
+                #define SET_X10_MOUSE               9
+                #define SET_VT200_MOUSE             1000
+                #define SET_VT200_HIGHLIGHT_MOUSE   1001
+                #define SET_BTN_EVENT_MOUSE         1002
+                #define SET_ANY_EVENT_MOUSE         1003
+
+The motion reporting modes are strictly xterm extensions, and are not
+part of any standard, though they are analogous to the DEC VT200 DECELR
+locator reports.
+
+Parameters (such as pointer position and button number) for all mouse
+tracking escape sequences generated by xterm encode numeric parameters
+in a single character as value+32.  For example, !  specifies the value
+1.  The upper left character position on the terminal is denoted as 1,1.
+
+X10 compatibility mode sends an escape sequence only on button press,
+encoding the location and the mouse button pressed.  It is enabled by
+specifying parameter 9 to DECSET.  On button press, xterm sends CSI M
+CbCxCy (6 characters).  Cb is button-1.  Cx and Cy are the x and y coor-
+dinates of the mouse when the button was pressed.
+
+Normal tracking mode sends an escape sequence on both button press and
+release.  Modifier key (shift, ctrl, meta) information is also sent.  It
+is enabled by specifying parameter 1000 to DECSET.  On button press or
+release, xterm sends CSI M CbCxCy.  The low two bits of Cb encode button
+information: 0=MB1 pressed, 1=MB2 pressed, 2=MB3 pressed, 3=release.
+The next three bits encode the modifiers which were down when the button
+was pressed and are added together:  4=Shift, 8=Meta, 16=Control.  Note
+however that the shift and control bits are normally unavailable because
+xterm uses the control modifier with mouse for popup menus, and the
+shift modifier is used in the default translations for button events.
+The Meta modifier recognized by xterm is the mod1 mask, and is not nec-
+essarily the &quot;Meta&quot; key (see xmodmap).        Cx and Cy are the x and y coor-
+dinates of the mouse event, encoded as in X10 mode.
+
+Wheel mice may return buttons 4 and 5.  Those buttons are represented by
+the same event codes as buttons 1 and 2 respectively, except that 64 is
+added to the event code.  Release events for the wheel buttons are not
+reported.
+
+Mouse highlight tracking notifies a program of a button press, receives
+a range of lines from the program, highlights the region covered by the
+mouse within that range until button release, and then sends the program
+the release coordinates.  It is enabled by specifying parameter 1001 to
+DECSET.  Highlighting is performed only for button 1, though other but-
+ton events can be received.  Warning: use of this mode requires a coop-
+erating program or it will hang xterm.  On button press, the same infor-
+mation as for normal tracking is generated; xterm then waits for the
+program to send mouse tracking information.  All X events are ignored
+until the proper escape sequence is received from the pty: CSI Ps ; Ps ;
+Ps ; Ps ; Ps T .  The parameters are func, startx, starty, firstrow, and
+lastrow.  func is non-zero to initiate highlight tracking and zero to
+abort.  startx and starty give the starting x and y location for the
+highlighted region.  The ending location tracks the mouse, but will
+never be above row firstrow and will always be above row lastrow.  (The
+top of the screen is row 1.)  When the button is released, xterm reports
+the ending position one of two ways: if the start and end coordinates
+are valid text locations: CSI t CxCy.  If either coordinate is past the
+end of the line: CSI T CxCyCxCyCxCy.  The parameters are startx, starty,
+endx, endy, mousex, and mousey.  startx, starty, endx, and endy give the
+starting and ending character positions of the region.  mousex and
+mousey give the location of the mouse at button up, which may not be
+over a character.
+
+Button-event tracking is essentially the same as normal tracking, but
+xterm also reports button-motion events.  Motion events are reported
+only if the mouse pointer has moved to a different character cell.  It
+is enabled by specifying parameter 1002 to DECSET.  On button press or
+release, xterm sends the same codes used by normal tracking mode.  On
+button-motion events, xterm adds 32 to the event code (the third charac-
+ter, Cb).  The other bits of the event code specify button and modifier
+keys as in normal mode.  For example, motion into cell x,y with button 1
+down is reported as CSI M @ CxCy.  ( @  = 32 + 0 (button 1) + 32 (motion
+indicator) ).  Similarly, motion with button 3 down is reported as CSI M
+B CxCy.  ( B  = 32 + 2 (button 3) + 32 (motion indicator) ).
+
+Any-event mode is the same as button-event mode, except that all motion
+events are reported, even if no mouse button is down.  It is enabled by
+specifying 1003 to DECSET.
+
+Tektronix 4014 Mode
+Most of these sequences are standard Tektronix 4014 control sequences.
+Graph mode supports the 12-bit addressing of the Tektronix 4014.  The
+major features missing are the write-through and defocused modes.  This
+document does not describe the commands used in the various Tektronix
+plotting modes but does describe the commands to switch modes.
+
+BEL            Bell (Ctrl-G)
+BS             Backspace (Ctrl-H)
+TAB            Horizontal Tab (Ctrl-I)
+LF             Line Feed or New Line (Ctrl-J)
+VT             Cursor up (Ctrl-K)
+FF             Form Feed or New Page (Ctrl-L)
+CR             Carriage Return (Ctrl-M)
+ESC ETX        Switch to VT100 Mode (ESC Ctrl-C)
+ESC ENQ        Return Terminal Status (ESC Ctrl-E)
+ESC FF         PAGE (Clear Screen) (ESC Ctrl-L)
+ESC SO         Begin 4015 APL mode (ignored by xterm) (ESC Ctrl-N)
+ESC SI         End 4015 APL mode (ignored by xterm) (ESC Ctrl-O)
+ESC ETB        COPY (Save Tektronix Codes to file COPYyyyy-mm-
+               dd.hh:mm:ss) (ESC Ctrl-W)
+ESC CAN        Bypass Condition (ESC Ctrl-X)
+ESC SUB        GIN mode (ESC Ctrl-Z)
+ESC FS         Special Point Plot Mode (ESC Ctrl-\)
+ESC 8          Select Large Character Set
+ESC 9          Select #2 Character Set
+ESC :          Select #3 Character Set
+ESC ;          Select Small Character Set
+OSC Ps ; Pt BEL
+               Set Text Parameters of VT window
+                 Ps = 0  -&gt; Change Icon Name and Window Title to Pt
+                 Ps = 1  -&gt; Change Icon Name to Pt
+                 Ps = 2  -&gt; Change Window Title to Pt
+                 Ps = 4 6  -&gt; Change Log File to Pt (normally disabled
+               by a compile-time option)
+ESC `          Normal Z Axis and Normal (solid) Vectors
+ESC a          Normal Z Axis and Dotted Line Vectors
+ESC b          Normal Z Axis and Dot-Dashed Vectors
+ESC c          Normal Z Axis and Short-Dashed Vectors
+ESC d          Normal Z Axis and Long-Dashed Vectors
+ESC h          Defocused Z Axis and Normal (solid) Vectors
+ESC i          Defocused Z Axis and Dotted Line Vectors
+ESC j          Defocused Z Axis and Dot-Dashed Vectors
+ESC k          Defocused Z Axis and Short-Dashed Vectors
+ESC l          Defocused Z Axis and Long-Dashed Vectors
+ESC p          Write-Thru Mode and Normal (solid) Vectors
+ESC q          Write-Thru Mode and Dotted Line Vectors
+ESC r          Write-Thru Mode and Dot-Dashed Vectors
+ESC s          Write-Thru Mode and Short-Dashed Vectors
+ESC t          Write-Thru Mode and Long-Dashed Vectors
+FS             Point Plot Mode (Ctrl-\)
+GS             Graph Mode (Ctrl-])
+RS             Incremental Plot Mode (Ctrl-^)
+US             Alpha Mode (Ctrl-_)
+
+VT52 Mode
+Parameters for cursor movement are at the end of the ESC Y  escape
+sequence.  Each ordinate is encoded in a single character as value+32.
+For example, !  is 1.  The screen coordinate system is 0-based.
+
+ESC A          Cursor up.
+ESC B          Cursor down.
+ESC C          Cursor right.
+ESC D          Cursor left.
+ESC F          Enter graphics mode.
+ESC G          Exit graphics mode.
+ESC H          Move the cursor to the home position.
+ESC I          Reverse line feed.
+ESC J          Erase from the cursor to the end of the screen.
+ESC K          Erase from the cursor to the end of the line.
+ESC Y Ps Ps    Move the cursor to given row and column.
+ESC Z          Identify
+                 -&gt; ESC       /  Z  (``I am a VT52.'')
+ESC =          Enter alternate keypad mode.
+ESC &gt;               Exit alternate keypad mode.
+ESC &lt;               Exit VT52 mode (Enter VT100 mode).
+
+</xmp>
+<hr>
+</html>

@@ -12,7 +12,7 @@ LIBRARY=$(INSTALL)/lib$(LIBNAME).a
 # 
 LIBS := -Llib -lM_draw -lX11 
 CC := cc
-CFLAGS := -O
+CFLAGS := -O -I../include
 FC := gfortran
 FFLAGS := -O -J $(INSTALL)
 AR=ar
@@ -23,25 +23,24 @@ LDFLAGS := -I $(INSTALL)
 # You can either ignore it, or disable the "may be used uninitialized"
 # warnings with -Wno-maybe-uninitialized or compile with optimizations
 # (-O1 and more).
-gfortran: F90=gfortran 
-gfortran: F90FLAGS := -g -O -Wall -std=f2018 -Wextra -Wno-maybe-uninitialized -Wno-uninitialized -J $(INSTALL)
+
+gfortran: FC=gfortran 
+gfortran: FFLAGS := -g -O -Wall -std=f2018 -Wextra -Wno-maybe-uninitialized -Wno-uninitialized -J $(INSTALL)
 gfortran: all
-	@echo built with $(F90)
+	@echo built with $(FC)
 
-nvfortran: F90=nvfortran
-nvfortran: F90FLAGS := -Minform=inform -Mbackslash -traceback -module $(INSTALL)
+nvfortran: FC=nvfortran
+nvfortran: FFLAGS := -Minform=inform -Mbackslash -traceback -module $(INSTALL)
+nvfortran: CC := nvc
 nvfortran: all
-	@echo built with $(F90)
+	@echo built with $(FC)
 
-ifort: F90=ifort
-ifort: F90FLAGS := -warn all -traceback -module $(INSTALL)
+ifort: FC=ifort
+ifort: FFLAGS := -warn all -traceback -module $(INSTALL)
+ifort: CC := icc
 ifort: all
-	@echo built with $(F90)
+	@echo built with $(FC)
 
-nagfor: F90=nagfor
-nagfor: F90FLAGS := -C all
-nagfor: all
-	@echo built with $(F90)
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
 PROGFILES = $(wildcard ../example/*.f90) $(wildcard ../test/*.f90)
@@ -50,9 +49,9 @@ CPROGFILES = ../app/MAKE_HERSHEY/h2v.c
 PROG = ${PROGFILES:.f90=}
 CPROG = ${CPROGFILES:.c=}
 
-SRCS = $(wildcard ./*.f90) $(wildcard ./*.c ) $(wildcard ./*.h )
+SRCS = $(wildcard ./*.f90) $(wildcard */*.c ) $(wildcard ./*.h )
 # create a list of corresponding object files
-COBJS_FILES = $(wildcard ./*.c )
+COBJS_FILES = $(wildcard */*.c )
 FOBJS_FILES = $(wildcard ./*.f90 )
 OBJS = $(patsubst %.c,%.o,$(COBJS_FILES)) $(patsubst %.f90,%.o,$(FOBJS_FILES))
 LIBOBJS = $(patsubst %.f90,$(LIBRARY)(%.o),$(SRCS)) $(patsubst %.c,$(LIBRARY)(%.o),$(SRCS))
@@ -82,7 +81,7 @@ $(PROG): $(LIBRARY)
 #$(PROG): $(OBJS)
 #>   -$(FC) $(LDFLAGS) $@.f90 -o $@ $(OBJS) $(LIBS)||echo "ouch: $@.f90 "
 
-$(OBJS): draw.h
+$(OBJS): ../include/draw.h
 
 # Need rule for M_draw.mod
 

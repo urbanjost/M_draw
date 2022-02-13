@@ -130,7 +130,7 @@ library, which it is very amenable to.
 
 There are a number of programs already using this low-level library
 to generate higher-level graphics:
-                 ![sample](images/M_slices.3.gif)
+                 ![sample](images/M_slices.gif)
 
 ---
 

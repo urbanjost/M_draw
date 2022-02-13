@@ -1,0 +1,328 @@
+
+/* this code is licensed as public domain */
+#ident "@(#)M_DRAW:driver/PC.c - M_DRAW driver for PC in CygWin"
+#ident "@(#)M_DRAW:author - John S. Urban"
+#ident "@(#)M_DRAW:version - 1.0, Jan 2010"
+/*
+    Make calls to a basic graphics library to isolate M_DRAW from
+    PC-specific routines; so PC users do not have to install CygWin
+    and X11. Needed because having stability problems with MSW Vista
+    and CygWin X11 Windows and need to make something that will work
+    with partial install of CygWin.  First draft; needs better hardware
+    character support; backingstore; how to behave when window is resized;
+    works from CYGWIN reasonably well.
+
+    Sun Jan 17 20:55:31 EST 2010
+*/
+
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+#include <g2.h>
+#include <g2_win32.h>
+
+#include "draw.h"
+
+#define MIN(x,y)        ((x) < (y) ? (x) : (y))
+#define CMAPSIZE        256
+
+static  int             device;
+static  unsigned long   carray[CMAPSIZE];
+
+static  unsigned long   pen_number;
+/******************************************************************************/
+/* PROTOTYPES */
+static int PC_mapcolor(int i, int r, int g, int b);
+static int PC_color(int ind);
+static int PC_clear(void);
+static int PC_sync(void);
+static int PC_checkkey(void);
+/******************************************************************************/
+/* initialises PC display.  */
+int PC_init(void) {
+   char *varname;
+   int prefx, prefy, prefxs, prefys;
+
+   draw_getprefposandsize(&prefx, &prefy, &prefxs, &prefys);
+   if (prefxs == -1 ) {
+      prefxs=640;
+      prefys=400;
+   }
+   vdevice.sizeSy = prefys; /* size in resolution rasters */
+   vdevice.sizeSx = prefxs; /* size in resolution rasters */
+   vdevice.sizeX = vdevice.sizeY = MIN(prefys, prefxs ); /* current viewport to use */
+
+   varname=getenv("PLTDEVICE");
+   if(varname==(char *)NULL) {
+      varname="UNDEFINED";
+   }
+   varname="HOLDOFF";
+   if (!strcmp(varname,"NOCLOSE")) {
+        fprintf(stderr,"PC: returning to PC window\n");
+   }else{
+     device=g2_open_win32(prefxs, prefys, "M_DRAW",0);
+   }
+
+   g2_set_auto_flush(device,0); /* 1-on 0-off */
+   /* Set our standard colors...  */
+   vdevice.depth = 8;
+   g2_clear_palette(device);
+   /* Color, try to get our colors close to what's in the default colormap.  */
+   PC_mapcolor(  7,  255,  255,  255);
+   PC_mapcolor(  1,  255,    0,    0);
+   PC_mapcolor(  2,    0,  255,    0);
+   PC_mapcolor(  3,  255,  255,    0);
+   PC_mapcolor(  4,    0,    0,  255);
+   PC_mapcolor(  5,  255,    0,  255);
+   PC_mapcolor(  6,    0,  255,  255);
+   PC_mapcolor(  0,    0,    0,    0);
+   PC_mapcolor(  8,  155,    0,    0);
+   PC_mapcolor(  9,    0,  155,    0);
+   PC_mapcolor( 10,  155,  255,  255);
+   PC_mapcolor( 11,  155,  155,    0);
+   PC_mapcolor( 12,    0,    0,  155);
+   PC_mapcolor( 13,  155,    0,  155);
+   PC_mapcolor( 14,    0,  155,  155);
+   PC_mapcolor( 15,  100,  100,  100);
+   g2_set_background(device, carray[7]);
+   g2_clear(device);
+   if (vdevice.sync){
+       g2_flush(device);
+   }
+   return(1);
+}
+/******************************************************************************/
+/* PC_exit   cleans up before closing the window.  */
+int PC_exit(void) {
+   char            *varname;
+   varname=getenv("PLTDEVICE");
+   if(varname==(char *)NULL) {
+            varname="UNDEFINED";
+   }
+   varname="HOLDOFF";
+   if (!strcmp(varname,"NOCLOSE")) {
+      fprintf(stderr,"PC: planning on returning to PC window\n");
+      return(1);
+   }
+   if (vdevice.sync){
+      g2_flush(device);
+   }
+   g2_close(device);
+   return(1);
+}
+/******************************************************************************/
+/* draws a line from the current graphics position to (x, y).
+ *
+ * Note: (0, 0) is defined as the top left of the window (easy to forget).
+ */
+int PC_draw(int x, int y) {
+   g2_line(device,vdevice.cpVx,vdevice.cpVy,x,y);
+    if (vdevice.sync){
+       g2_flush(device);
+    }
+    return(UNUSED);
+}
+/******************************************************************************/
+/* grab a character from the keyboard - blocks until one is there.  */
+int PC_getkey(void) {
+   unsigned int button ;
+   double x, y ;
+   do{ /* potential infinite loop and heavy CPU load */
+        g2_query_pointer(device, &x, &y,&button);
+     } while (button == 0);
+   return((int)button);
+}
+/******************************************************************************/
+/* Check if there has been a keyboard key pressed and return it if there is.  */
+int PC_checkkey(void) {
+   unsigned int button ;
+   double x, y ;
+   g2_query_pointer(device, &x, &y,&button);
+   return((int)button);
+}
+/******************************************************************************/
+/*
+ * return the window location of the cursor, plus which mouse button,
+ * if any, has been pressed.
+ */
+int PC_locator(int *wx, int *wy) {
+   double x, y ;
+   unsigned int button ;
+   g2_query_pointer(device, &x, &y,&button);
+   *wx = (int)x;
+   *wy = (int)y;
+   switch(button) {
+   case 0x0000:
+   break;
+   case 0x0100:
+      button=1;
+   break;
+   case 0x0400:
+      button=3;
+   break;
+   case 0x0200:
+   case 0x0500:
+      button=2;
+   break;
+   default:
+      button=2;
+      }
+   return((int)button);
+}
+/******************************************************************************/
+/* Clear the screen to current pen_number */
+int PC_clear(void) {
+   g2_set_background(device, carray[pen_number]);
+   g2_clear(device);
+   if (vdevice.sync){
+      g2_flush(device);
+   }
+   return(UNUSED);
+}
+/******************************************************************************/
+/*
+ *  set the current drawing color index if ind >= 0.
+ *  set the line width in raster units if ind  <  0.
+ */
+int PC_color(int ind) {
+   double line_width=0; /* 0 would be fast line of width 1 */
+   if ( ind < 0 ) {
+      line_width=abs(ind);
+      g2_set_line_width(device,line_width);
+   } else {
+      pen_number = ind;
+      g2_pen(device,carray[ind]);
+   }
+   return(UNUSED);
+}
+/******************************************************************************/
+/* set the line width in raster units if ind < 0. input units in 1/10000 of X size */
+int PC_setlw(int ind) {
+    double line_width; 
+    ind=(float)vdevice.sizeX/10000.0*ind;
+    if ( ind <= -1 ) {
+       ind = 0;
+    }
+    line_width=abs(ind);
+    g2_set_line_width(device,line_width);
+    return(UNUSED);
+}
+/******************************************************************************/
+/* change index i in the color map to the appropriate r, g, b, value.  */
+int PC_mapcolor(int i, int r, int g, int b) {
+   double red,green,blue;
+   if (i >= CMAPSIZE){
+      return(-1);
+   }
+   red    =  r  /  255.0  ;
+   green  =  g  /  255.0  ;
+   blue   =  b  /  255.0  ;
+   carray[i]=g2_ink(device,red,green,blue);
+   if (vdevice.sync){
+      g2_flush(device);
+   }
+   return(0);
+}
+/******************************************************************************/
+/* Set up a hardware font. Return 1 on success 0 otherwise.  */
+int PC_font(char *fontfile) {
+   if (strcmp(fontfile, "small") == 0) {
+      vdevice.hheight = 10;
+      vdevice.hwidth = 7;
+   } else if (strcmp(fontfile, "large") == 0) {
+      vdevice.hheight = 20;
+      vdevice.hwidth = 14;
+   } else {
+      return(0);
+   }
+   g2_set_font_size(device,(double)vdevice.hheight);
+   return(1);
+}
+/******************************************************************************/
+static int PC_char(char c) { /* outputs one char */
+   char  s[2];
+   s[0] = c; s[1]='\0';
+   g2_string(device,(double)vdevice.cpVx,(double)(vdevice.cpVy),s);
+   if (vdevice.sync)
+      g2_flush(device);
+   return(UNUSED);
+}
+/******************************************************************************/
+int PC_string(char s[]) { /* Display a string at the current drawing position.  */
+   g2_string(device,(double)vdevice.cpVx,(double)(vdevice.cpVy),s);
+   if (vdevice.sync){
+      g2_flush(device);
+   }
+   return(UNUSED);
+}
+/******************************************************************************/
+int PC_fill(int n, int x[], int y[]) { /* fill a polygon */
+   char    buf[BUFSIZ];
+   int     i,ii;
+   double n_points[2*MAXVERTS];
+
+   if (n > MAXVERTS) {
+      sprintf(buf, "*PC_fill*: more than %d points in a polygon", MAXVERTS);
+      draw_verror(buf);
+   }
+
+   ii=0;
+   for (i = 0; i < n; i++) {
+      n_points[ii]= x[i];
+      ii=ii+1;
+      n_points[ii]= y[i];
+      ii=ii+1;
+   }
+
+   g2_filled_polygon(device, (double)n, n_points) ;
+
+   vdevice.cpVx = x[n-1];
+   vdevice.cpVy = y[n-1];
+
+   if (vdevice.sync){
+      g2_flush(device);
+   }
+   return(UNUSED);
+}
+/******************************************************************************/
+/* Syncronise the display with what we think has been sent to it...  */
+int PC_sync(void) {
+   g2_flush(device);
+   return(UNUSED);
+}
+/******************************************************************************/
+/* no operations - do nothing but return -1 */
+static int noop(void) { return(-1); }
+/******************************************************************************/
+/* the device entry */
+static DevEntry PCdev = {
+   "PC",        /* name of device */
+   "large",     /* name of large font */
+   "small",     /* name of small font */
+    noop,       /* PC_backbuf, Set drawing in back buffer */
+   PC_char,     /* Draw a hardware character */
+   PC_checkkey, /* Check if a key was hit */
+   PC_clear,    /* Clear the screen to current color */
+   PC_color,    /* Set current color */
+   PC_draw,     /* Draw a line */
+   PC_exit,     /* Exit graphics */
+   PC_fill,     /* Fill a polygon */
+   PC_font,     /* Set hardware font */
+   noop,        /* PC_frontbuf, Set drawing in front buffer */
+   PC_getkey,   /* Wait for and get the next key hit */
+   PC_init,     /* Initialize the device */
+   PC_locator,  /* Get mouse/cross hair position */
+   PC_mapcolor, /* Set color indices */
+   PC_setlw,    /* Set line width */
+   PC_string,   /* Draw a hardware string */
+   noop,        /* PC_swapbuf, Swap front and back buffers */
+   PC_sync      /* Syncronize the display */
+};
+/******************************************************************************/
+/* copy the PC device into vdevice.dev.  */
+int _PC_draw_devcpy(void) {
+        vdevice.dev = PCdev;
+        return(UNUSED);
+}
+/******************************************************************************/

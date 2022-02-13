@@ -1,0 +1,107 @@
+This directory contains the general device drivers 
+-------------------------------------------------------------------------
+@(#)The Structure of a Device Driver.
+
+M_DRAW device entries are structured as follows:
+
+        three character pointers giving:
+                        the name of the device,
+                        the name for the small hardware font,
+                        and the name for the large hardware font.
+        seventeen function pointers giving the functionality of the device.
+                        If a device is not capable of some things (eg. colour 
+                        changing) a no-op function should be provided which
+                        has a return value of -1.
+
+        A function must also be specified in the device driver which copies
+        the device entry into the global device entry vdevice.dev. This
+        function call should be included conditionally in the file drivers.c,
+        as should the device name in the code printing the list of available
+        devices - also found in drivers.c.
+
+The twelve functions required for a complete device driver are:
+
+static DEV_char
+        a routine which prints a character of hardware text. This routine must
+        do any necessary moving to make sure the current drawing position
+        on the device is correct, and it must leave the device in graphics
+        mode.
+
+static DEV_clear
+        a routine which clears the "screen" to the current background colour.
+
+static DEV_color
+        a routine to change the current color on the device. The default
+        colors are in the man page in the docs directory.
+
+static DEV_draw
+        a routine which draws from the current device position to a point (x, y)
+        in draw device coords - note these assume that (0, 0) is the bottom
+        left hand corner. This routine must doing any necessary moving to make
+        sure the current drawing position on the device is correct.
+
+static DEV_exit
+        a routine which does the necessary cleaning up to allow draw to exit
+        leaving the device in a usable form.
+
+static DEV_fill
+        a routine for doing filled polygons, devices which do not support this
+        should just do an outline.
+
+static DEV_font
+        a routine which sets up a hardware font. This should also set
+        vdevice.hwidth and vdevice.hheight, which are the width and height
+        of the current hardware font in pixels. M_DRAW assumes that hardware
+        text is of a fixed width.
+
+static DEV_getkey
+        a routine which gets a single character of input from a device capable
+        of providing it.
+
+static DEV_init
+        a routine which enables graphics on the device, sets the default
+        colour map, and sets vdevice.maxS{x,y} and vdevice.minS{x,y} to the
+        window size in pixels.
+
+static DEV_locator
+        a routine finds the mouse position for the device in draw device
+        coordinates (returned in the arguments) and returns a bit pattern
+        giving which buttons were down at the time of the call.
+
+static DEV_mapcolor
+        a routine for changing a colormap index to a given rgb value.
+
+static DEV_string
+        a routine for printing a string of hardware text. This routine must
+        do any necessary moving to make sure the current drawing position
+        on the device is correct, and it must leave the device in graphics
+        mode.
+
+static DEV_backbuf
+        a routine to initialise double buffering by selecting the back
+        drawing buffer and performing any other initialisations. If there
+        are any hassles with all this then it should return -1.
+
+        Lot's of this double buffering isn't really double buffering at
+        all. It's kind of a pseudo double buffering in that drawing is
+        done off screen and copied to the screen when needed.
+
+static DEV_frontbuf
+        a routine to switch drawing into the front drawing buffer
+
+static DEV_swapbuf
+        a routine to make the back buffer visible and notionally switch
+        the roles of the front and back drawing buffers.
+
+static DEV_sync
+        a routine to syncronize the display with what we think has been
+        output. This function can be noop. It is used with drivers such
+        as X11 which don't necessarily display things as soon as a call
+        has been made to a drawing routine. Because of buffering within
+        the system, a considerable speed up may be obtained by only syncing
+        the display when necessary. Cases in point are:
+                When drawing objects
+                When drawing arcs
+                When drawing Splines and patches
+        where the whole lot can be "sent down the line" with a single "sync"
+        at the end.

@@ -1,0 +1,403 @@
+<html> <body bgcolor="white">
+<font size="1">
+Todo:<br>
+Load a hardware font
+Use a hardware font at level 2 (scalable, rotatable)
+Read keyboard input
+mode where each clear starts a subwindow
+check into how to write an extended metafile directly
+<!--C--><xmp>
+/* this code is licensed as public domain */
+
+#ident "@(#)M_DRAW:driver/grwin.c - M_DRAW driver for minGW/GRwin"
+#ident "@(#)M_DRAW:author - John S. Urban"
+#ident "@(#)M_DRAW:version - 1.0"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+
+#include "GrWin.h"
+#include <unistd.h>
+#include <string.h>
+
+#undef RECT
+#undef small
+#include "draw.h"
+
+#define UNUSED -999
+#define BUFSIZE 80
+#define GRW_MAXVERTS 2000
+#define MIN(x,y)        ((x) < (y) ? (x) : (y))
+
+#define CMAPSIZE        256
+int colors=CMAPSIZE;
+
+static  unsigned long   carray[CMAPSIZE];
+static  unsigned long   colour;
+static  unsigned int    h, w;
+
+/******************************************************************************/
+/* PROTOTYPES */
+static int GRW_mapcolor(int i, int r, int g, int b);
+static int GRW_color(int ind);
+static int GRW_clear(void);
+static int GRW_sync(void);
+static int GRW_checkkey(void);
+/******************************************************************************/
+/* initialises GRW display.  */
+int GRW_init(void) {
+        int             i;
+        int             x, y, prefx, prefy, prefxs, prefys;
+        float           fprefx, fprefy, fprefxs, fprefys;
+        char            *varname;
+
+        varname=getenv("PLTDEVICE");
+        if(varname==(char *)NULL) {
+           varname="UNDEFINED";
+        }
+        if (!strcmp(varname,"NOCLOSE")) {
+           fprintf(stderr,"GRW_init: returning to GRW window\n");
+           GWopen(0);
+           GWarrange(2); /* Arrange windows , tile horizontally */
+        }else{
+           fprintf(stderr,"GRW_init: starting new GRW window\n");
+           GWopen(0);
+        }
+
+        GWmode(3,0); /* turn off status bar */
+        GWmode(2,0); /* turn off bitmap buffering */
+
+        /*
+        colors = MIN(CMAPSIZE,GWncolor());
+        fprintf(stderr,"*GRW_init* number of colors =%d\n",colors);
+        */
+
+        draw_getprefposandsize(&prefx, &prefy, &prefxs, &prefys);
+        fprintf(stderr,"pref SIZE A %d %d %d %d\n",prefx,prefy,prefxs,prefys);
+        if (prefxs > -1) {
+                w = prefxs;
+                h = prefys;
+        }
+        if (prefx > -1 ) {
+                x = prefx;
+                y = prefy;
+        }
+
+        GWgetwn(&fprefx,&fprefy,&fprefxs,&fprefys);
+        fprintf(stderr,"SIZE X %f %f %f %f\n",fprefx,fprefy,fprefxs,fprefys);
+        prefx=fprefx;
+        prefy=fprefy;
+        prefxs=fprefxs;
+        prefys=fprefys;
+        fprintf(stderr,"SIZE B %d %d %d %d\n",prefx,prefy,prefxs,prefys);
+        prefxs=prefxs-prefx;
+        prefys=prefys-prefy;
+
+        vdevice.sizeX = vdevice.sizeY = MIN(prefys, prefxs);
+        vdevice.sizeSx = prefxs;
+        vdevice.sizeSy = prefys;
+
+        /* Set our standard colors...  */
+        vdevice.depth = log(colors)/log(2.0);
+        carray[0] = 1;
+        for (i = 1; i < colors; i++){
+           carray[i] = i;
+        }
+        /* try to get colors close to what's in the default colormap. */
+        GRW_mapcolor(0, 255, 255, 255);
+        GRW_mapcolor(1, 255, 0, 0);
+        GRW_mapcolor(2, 0, 255, 0);
+        GRW_mapcolor(3, 255, 255, 0);
+        GRW_mapcolor(4, 0, 0, 255);
+        GRW_mapcolor(5, 255, 0, 255);
+        GRW_mapcolor(6, 0, 255, 255);
+        GRW_mapcolor(7, 0, 0, 0);
+
+       if (strcmp(varname,"NOCLOSE")){
+       }
+
+        if (strcmp(varname,"NOCLOSE")){
+        }else{
+           /* GRW_NEW(); */
+        }
+        return(1);
+}
+/******************************************************************************/
+/* GRW_exit   cleans up before returning the window to normal.  */
+int GRW_exit(void) {
+   char *varname;
+   varname=getenv("PLTDEVICE");
+   if(varname==NULL) {
+      varname="UNDEFINED";
+   }
+   if (!strcmp(varname,"NOCLOSE")) {
+      fprintf(stderr,"GRW_exit: planning on returning to GRW window\n");
+      return(1);
+   }
+   /*GWquitx(0);*/ /* quit now */
+   GWquitx(-1); /* popup an ending dialog and then quit */
+   return(1);
+}
+/******************************************************************************/
+/* draws a line from the current graphics position to (x, y).  */
+int GRW_draw(int x, int y) {
+   GWline( vdevice.cpVx, vdevice.cpVy, x, y);
+   return(UNUSED);
+}
+/******************************************************************************/
+/* grab a character from the keyboard - blocks until one is there.  */
+int GRW_getkey(void){
+   float XM, YM ;
+   int IRB;
+   int MSEC=0;
+   while(0 == 0){
+      GWidle(&IRB,&XM,&YM,MSEC);
+      if(IRB>0)return((int)IRB);
+   }
+}
+/******************************************************************************/
+/* Check if there has been a keyboard key pressed and return it if there is.  */
+int GRW_checkkey(void) {
+   return(0);
+}
+/******************************************************************************/
+/* return the window location of the cursor, plus which mouse button,
+ * if any, has been pressed.
+ * Using alphanumerics instead of mouse clicks to simulate a 3-key mouse
+ */
+int GRW_locator(int *wx, int *wy) {
+   float XM, YM ;
+   int IRB;
+   int MSEC=0;
+   int mask;
+   /*
+   GWmouse( &IRB, &XM, &YM);
+   GWcappnt(&XM,&YM,"Click at any point");
+   */
+   *wy = (int)YM;
+   *wx = (int)XM;
+   GWidle(&IRB,&XM,&YM,MSEC);
+   fprintf(stderr,"%f %f %d %d \n",XM,YM,IRB,MSEC);
+   mask=0;
+   if ( IRB > 0 ){
+      fprintf(stderr,"%c\n",IRB);
+   }
+   switch(IRB) {
+   case '0':
+   case 'q':
+      mask=mask+0;
+      break;
+   case 'c':
+   case '1':
+      mask=mask+1;
+      break;
+   case 'b':
+   case '2':
+   case  -2:
+      mask=mask+2;
+      break;
+   case 'B':
+   case '3':
+      mask=mask+3;
+      break;
+   case 'a':
+   case '4':
+   case  -1:
+      mask=mask+4;
+      break;
+   case 'C':
+   case '5':
+      mask=mask+5;
+      break;
+   case 'A':
+   case '6':
+      mask=mask+6;
+      break;
+   case 'X':
+   case '7':
+      mask=mask+7;
+      break;
+
+   default:
+      if ( IRB > 0 ){
+         fprintf(stderr, "unknown mouse character %c\n",IRB);
+      }else{
+         fprintf(stderr,"unknown mouse value %d\n",IRB);
+      }
+      fprintf(stderr, "Key  123 (mouse key number)\n");
+      fprintf(stderr, "-- - --- 1 is down, 0 is up)\n");
+      fprintf(stderr, " 0 q 000\n");
+      fprintf(stderr, " 1 c 001\n");
+      fprintf(stderr, " 2 b 010\n");
+      fprintf(stderr, " 3 B 011\n");
+      fprintf(stderr, " 4 a 100\n");
+      fprintf(stderr, " 5 C 101\n");
+      fprintf(stderr, " 6 A 110\n");
+      fprintf(stderr, " 7 X 111\n");
+   }
+   return(mask);
+/*
+-----------------------------------------------------------------------------
+[C] int GWidle(int *ICH, float *X, float *y, int MSEC);
+-----------------------------------------------------------------------------
+Description
+   Leaves the status of the application in idling mode, during which the
+   control is not returned and the execution of the application is suspended,
+   until a keyboard input or a mouse button down is detected, or the specified
+   time is elapsed.  In the idling mode the menu operations, e.g. Print, and
+   moves of the mouse pointer by the cursor keys can be done.
+
+Input
+   MSEC = the maximum elapsed time (milliseconds) for the idling.  If 0 or
+          a negative value is specified, the maximum elapsed time is set as
+          300000 (5 minutes).
+
+Output
+  IRTN  = the elapsed time (milliseconds)
+  ICH > 0: the key code (ASCII) for the detected nonsystem key down
+      = 0: the specified elapsed time expired
+       -1: the left mouse button down was detected
+       -2: the right mouse button down was detected
+    X = the world x-coordinate of the mouse pointer
+    Y = the world y-coordinate of the mouse pointer
+*/
+}
+/******************************************************************************/
+/* Clear the screen (or current buffer )to current colour */
+int GRW_clear(void) {
+   GWclear(-1);  /* flush the previously drawn frames in this window */
+   GWclear(carray[colour]); /* set the background color */
+   return(UNUSED);
+}
+/******************************************************************************/
+/* set the line width in units of 1/10000 of X size */
+int GRW_setlw(int line_width) {
+   line_width=(float)vdevice.sizeX/10000.0*line_width;
+   line_width=abs(line_width);
+   GWsetpen(-1, 1, line_width,4);
+   return(UNUSED);
+}
+/******************************************************************************/
+/* set the current drawing color index if ind >= 0.
+ * set the line width in raster units if ind  <  0.
+ */
+int GRW_color(int ind) {
+   if ( ind < 0 ) {
+      GRW_setlw(abs(ind));
+   } else {
+      colour = ind;
+   }
+   GWsetpen(carray[colour],-1, -1,-1); /* pen color */
+   GWsetbrs(carray[colour],1,-1);  /* polygon fill color */
+   GWsettxt(-1,1.0,1,carray[colour],-1," "); /* text color */
+   return(UNUSED);
+}
+/******************************************************************************/
+/* change index i in the color map to the appropriate r, g, b, value. */
+int GRW_mapcolor(int i, int r, int g, int b) {
+   if (i >= colors) return(-1);
+   if (i < 0) return(-2);
+   carray[i]=GWkrgb(r,g,b);
+   return(0);
+}
+/******************************************************************************/
+/* Set up a hardware font. Return 1 on success 0 otherwise. */
+int GRW_font(char *fontfile) {
+        if (strcmp(fontfile, "small") == 0) {
+        } else if (strcmp(fontfile, "large") == 0) {
+        } else {
+        }
+        vdevice.hheight = 0;
+        vdevice.hwidth = 0;
+        return(1);
+}
+/******************************************************************************/
+/* Display a string at the current drawing position.  */
+int GRW_string(char s[]) {
+        /*
+        XDrawString(vdevice.cpVx, (int)(vdevice.cpVy), s, strlen(s));
+        gwsettxt(heightoffont,angle_degrees+ccw,-1,-1,-1,' ')
+        gwputtxt(x,y,txt)
+        */
+        return(UNUSED);
+}
+/******************************************************************************/
+/* outputs one hardware char */
+static int GRW_char(char c) {
+   char  s[2];
+   s[0] = c; s[1]='\0';
+   GRW_string(s);
+   return(UNUSED);
+}
+/******************************************************************************/
+/* fill a polygon */
+int GRW_fill(int n, int x[], int y[]) {
+   float  plist[2*GRW_MAXVERTS];
+   int i;
+   if (n > GRW_MAXVERTS) {
+      fprintf(stderr, "GRW_fill: more than %d points in a polygon\n",GRW_MAXVERTS);
+      GWmove2(x[0],y[0]);
+      for (i = 1; i < n; i++) {
+         GWline2(x[i],y[i]);
+      }
+      GWline2(x[0],y[0]);
+      vdevice.cpVx = x[0];
+      vdevice.cpVy = y[0];
+   }else if ( n < 1){
+      fprintf(stderr, "GRW_fill: number of points in polygon %d too small\n",n);
+   }else{
+      for (i = 0; i < n; i++) {
+         plist[2*i] = x[i];
+         plist[2*i+1] = y[i];
+      }
+      GWpolygon(plist, n, -1);
+      vdevice.cpVx = x[0];
+      vdevice.cpVy = y[0];
+      }
+   return(UNUSED);
+}
+/******************************************************************************/
+/* Syncronise the display with what we think has been sent to it...  */
+int GRW_sync(void) {
+   return(UNUSED);
+}
+/******************************************************************************/
+/* the device entry */
+/* no operations - do nothing but return -1 */
+static int noop(void) { return(-1); }
+
+static DevEntry GRWdev = {
+   "grwin",      /* name of device */
+   "large",      /* name of large font */
+   "small",      /* name of small font */
+   noop,         /* Set drawing in back buffer GRW_backbuf, */
+   GRW_char,     /* Draw a hardware character */
+   GRW_checkkey, /* Check if a key was hit */
+   GRW_clear,    /* Clear the screen to current color */
+   GRW_color,    /* Set current color */
+   GRW_draw,     /* Draw a line */
+   GRW_exit,     /* Exit graphics */
+   GRW_fill,     /* Fill a polygon */
+   GRW_font,     /* Set hardware font */
+   noop,         /* Set drawing in front buffer GRW_swapbuf, */
+   GRW_getkey,   /* Wait for and get the next key hit */
+   GRW_init,     /* Initialize the device */
+   GRW_locator,  /* Get mouse/cross hair position */
+   GRW_mapcolor, /* Set color indices */
+   GRW_setlw,    /* Set line width */
+   GRW_string,   /* Draw a hardware string */
+   noop,         /* Swap front and back buffers GRW_swapbuf */
+   GRW_sync      /* Syncronize the display */
+};
+/******************************************************************************/
+/* copy the GRW device into vdevice.dev.  */
+int _GRW_draw_devcpy(void) {
+   vdevice.dev = GRWdev;
+   return(UNUSED);
+}
+/******************************************************************************/
+</xmp><!--/C-->
+</font>
+</body>
+</html>
