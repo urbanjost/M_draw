@@ -34,9 +34,22 @@ Alternatively, download the github repository and build it with
 fpm ( as described at [Fortran Package Manager](https://github.com/fortran-lang/fpm) )
 
 ```bash
+     #!/bin/bash
      git clone https://github.com/urbanjost/M_draw.git
      cd M_draw
-     fpm build
+     #
+     # specify directory to place Hershey font files in
+     export BUILD_DIR=$HOME/local/lib 
+     mkdir -p $BUILD_DIR
+     #
+     # create font files
+     fpm run make_hershey
+     #
+     # set environment variables
+     export M_DRAW_FONTPATH=$HOME/.local/lib/hershey
+     export M_DRAW_DEVICE=X11
+
+     # run tests
      fpm test  # run unit tests
 ```
 
@@ -63,7 +76,7 @@ of the font definition files and a default output device. For example:
 While you are there, you might want to generate a text version of the
 documentation as well:
 
-    # show all manpages as text
+    # show all man-pages as text
     env MANWIDTH=80 MANPATH=../man man --regex '.*' |col -b|tee man.txt
 
 ## NOTES
@@ -91,10 +104,10 @@ more CygWin utilities as well.
    - [An overview in HTML](https://urbanjost.github.io/M_draw/M_draw.html)
 
    - a simple [index](https://urbanjost.github.io/M_draw/) to
-     the individual manpages in HTML form
+     the individual man-pages in HTML form
 
    - A single page that uses javascript to combine all the HTML
-     descriptions of the manpages is at 
+     descriptions of the man-pages is at 
      [BOOK_M_draw](https://urbanjost.github.io/M_draw/BOOK_M_draw.html).
 
 The overview is maintained manually and may be out of date but covers
@@ -102,7 +115,7 @@ the core routines (which are very stable). The other documentation
 is auto-generated during a rebuild of this repository, and will
 automatically have the latest routines.
 
-## MANPAGES ![manpages](docs/images/manpages.gif) 
+## MAN-PAGES ![man-pages](docs/images/manpages.gif) 
 Literal man-pages for use on GNU/Linux, Unix and CygWin platforms:
   - [manpages.zip](https://urbanjost.github.io/M_draw/manpages.zip)
   - [manpages.tgz](https://urbanjost.github.io/M_draw/manpages.tgz)
