@@ -4,6 +4,7 @@ program demo_polyhatch
    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
    real :: N=11
+   integer :: key
    call prefsize(600*10/6,200*10/6)
    call vinit(' ')
    call page( -15.0, 15.0, -5.0, 5.0)

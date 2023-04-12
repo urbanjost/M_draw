@@ -1,5 +1,7 @@
           program demo_windows
           use M_draw
+          implicit none
+          integer :: idum, ios
           integer CUBE, TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT
           parameter(CUBE = 1, TOPLEFT = 2, TOPRIGHT = 3, BOTTOMLEFT = 4, BOTTOMRIGHT = 5)
           character(len=20) :: device

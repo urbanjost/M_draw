@@ -4,8 +4,9 @@
         program fcurves
 
         use M_draw
+        implicit none
 
-        integer i, BLACK, RED, GREEN, YELLOW, MAGENTA
+        integer i, idum, BLACK, RED, GREEN, YELLOW, MAGENTA
         parameter (BLACK = 0, RED = 1, GREEN = 2, YELLOW = 3)
         parameter (MAGENTA = 5)
         character(len=50) :: buf

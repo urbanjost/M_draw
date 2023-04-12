@@ -5,6 +5,7 @@ program dlines
 !(LICENSE:PD)
 
    use M_draw
+   implicit none
 
    character(len=40) :: device
 
@@ -23,12 +24,12 @@ program dlines
    call drawscene
 
    call vexit
-end program dlines
-
+contains
 subroutine drawscene
 
    use M_draw
 
+   integer :: idum
    integer BLACK, RED, GREEN, BLUE, YELLOW, MAGENTA, WHITE
    integer CYAN
    parameter(BLACK = 0)
@@ -140,6 +141,7 @@ subroutine drawsine(s)
    parameter(RAD = 0.5, AMP = 0.04)
 
    real    a, x, y, z
+   integer :: i10
 
    call pushmatrix
 
@@ -158,3 +160,6 @@ subroutine drawsine(s)
    enddo
    call popmatrix
 end subroutine drawsine
+
+end program dlines
+

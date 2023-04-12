@@ -1,7 +1,9 @@
 program fjtext   !@(#)  demonstrate still more features of text
 !(LICENSE:PD)
 use M_draw
+implicit none
 character(len=20) ::  dev
+integer :: idum
 
    write(*,'(a)',advance='no')'Enter device: '
    read(*, '(a)') dev
@@ -32,7 +34,7 @@ character(len=20) ::  dev
       end select
    enddo
    call vexit()
-end program fjtext
+contains
 
 subroutine drawstuff
 use M_draw
@@ -91,6 +93,7 @@ end subroutine drawstuff
 
 subroutine drawstuff2(ang)
 use M_draw
+real :: ang
 
    call color(D_BLACK)
    call rect(0.1, 0.1, 0.9, 0.9)
@@ -195,3 +198,4 @@ use M_draw
    idum=getkey()
 
 end subroutine drawstuff2
+end program fjtext

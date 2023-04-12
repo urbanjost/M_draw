@@ -904,7 +904,8 @@
 !!       program demo_vinit
 !!       use M_draw
 !!       use ISO_C_BINDING
-!!       integer :: ios
+!!       implicit none
+!!       integer :: ios, idum
 !!       character(len=50) :: device
 !!
 !!       ! read in device name and start graphics mode
@@ -1545,6 +1546,7 @@
 !!       use M_draw,    only  : D_BLACK,   D_WHITE
 !!       use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!       use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
+!!       implicit none
 !!       integer           :: ios
 !!       character(len=50) :: device
 !!       print*,'Enter output device:'
@@ -1580,8 +1582,8 @@
 !!       use M_draw,    only  : D_BLACK,   D_WHITE
 !!       use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!       use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
-!!
 !!       real parray(3,4)                   ! An array of points for a polygon
+!!       integer :: idum
 !!       data parray/ -8.0, -8.0, 0.0,  &
 !!       & -5.0, -8.0, 0.0,  &
 !!       & -5.0, -5.0, 0.0,  &
@@ -1628,7 +1630,9 @@
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
-!!    real :: N=11
+!!    implicit none
+!!    integer :: key
+!!    real :: N=11.0
 !!    call prefsize(600*10/6,200*10/6)
 !!    call vinit(' ')
 !!    call page( -15.0, 15.0, -5.0, 5.0)
@@ -1669,8 +1673,8 @@
 !!
 !!    program demo_hatchang
 !!    use M_drawplus, only : draw_interpret
+!!    implicit none
 !!    character(len=:),allocatable :: draw_cmds(:)
-!!
 !!    DRAW_CMDS=[ CHARACTER(LEN=128) :: &
 !!    'prefsize 1000 200; vinit                                     ',&
 !!    'set b=.4; page -25-b 25+b -5-b 5+b; color 0;clear            ',&
@@ -1720,6 +1724,7 @@
 !!
 !!    program demo_hatchpitch
 !!    use M_drawplus, only : draw_interpret
+!!    implicit none
 !!    character(len=:),allocatable :: draw_cmds(:)
 !!
 !!    DRAW_CMDS=[ CHARACTER(LEN=128) :: &
@@ -1759,6 +1764,7 @@
 !!
 !!    program demo_poly2
 !!    use M_draw
+!!    implicit none
 !!    integer :: i,j
 !!    integer :: ipaws, icolor
 !!    real    :: xx,yy
@@ -1831,6 +1837,7 @@
 !!
 !!    program demo_poly
 !!    use M_draw
+!!    implicit none
 !!    ! Using polygons, hatching, and filling.
 !!    integer           :: ios
 !!    character(len=50) :: device
@@ -1879,6 +1886,7 @@
 !!       call vexit()
 !!    contains
 !!    subroutine drawpoly()
+!!       integer :: idum
 !!       real parray(3,4)                   ! An array of points for a polygon
 !!       data parray/ -8.0, -8.0, 0.0,  &
 !!                  & -5.0, -8.0, 0.0,  &
@@ -2740,8 +2748,9 @@
 !!    !      using curves
 !!    !
 !!    use M_draw
+!!    implicit none
 !!
-!!    integer i
+!!    integer i, idum, ios
 !!    character(len=50) :: buf
 !!    real bezier(4, 4), cardinal(4, 4), bspline(4, 4)
 !!    real geom1(3, 4), geom2(3, 6)
@@ -2981,6 +2990,7 @@
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
+!!    implicit none
 !!    real    :: left
 !!    real    :: baseline=80.0
 !!    integer :: icolor=1
@@ -3124,7 +3134,8 @@
 !!    program demo_textang
 !!    use :: M_draw
 !!    use :: M_units, only : cosd, sind
-!!    integer :: ipaws
+!!    implicit none
+!!    integer :: i, ipaws
 !!
 !!    !! set up drawing environment
 !!    call prefsize(600,600)
@@ -3226,6 +3237,9 @@
 !!    program demo_centertext
 !!    use :: M_draw
 !!    use :: M_units, only : cosd, sind
+!!    implicit none
+!!    real :: x1, y1, r, ang, xx, yy
+!!    integer :: i, j, ipaws
 !!    !! set up drawing environment
 !!    call prefsize(600,600)
 !!    call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
@@ -3340,11 +3354,12 @@
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
 !!    use M_draw
+!!    implicit none
 !!
 !!    character(len=40)   :: str1, str2, str3, str4, fonts(22)
 !!    character(len=100)  :: buf
 !!    character(len=1)    :: c
-!!    integer             :: i
+!!    integer             :: i, ios
 !!    data fonts/ 'astrology', 'cursive',    'futura.l',               &
 !!    &      'futura.m',  'gothic.eng', 'gothic.ger',             &
 !!    &      'gothic.ita','greek',      'japanese',    'markers', &
@@ -3462,6 +3477,8 @@
 !!
 !!       program demo_drawstr
 !!       use M_draw
+!!       implicit none
+!!       integer :: idum
 !!       call vinit('')
 !!       ! by default the drawing surface is
 !!       ! a square ranging from -1 to 1 in both
@@ -3517,6 +3534,7 @@
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
+!!    implicit none
 !!    real    :: left
 !!    real    :: baseline
 !!    integer :: icolor=0
@@ -4316,8 +4334,9 @@
 !!     program demo_linestyle
 !!     ! A program showing basic line styles.
 !!     use M_draw
+!!     implicit none
 !!     character(len=40) :: device
-!!     integer           :: ios
+!!     integer           :: ios, idum
 !!
 !!        print*,'Enter output device: '
 !!        read(*,'(a)',iostat=ios)device
@@ -4529,6 +4548,7 @@
 !!
 !!     program demo_color
 !!     use M_draw
+!!    implicit none
 !!     real    :: b=0.5
 !!     real    :: y1,y2,ym,x1,x2
 !!     real    :: width=50.0/8.0,width2
@@ -4902,11 +4922,13 @@
 !!
 !!    program demo_getstring
 !!    use M_draw
+!!    implicit none
 !!    ! reading a string from graphic input with getstring(3f)
 !!    character(len=128) :: buf(10)
 !!    character(len=20)  :: dev
 !!    character(len=20)  :: fname
-!!    integer            :: ios
+!!    integer            :: ios, i, n
+!!    real               :: shft, tsize, y
 !!
 !!    print*, 'Enter device:'
 !!    read (*, '(a)',iostat=ios) dev
@@ -5319,11 +5341,12 @@
 !!    ! using non-square viewports, the associated distortion -- and how to fix it
 !!    !
 !!    use M_draw
+!!    implicit none
 !!
 !!    character(len=50)  :: device
 !!    character(len=120) :: buf
 !!    real    xfact, yfact
-!!    integer :: ios
+!!    integer :: ios, idum
 !!
 !!    print*,'Enter output device:'
 !!    read(*,'(a)',iostat=ios)device
@@ -5736,9 +5759,10 @@
 !!    !
 !!    !     Shows various combinations of viewing and projection transformations
 !!    use M_draw
+!!    implicit none
 !!    !
 !!    character(len=50) :: device
-!!    integer :: ios
+!!    integer :: ios, idum
 !!    !
 !!       print*,'Enter output device:'
 !!       read(*,'(a)',iostat=ios)device
@@ -5907,8 +5931,10 @@
 !!
 !!   Sample program:
 !!
-!!    program demo_windows
+!!    program demo_window
 !!    use M_draw
+!!    implicit none
+!!    integer :: idum, ios
 !!    integer CUBE, TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT
 !!    parameter(CUBE = 1, TOPLEFT = 2, TOPRIGHT = 3, BOTTOMLEFT = 4, BOTTOMRIGHT = 5)
 !!    character(len=20) :: device
@@ -7772,7 +7798,7 @@ module M_draw
 use ISO_C_BINDING
 implicit none
 
-! ident_1="@(#)M_draw::M_draw(3fm):: The M_draw graphics library module"
+! ident_1="@(#) M_draw M_draw(3fm) The M_draw graphics library module"
 
 private
 !-------------------------------------------------------------------------------
@@ -9953,7 +9979,7 @@ end function s2c
 !!    Public Domain
 subroutine invokeobj(xt,yt,zt,xs,ys,zs,xr,yr,zr,iobject)
 
-! ident_2="@(#)M_draw::invokeobj(3f): invoke object with specified transformation applied and then restored"
+! ident_2="@(#) M_draw invokeobj(3f) invoke object with specified transformation applied and then restored"
 
 real,intent(in)    :: xt,yt,zt  ! linear transforms
 real,intent(in)    :: xs,ys,zs  ! scaling
@@ -10047,7 +10073,7 @@ end subroutine invokeobj
 !!    Public Domain
 subroutine biggest_ortho2(xsmall,xlarge,ysmall,ylarge)
 
-! ident_3="@(#)M_draw::page(3f): given a window size, find and set to largest accommodating viewport"
+! ident_3="@(#) M_draw page(3f) given a window size find and set to largest accommodating viewport"
 
 real,intent(in)  :: xsmall
 real,intent(in)  :: xlarge
@@ -10237,7 +10263,7 @@ end subroutine page_rri
 !!    Public Domain
 subroutine pop()
 
-! ident_4="@(#)M_draw::pop(3f): call popviewport(), popmatrix(), popattributes()"
+! ident_4="@(#) M_draw pop(3f) call popviewport() popmatrix() popattributes()"
 
    call popviewport()
    call popmatrix()
@@ -10378,7 +10404,7 @@ class(*),intent(in) :: generic
       type is (integer(kind=int64));    write(line(istart:),'(i0)') generic
       type is (real(kind=real32));      write(line(istart:),'(1pg0)') generic
       type is (real(kind=real64));      write(line(istart:),'(1pg0)') generic
-      !type is (real(kind=real128));     write(line(istart:),'(1pg0)') generic
+      type is (real(kind=real128));     write(line(istart:),'(1pg0)') generic
       type is (logical);                write(line(istart:),'(l1)') generic
       type is (character(len=*));       write(line(istart:),'(a)') trim(generic)
       type is (complex);                write(line(istart:),'("(",1pg0,",",1pg0,")")') generic
@@ -10411,7 +10437,7 @@ end function str
 !!    Public Domain
 subroutine push()
 
-! ident_5="@(#)M_draw::push(3f): call pushattributes(), pushmatrix(), pushviewport()"
+! ident_5="@(#) M_draw push(3f) call pushattributes() pushmatrix() pushviewport()"
 
    call pushattributes()
    call pushmatrix()

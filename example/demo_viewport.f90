@@ -7,7 +7,7 @@
           character(len=50)  :: device
           character(len=120) :: buf
           real    xfact, yfact
-          integer :: ios
+          integer :: ios, idum
 
           print*,'Enter output device:'
           read(*,'(a)',iostat=ios)device

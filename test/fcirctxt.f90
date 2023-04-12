@@ -71,14 +71,14 @@ integer :: idum
       call clear()
    enddo
    call vexit()
-   end program fcirctxt
+contains
 !===================================================================================================================================
 subroutine ShowCircularText(r, str) !       show a ring of text
 use M_draw, only : move2, textang, drawchar
 
 real              :: r
 character(len=*)  :: str
-real              :: i, inc, x, y, a
+real              :: i, inc, x, y, a, i10
 integer           :: j
 character(len=1)  :: c
 real,parameter    :: pi = 3.1415926535
@@ -109,3 +109,4 @@ real,parameter    :: pi = 3.1415926535
 
 end subroutine ShowCircularText
 !===================================================================================================================================
+end program fcirctxt

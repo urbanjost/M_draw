@@ -2,12 +2,14 @@ program fgetstr
 !(LICENSE:PD)
 
 use M_draw
+implicit none
 
 !@(#)   reading a string from graphic input
 
    integer,parameter  :: BLACK = 0, GREEN = 2, YELLOW = 3
    character(len=128) ::  buf(10)
    character(len=20)  ::  dev
+   integer :: i, n
 
    print*, 'Enter device:'
    read (*, '(a)') dev
@@ -48,8 +50,8 @@ use M_draw
 
    call vexit
 
-   do 2 i = 1, n - 1
+   do i = 1, n - 1
       write(*, '(1x, ''Line'',i3,'' was: '', a)') i, buf(i)
-2  continue
+   enddo     
 
 end program fgetstr

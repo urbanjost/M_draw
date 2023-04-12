@@ -1,5 +1,7 @@
 program demo_textang
    use :: M_draw
+   implicit none
+   integer :: i, ipaws
 
    !! set up drawing environment
    call prefsize(600,600)

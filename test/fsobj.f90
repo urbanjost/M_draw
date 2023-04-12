@@ -2,7 +2,9 @@
 program sobj
 !(LICENSE:PD)
 use M_draw
+implicit none
 character(len=20) :: device
+integer :: idum
    write(*,*)"Fortran: Enter output device: "
    read(*,*)device
    call prefsize(300, 300)

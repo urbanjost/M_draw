@@ -1,5 +1,8 @@
 program demo_centertext
    use :: M_draw
+   implicit none
+   integer :: i, j, ipaws
+   real :: x1, y1, ang, xx, yy, r
    !! set up drawing environment
    call prefsize(600,600)
    call vinit(' ') ! start graphics using device $M_draw_DEVICE

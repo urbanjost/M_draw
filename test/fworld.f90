@@ -6,7 +6,8 @@ program fworld
 !
 !(LICENSE:PD)
 
-   use M_draw
+use M_draw
+implicit none
 
    integer BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE
    parameter(BLACK = 0)
@@ -18,11 +19,11 @@ program fworld
    parameter(CYAN = 6)
    parameter(WHITE = 7)
 
-   integer SPHERE
-   real RADIUS, PI
-   parameter (RADIUS = 10.0, PI = 3.1415926535, SPHERE = 1)
+   integer,parameter :: SPHERE = 1
+   real,parameter :: RADIUS = 10.0, PI = 3.1415926535
 
    character(len=20) :: dev
+   integer :: idum
 
    print*,'Enter device:'
    read(*,'(a)') dev
@@ -38,9 +39,9 @@ program fworld
    call lookat(13.0, 13.0, 8.0, 0.0, 0.0, 0.0, 0.0)
 
    call color(BLACK)
-   call clear
+   call clear()
 
-   call makesphere
+   call makesphere()
 
 !
 !       draw the main one in cyan
@@ -91,7 +92,7 @@ program fworld
 
    call vexit
 
-end program fworld
+contains
 !
 ! showroundtext
 !
@@ -105,7 +106,7 @@ subroutine showroundtext(str)
 
    real i, inc, RADIUS
    parameter (RADIUS = 10.0)
-   integer j
+   integer j, i10
 
    inc = 360.0 / float(len_trim(str))
 
@@ -141,9 +142,13 @@ subroutine makesphere
 
    integer SPHERE
    parameter (SPHERE = 1)
+   real pi
    parameter(PI = 3.1415926535)
+   real radius
    parameter(RADIUS = 10.0)
    real i
+   real :: a, r, z
+   integer :: i10, i20
 
    call makeobj(SPHERE)
 
@@ -171,3 +176,5 @@ subroutine makesphere
    call closeobj
 
 end subroutine makesphere
+
+end program fworld

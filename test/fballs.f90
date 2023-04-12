@@ -1,50 +1,3 @@
-!(LICENSE:PD)
-!
-! makesphere
-!
-!        make a sphere object
-!
-        subroutine makesphere
-      use M_draw
-
-        integer SPHERE
-        integer ii
-        real i, r, z, a, RADIUS, PI
-        parameter (PI = 3.1415926535, RADIUS = 10.0, SPHERE = 1)
-
-        call makeobj(SPHERE)
-
-!
-! create the latitudinal rings
-!
-            do 10 ii = 0, 180, 20
-                call pushmatrix
-                    i=real(ii)
-                    call rotate(i, 'y')
-                    call circle(0.0, 0.0, RADIUS)
-                call popmatrix
-10          continue
-                
-!
-! create the longitudinal rings
-!
-            call pushmatrix
-                call rotate(90.0, 'x')
-                do 20 ia = -90, 90, 20
-                    a=ia
-                    r = RADIUS * cos(a * PI / 180.0)
-                    z = RADIUS * sin(a * PI / 180.0)
-                    call pushmatrix
-                        call translate(0.0, 0.0, -z)
-                        call circle(0.0, 0.0, r)
-                    call popmatrix      
-20              continue
-            call popmatrix
-
-        call closeobj
-
-        end
-
 !
 !@(#)  a demonstration of objects
 !
@@ -64,6 +17,7 @@
         parameter(MAGENTA = 5)
         parameter(CYAN = 6)
         parameter(WHITE = 7)
+        integer :: idum
         character(len=50) :: device
 
         print*,'Enter output device:'
@@ -151,5 +105,53 @@
         idum=getkey()
 
         call vexit
+contains
+!(LICENSE:PD)
+!
+! makesphere
+!
+!        make a sphere object
+!
+        subroutine makesphere
+      use M_draw
 
-        end
+        integer SPHERE
+        integer ii, ia
+        real i, r, z, a, RADIUS, PI
+        parameter (PI = 3.1415926535, RADIUS = 10.0, SPHERE = 1)
+
+        call makeobj(SPHERE)
+
+!
+! create the latitudinal rings
+!
+            do ii = 0, 180, 20
+                call pushmatrix
+                    i=real(ii)
+                    call rotate(i, 'y')
+                    call circle(0.0, 0.0, RADIUS)
+                call popmatrix
+            enddo   
+                
+!
+! create the longitudinal rings
+!
+            call pushmatrix
+                call rotate(90.0, 'x')
+                do ia = -90, 90, 20
+                    a=ia
+                    r = RADIUS * cos(a * PI / 180.0)
+                    z = RADIUS * sin(a * PI / 180.0)
+                    call pushmatrix
+                        call translate(0.0, 0.0, -z)
+                        call circle(0.0, 0.0, r)
+                    call popmatrix      
+            enddo        
+            call popmatrix
+
+        call closeobj
+
+        end subroutine makesphere
+
+
+        end program fballs

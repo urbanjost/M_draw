@@ -20,7 +20,7 @@ source-dir = "src"
 
 [[executable]]
 name="make_hershey"
-source-dir="app/make_hershey"
+source-dir="app/MAKE_HERSHEY"
 main="make_hershey.f90"
 
 [[executable]]

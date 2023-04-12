@@ -4,10 +4,12 @@
           use M_draw,    only  : D_BLACK,   D_WHITE
           use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
           use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
+          implicit none
           real    :: left
           real    :: baseline
           integer :: icolor=0
           real    :: texth=10.0
+          integer :: ipaws
              !! set up drawing surface
              call prefsize(800, 400)
              call vinit(' ') ! start graphics using device $M_draw_DEVICE

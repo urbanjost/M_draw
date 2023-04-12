@@ -3,6 +3,7 @@
 program ftetra
 !(LICENSE:PD)
 use M_draw
+implicit none
 
         integer BLACK, GREEN, RED, BLUE
         parameter (BLACK = 0, GREEN = 2, RED = 1, BLUE = 4)
@@ -135,7 +136,7 @@ use M_draw
 
         goto 10
                 
-end program ftetra
+contains
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! maketheobject
 !
@@ -197,3 +198,4 @@ end program ftetra
         call closeobj
 
         end subroutine maketheobject
+end program ftetra

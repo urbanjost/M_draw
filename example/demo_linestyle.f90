@@ -2,7 +2,7 @@
            ! A program showing basic line styles.
            use M_draw
            character(len=40) :: device
-           integer           :: ios
+           integer           :: ios, i10
 
               print*,'Enter output device: '
               read(*,'(a)',iostat=ios)device
@@ -25,6 +25,7 @@
               contains
 
               subroutine drawscene()
+              integer :: idum
 
                  call color(D_BLACK)
                  call clear()

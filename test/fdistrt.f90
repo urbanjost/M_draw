@@ -18,6 +18,7 @@
         character(len=50)  :: device
         character(len=120) :: buf
         real    xfact, yfact
+        integer :: idum
 
         print*,'Enter output device:'
         read(*,'(a)') device

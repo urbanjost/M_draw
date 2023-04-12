@@ -1,5 +1,7 @@
 program demo_checkkey
    use :: M_draw
+   implicit none
+   integer :: ichar
    !! set up drawing environment
    call prefsize(600,600)
    call vinit(' ') ! start graphics using device $M_draw_DEVICE

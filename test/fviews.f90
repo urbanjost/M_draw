@@ -4,8 +4,10 @@ program fviews
 !(LICENSE:PD)
 
    use M_draw
+   implicit none
 
    integer,parameter :: BLACK=0, GREEN=2, RED=1, MAGENTA=5, YELLOW=3
+   integer :: idum
    character(len=50) :: device
 
    print*,'Enter output device:'
@@ -132,8 +134,7 @@ program fviews
 
    call vexit
 
-end program fviews
-
+contains
 !
 ! drawtetra
 !
@@ -170,3 +171,5 @@ subroutine drawtetra
    call drawchar('d')
 
 end subroutine drawtetra
+end program fviews
+

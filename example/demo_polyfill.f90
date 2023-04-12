@@ -5,6 +5,7 @@
              use M_draw,    only  : D_BLACK,   D_WHITE
              use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
              use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
+             implicit none
              integer           :: ios
              character(len=50) :: device
              print*,'Enter output device:'
@@ -41,6 +42,7 @@
              use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
              use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
 
+             integer :: idum
              real parray(3,4)                   ! An array of points for a polygon
              data parray/ -8.0, -8.0, 0.0,  &
              & -5.0, -8.0, 0.0,  &

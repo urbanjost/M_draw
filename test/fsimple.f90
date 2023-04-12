@@ -6,6 +6,7 @@
 program fsimple
 !(LICENSE:PD)
 use M_draw
+integer :: i, idum
 integer,parameter :: BLACK = 0, GREEN = 2
 character(len=50) :: device
 character(len=80) :: fname
