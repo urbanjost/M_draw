@@ -1,4 +1,4 @@
-# TOML file for fpm as described at https://github.com/fortran-lang/fpm/blob/master/manifest-reference.md
+# TOML file for fpm as described at https://fpm.fortran-lang.org/en/spec/manifest.html
 name = "M_draw"
 version = "1.0.0"
 license = "Public Domain"
@@ -9,10 +9,12 @@ description = "basic vector graphics package"
 categories = ["graphics"]
 keywords = ["fortran", "draw", "plot", "graphics"]
 homepage = "https://github.com/urbanjost/M_draw.git"
+
 [build]
 auto-executables = true  # Toggle automatic discovery of executables
 auto-examples = true     # Toggle automatic discovery of example programs
 auto-tests = true        # Toggle automatic discovery of test executables
+module-naming = true
 link = ["X11"]           # Linking against libraries
 
 [library]

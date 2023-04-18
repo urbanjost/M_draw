@@ -3537,6 +3537,7 @@
 !!    implicit none
 !!    real    :: left
 !!    real    :: baseline
+!!    integer :: ipaws
 !!    integer :: icolor=0
 !!    real    :: texth=10.0
 !!       !! set up drawing surface
@@ -4548,7 +4549,7 @@
 !!
 !!     program demo_color
 !!     use M_draw
-!!    implicit none
+!!     implicit none
 !!     real    :: b=0.5
 !!     real    :: y1,y2,ym,x1,x2
 !!     real    :: width=50.0/8.0,width2
@@ -4805,6 +4806,8 @@
 !!
 !!      program demo_getkey
 !!      use :: M_draw
+!!      implicit none
+!!      integer :: ichar
 !!      !! set up drawing environment
 !!      call prefsize(600,600)
 !!      call voutput('+')
@@ -4858,6 +4861,8 @@
 !!    program demo_checkkey
 !!    use :: M_draw
 !!    use :: M_time, only : system_sleep
+!!    implicit none
+!!    integer :: ichar
 !!    !! set up drawing environment
 !!    call prefsize(600,600)
 !!    call vinit(' ') ! start graphics using device $M_DRAW_DEVICE
@@ -5014,6 +5019,9 @@
 !!
 !!       program demo_locator !     track a cube with the locator
 !!       use M_draw
+!!       implicit none
+!!       real :: trans, sc, tdir, scal, x, y
+!!       integer :: idum, nplanes
 !!       parameter(TRANS=20.0, SC=0.1)
 !!       integer, parameter :: FACE=1, FILLED=2, OUTLINE=3
 !!       character(len=10)  :: device
@@ -6320,13 +6328,14 @@
 !!    !      a demonstration of objects
 !!    !
 !!    use M_draw
+!!    implicit none
 !!
 !!    integer SPHERE
 !!    real RADIUS
 !!    parameter (RADIUS = 10.0)
 !!    parameter(SPHERE = 1)
 !!    character(len=50) :: device
-!!    integer           :: ios
+!!    integer           :: ios, idum
 !!
 !!    print*,'Enter output device:'
 !!    read(*,'(a)',iostat=ios) device
@@ -7284,6 +7293,8 @@
 !!
 !!    program demo_isobj
 !!    use M_draw
+!!    implicit none
+!!    integer :: idum
 !!       call prefsize(300, 300)
 !!       call prefposition(100, 100)
 !!       call vinit(' ')   ! set up device
@@ -7352,7 +7363,8 @@
 !!    program demo_loadobj
 !!    ! test some object-related procedures
 !!    use M_draw
-!!    integer                      :: env_len
+!!    implicit none
+!!    integer                      :: env_len, idum
 !!    character(len=:),allocatable :: env
 !!       !------------------------------------------------------------
 !!       ! make an object file, which would normally be
