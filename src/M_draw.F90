@@ -10360,7 +10360,7 @@ function str(generic0, generic1, generic2, generic3, generic4, generic5, generic
                   & sep)
 implicit none
 
-! ident_2="@(#)M_msg::str(3fp): writes a message to a string composed of any standard scalar types"
+! ident_2="@(#)M_draw__msg::str(3fp): writes a message to a string composed of any standard scalar types"
 
 class(*),intent(in),optional  :: generic0, generic1, generic2, generic3, generic4
 class(*),intent(in),optional  :: generic5, generic6, generic7, generic8, generic9
