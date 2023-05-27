@@ -1393,6 +1393,7 @@
 !!      use M_draw,    only  : D_BLACK,   D_WHITE
 !!      use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!      use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
+!!      implicit none
 !!      integer :: ipaws
 !!
 !!      call prefsize(200,200)
@@ -2074,6 +2075,7 @@
 !!    !      Specifying an extra argument turns on the filling.
 !!    !
 !!    use M_draw
+!!    implicit none
 !!    character(len=30) :: device
 !!    character(len=1)  :: c
 !!    real    r, t, dr, dt
@@ -2311,6 +2313,7 @@
 !!    use M_draw,    only  : D_BLACK,   D_WHITE
 !!    use M_draw,    only  : D_RED,     D_GREEN,    D_BLUE
 !!    use M_draw,    only  : D_YELLOW,  D_MAGENTA,  D_CYAN
+!!    implicit none
 !!    real    :: b=0.5
 !!    real    :: y1,y2,ym,x1,x2
 !!    real    :: width=50.0/8.0,width2
@@ -5218,6 +5221,7 @@
 !!     program demo_slocator
 !!
 !!     use M_draw
+!!    implicit none
 !!
 !!     character(len=20) :: dev
 !!     integer bt
@@ -6126,6 +6130,7 @@
 !!    ! Demonstrate a rotating translating tetrahedron, and doublebuffering
 !!    use M_draw
 !!    use M_time, only : system_sleep
+!!    implicit none
 !!    !
 !!    integer TETRAHEDRON
 !!    parameter (TETRAHEDRON = 1)
@@ -7602,8 +7607,9 @@
 !!
 !!    program demo_example_text_justification   !      demonstrate still more features of text
 !!    use M_draw
+!!    implicit none
 !!    character(len=20) :: dev
-!!    integer           :: ios
+!!    integer           :: ios, idum
 !!
 !!    write(*,'(a)',advance='no')'Enter device: '
 !!    read(*, '(a)',iostat=ios) dev
@@ -7637,8 +7643,9 @@
 !!    call vexit()
 !!    contains
 !!
-!!    subroutine drawstuff
+!!    subroutine drawstuff()
 !!    use M_draw
+!!    integer :: idum
 !!
 !!    call color(D_BLACK)
 !!    !call polyfill(1)
@@ -7694,6 +7701,8 @@
 !!
 !!    subroutine drawstuff2(ang)
 !!    use M_draw
+!!    real :: ang
+!!    integer :: idum
 !!
 !!    call color(D_BLACK)
 !!    call rect(0.1, 0.1, 0.9, 0.9)
