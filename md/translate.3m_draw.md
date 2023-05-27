@@ -108,6 +108,7 @@ real <i>x</i>, <i>y</i>, <i>z</i>
    !
    integer SPHERE
    integer ii
+   integer ia
    real i, r, z, a, RADIUS, PI
    parameter (PI = 3.1415926535, RADIUS = 10.0, SPHERE = 1)
 <br />   call makeobj(SPHERE)
