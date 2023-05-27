@@ -25,7 +25,7 @@ real <i>left</i>, <i>right</i>, <i>bot</i>, <i>top</i>, <i>near</i>, <i>far</i>
       <blockquote>
         Sample program:
         <pre>
-   program demo_windows
+   program demo_window
    use M_draw
    integer CUBE, TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT
    parameter(CUBE = 1, TOPLEFT = 2, TOPRIGHT = 3, BOTTOMLEFT = 4, BOTTOMRIGHT = 5)
@@ -132,7 +132,7 @@ real <i>left</i>, <i>right</i>, <i>bot</i>, <i>top</i>, <i>near</i>, <i>far</i>
    call popmatrix
    end subroutine side
    !=====================================================================
-   end program demo_windows
+   end program demo_window
 <br />
 </pre>
       </blockquote>

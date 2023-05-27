@@ -1796,6 +1796,7 @@
 !!    real,intent(in)    :: xx,yy
 !!    character(len=80)  :: echoname
 !!    real    :: points(2,100)
+!!    real :: red, green, blue
 !!    if(iset.gt.255)return
 !!    ! determine coordinates of next square
 !!    points(1:2,1)=[xx,      yy      ]
@@ -3426,7 +3427,7 @@
 !!       real              :: r
 !!       character(len=*)  :: str
 !!       real              :: i, inc, x, y, a
-!!       integer           :: j
+!!       integer           :: j, i10
 !!       character(len=1)  :: c
 !!       real,parameter    :: pi = 3.1415926535
 !!
@@ -6048,7 +6049,7 @@
 !!    call popmatrix
 !!    end subroutine side
 !!    !=====================================================================
-!!    end program demo_windows
+!!    end program demo_window
 !>
 !!##NAME
 !!    pushmatrix(3f) - [M_draw:MATRIX_STACK] Save the current transformation matrix on the matrix stack.
@@ -10360,7 +10361,7 @@ function str(generic0, generic1, generic2, generic3, generic4, generic5, generic
                   & sep)
 implicit none
 
-! ident_2="@(#)M_draw__msg::str(3fp): writes a message to a string composed of any standard scalar types"
+! ident_2="@(#)M_draw::str(3fp): writes a message to a string composed of any standard scalar types"
 
 class(*),intent(in),optional  :: generic0, generic1, generic2, generic3, generic4
 class(*),intent(in),optional  :: generic5, generic6, generic7, generic8, generic9

@@ -56,6 +56,7 @@ subroutine <b>poly2</b>(<i>n</i>, <i>points</i>)
    real,intent(in)    :: xx,yy
    character(len=80)  :: echoname
    real    :: points(2,100)
+   real :: red, green, blue
    if(iset.gt.255)return
    ! determine coordinates of next square
    points(1:2,1)=[xx,      yy      ]

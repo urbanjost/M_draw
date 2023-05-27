@@ -13,7 +13,7 @@
           character(len=40)   :: str1, str2, str3, str4, fonts(22)
           character(len=100)  :: buf
           character(len=1)    :: c
-          integer             :: i, i10, ios, idum
+          integer             :: i, ios, idum
           data fonts/ 'astrology', 'cursive',    'futura.l',               &
           &      'futura.m',  'gothic.eng', 'gothic.ger',             &
           &      'gothic.ita','greek',      'japanese',    'markers', &
@@ -79,7 +79,7 @@
              real              :: r
              character(len=*)  :: str
              real              :: i, inc, x, y, a
-             integer           :: j
+             integer           :: j, i10
              character(len=1)  :: c
              real,parameter    :: pi = 3.1415926535
 

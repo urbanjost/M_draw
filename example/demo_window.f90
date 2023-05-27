@@ -1,4 +1,4 @@
-          program demo_windows
+          program demo_window
           use M_draw
           implicit none
           integer :: idum, ios
@@ -107,4 +107,4 @@
           call popmatrix
           end subroutine side
           !=====================================================================
-          end program demo_windows
+          end program demo_window
