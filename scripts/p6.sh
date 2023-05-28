@@ -1,0 +1,16 @@
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >fballs.gif'        fballs        ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >fcirctxt.gif'      fcirctxt      ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >fcurves.gif'       fcurves       ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >fdistrt.gif'       fdistrt       ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >fjtext.gif'        fjtext        ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >floc.gif'          floc          ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >flstyles.gif'      flstyles      ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >fmoretxt.gif'      fmoretxt      ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >fobjvws.gif'       fobjvws       ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >fpoly.gif'         fpoly         ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >fshapes.gif'       fshapes       ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >fsimple.gif'       fsimple       ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >ftrivial.gif'      ftrivial      ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >fviews.gif'        fviews        ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >fworld.gif'        fworld        ||  echo  ok
+(echo  p6;echo  futura.m)|env  VDEVICE=p6  VOUTPUT='|ppmtogif  >ftextjustify.gif'  ftextjustify  ||  echo  ok
