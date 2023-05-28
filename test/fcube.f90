@@ -46,7 +46,7 @@ program cube
 !
 ! Setup drawing into the backbuffer....
 !
-   if (backbuffer() .lt. 0) then
+   if (backbuffer() < 0) then
       call vexit
       write (*, *) 'Device can''t support doublebuffering'
       stop
@@ -57,7 +57,7 @@ program cube
    r = 0.0
 
    INFINITE: do
-      if (r .ge. 360) r = 0.0
+      if (r >= 360) r = 0.0
       call color(BLACK)
       call clear
 
@@ -71,7 +71,7 @@ program cube
 
       call drawcube(nplanes)
 
-      if (nplanes .eq. 1 .and. fill) then
+      if (nplanes == 1 .and. fill) then
          call polyfill(.false.)
          call color(0)
          call drawcube(nplanes)
@@ -81,21 +81,21 @@ program cube
       call popmatrix
 
       t = t + dt
-      if (t .gt. 3.0 .or. t .lt. -18.0) dt = -dt
+      if (t > 3.0 .or. t < -18.0) dt = -dt
 
       call swapbuffers
 
       c = char(checkkey())
-      if (c .eq. 'f') then
+      if (c == 'f') then
          fill = .not. fill
          call polyfill(fill)
-      else if (c .eq. 'b') then
+      else if (c == 'b') then
          back = .not. back
          call backface(back)
-      else if (c .eq. 'd') then
+      else if (c == 'd') then
          backdir = .not. backdir
          call backfacedir(backdir)
-      else if (c .ne. char(0)) then
+      else if (c /= char(0)) then
          call vexit
          stop
       end if
@@ -119,16 +119,16 @@ contains
 
       real carray(3, 8)
       data carray/                                                    &
-   &     -1.0, -1.0, 1.0,                                          &
-   &      1.0, -1.0, 1.0,                                          &
-   &      1.0, 1.0, 1.0,                                          &
-   &     -1.0, 1.0, 1.0,                                          &
-   &     -1.0, -1.0, -1.0,                                          &
-   &      1.0, -1.0, -1.0,                                          &
-   &      1.0, 1.0, -1.0,                                          &
-   &     -1.0, 1.0, -1.0/
+      &     -1.0, -1.0, 1.0,                                          &
+      &      1.0, -1.0, 1.0,                                          &
+      &      1.0, 1.0, 1.0,                                          &
+      &     -1.0, 1.0, 1.0,                                          &
+      &     -1.0, -1.0, -1.0,                                          &
+      &      1.0, -1.0, -1.0,                                          &
+      &      1.0, 1.0, -1.0,                                          &
+      &     -1.0, 1.0, -1.0/
 
-      if (nplanes .gt. 1) call color(RED)
+      if (nplanes > 1) call color(RED)
 
       call makepoly
       call move(carray(1, 1), carray(2, 1), carray(3, 1))
@@ -138,7 +138,7 @@ contains
       call draw(carray(1, 1), carray(2, 1), carray(3, 1))
       call closepoly
 
-      if (nplanes .gt. 1) call color(GREEN)
+      if (nplanes > 1) call color(GREEN)
 
       call makepoly
       call move(carray(1, 6), carray(2, 6), carray(3, 6))
@@ -148,7 +148,7 @@ contains
       call draw(carray(1, 6), carray(2, 6), carray(3, 6))
       call closepoly
 
-      if (nplanes .gt. 1) call color(YELLOW)
+      if (nplanes > 1) call color(YELLOW)
 
       call makepoly
       call move(carray(1, 2), carray(2, 2), carray(3, 2))
@@ -158,7 +158,7 @@ contains
       call draw(carray(1, 2), carray(2, 2), carray(3, 2))
       call closepoly
 
-      if (nplanes .gt. 1) call color(BLUE)
+      if (nplanes > 1) call color(BLUE)
 
       call makepoly
       call move(carray(1, 1), carray(2, 1), carray(3, 1))
@@ -168,7 +168,7 @@ contains
       call draw(carray(1, 1), carray(2, 1), carray(3, 1))
       call closepoly
 
-      if (nplanes .gt. 1) call color(MAGENTA)
+      if (nplanes > 1) call color(MAGENTA)
 
       call makepoly
       call move(carray(1, 3), carray(2, 3), carray(3, 3))
@@ -178,7 +178,7 @@ contains
       call draw(carray(1, 3), carray(2, 3), carray(3, 3))
       call closepoly
 
-      if (nplanes .gt. 1) call color(CYAN)
+      if (nplanes > 1) call color(CYAN)
 
       call makepoly
       call move(carray(1, 1), carray(2, 1), carray(3, 1))

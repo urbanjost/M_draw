@@ -3,17 +3,17 @@
 !
 program fobjviews
 
-use M_draw
-implicit none
+   use M_draw
+   implicit none
 
-integer BLACK, RED, GREEN, YELLOW, BLUE, CYAN, MAGENTA
-parameter(BLACK=0, RED=1, GREEN=2, YELLOW=3, BLUE=4, CYAN=5, MAGENTA=6)
+   integer BLACK, RED, GREEN, YELLOW, BLUE, CYAN, MAGENTA
+   parameter(BLACK=0, RED=1, GREEN=2, YELLOW=3, BLUE=4, CYAN=5, MAGENTA=6)
 
-integer CUBE, TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT
-parameter(CUBE=1, TOPLEFT=2, TOPRIGHT=3, BOTTOMLEFT=4, BOTTOMRIGHT=5)
+   integer CUBE, TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT
+   parameter(CUBE=1, TOPLEFT=2, TOPRIGHT=3, BOTTOMLEFT=4, BOTTOMRIGHT=5)
 
-character(len=20) :: device
-integer :: idum
+   character(len=20) :: device
+   integer :: idum
 
    print *, 'Enter device name:'
    read (*, '(A)') device
@@ -139,8 +139,6 @@ contains
 !
    subroutine makecube
 
-      use M_draw
-
       integer CUBE
       parameter(CUBE=1)
 
@@ -174,8 +172,6 @@ contains
 ! define a face for the cube
 !
    subroutine side
-
-      use M_draw
 
       call pushmatrix
       call translate(0.0, 0.0, 1.0)

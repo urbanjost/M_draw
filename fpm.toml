@@ -11,21 +11,31 @@ keywords = ["fortran", "draw", "plot", "graphics"]
 homepage = "https://github.com/urbanjost/M_draw.git"
 
 [build]
-auto-executables = true  # Toggle automatic discovery of executables
-auto-examples = true     # Toggle automatic discovery of example programs
-auto-tests = true        # Toggle automatic discovery of test executables
-module-naming = true
-link = ["X11"]           # Linking against libraries
+   auto-executables = true  # Toggle automatic discovery of executables
+   auto-examples = true     # Toggle automatic discovery of example programs
+   auto-tests = true        # Toggle automatic discovery of test executables
+   module-naming = true
+   link = ["X11"]           # Linking against libraries
+
+[install]
+   library = true
+
+[fortran]
+# Fortran features
+# enable and disable specific language features
+   implicit-typing = false    # whether default implicit typing should be allowed.  The default option is false.
+   implicit-external = false  # whether external interfaces can be declared implicitly. The default option is false.
+   source-form = "free"       # free|fixed|default
 
 [library]
-source-dir = "src"
+   source-dir = "src"
 
 [[executable]]
-name="make_hershey"
-source-dir="app/MAKE_HERSHEY"
-main="make_hershey.f90"
+   name="make_hershey"
+   source-dir="app/MAKE_HERSHEY"
+   main="make_hershey.f90"
 
 [[executable]]
-name="h2v"
-source-dir="app/MAKE_HERSHEY"
-main="h2v.c"
+   name="h2v"
+   source-dir="app/MAKE_HERSHEY"
+   main="h2v.c"

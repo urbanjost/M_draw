@@ -106,3 +106,9 @@ clean:
 >   @ $(AR) $(ARFLAGS) $(LIBRARY) $% 
 >   @ $(AR) $(ARFLAGS) $(LIBRARY) $<  # optionally store the source code too
 >   @ /bin/rm -f ${?F:.c=.o} $%
+
+.PHONY: man
+man:
+>@mandb ../man 1>&2
+>@env MANPATH=../man MANWIDTH=256 man -k .|col -b
+>@env MANPATH=../man MANWIDTH=80  man -Tutf8 --regex '.*'|col -b
