@@ -1,7 +1,7 @@
 # TOML file for fpm as described at https://fpm.fortran-lang.org/en/spec/manifest.html
 name = "M_draw"
-version = "1.0.0"
-license = "Public Domain"
+version = "1.0.2"
+license = "MIT"
 author = "John S. Urban"
 maintainer = "urbanjost@comcast.net"
 copyright = "2020 John S. Urban"
