@@ -101,7 +101,9 @@ more CygWin utilities as well.
 
 ## Documentation   ![docs](docs/images/docs.gif)
 ### User 
+<!--
    - [An overview in HTML](https://urbanjost.github.io/M_draw/M_draw.html)
+-->
 
    - a simple [index](https://urbanjost.github.io/M_draw/) to
      the individual man-pages in HTML form
@@ -132,18 +134,16 @@ programs include:
 
 ## Future
 There are higher-level routines based on this library not yet available
-on github. Ultimately the hope is to release this as an fpm package
-as described at [https://fortran-lang.org](https://fortran-lang.org)
-and then to release the higher-level routines as separate distributions
-on top of this.
+on github. Ultimately the hope is to release these as fpm packages
+as described at [https://fortran-lang.org](https://fortran-lang.org).
 
-This version is essentially C code based on the public-domain Vogle
-graphics library but the intent is to convert it to a native Fortran
-library, which it is very amenable to.
+This version is largely C code based originally on the public-domain
+Vogle graphics library but the intent is to convert it to a native
+Fortran library, which it is very amenable to.
 
 There are a number of programs already using this low-level library
 to generate higher-level graphics:
-                 ![sample](images/M_slices.gif)
+                 ![sample](docs/images/M_slices.gif)
 
 ---
 
