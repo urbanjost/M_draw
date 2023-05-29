@@ -14,8 +14,8 @@ homepage = "https://github.com/urbanjost/M_draw.git"
    auto-executables = true  # Toggle automatic discovery of executables
    auto-examples = true     # Toggle automatic discovery of example programs
    auto-tests = true        # Toggle automatic discovery of test executables
-   module-naming = true
    link = ["X11"]           # Linking against libraries
+   module-naming = true
 
 [install]
    library = true
