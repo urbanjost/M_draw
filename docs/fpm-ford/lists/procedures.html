@@ -1,0 +1,1006 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="M_draw module">
+    <meta name="author" content="John S. Urban" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>All Procedures &ndash; M_draw
+</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">M_draw </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="../sourcefile/m_draw.f90.html">Source File</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12" id='text'>
+			 <h1>Procedures</h1>
+			 <table class="table table-striped">
+			 <thead><tr><th>Procedure</th><th>Location</th><th>Procedure Type</th><th>Description</th></tr></thead>
+			 <tbody>
+			   <tr>
+                 <td><a href='../interface/arc.html'>arc</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/arcprecision.html'>arcprecision</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/backbuffer.html'>backbuffer</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/backface.html'>backface</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/backfacedir.html'>backfacedir</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/bottomjustify.html'>bottomjustify</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/boxfit.html'>boxfit</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/boxtext.html'>boxtext</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/calcw2vcoeffs.html'>CalcW2Vcoeffs</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/callobj.html'>callobj</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/centertext.html'>centertext</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/checkkey.html'>checkkey</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/circle.html'>circle</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/circleprecision.html'>circleprecision</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/clear.html'>clear</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/clipping.html'>clipping</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/closeobj.html'>closeobj</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/closepoly.html'>closepoly</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/color.html'>color</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/curve.html'>curve</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/curvebasis.html'>curvebasis</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/curven.html'>curven</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/curveprecision.html'>curveprecision</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/dashcode.html'>dashcode</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/delobj.html'>delobj</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/draw.html'>draw</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/draw2.html'>draw2</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/drawchar.html'>drawchar</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/drawstr.html'>drawstr</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/expandviewport.html'>expandviewport</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/fixedwidth.html'>fixedwidth</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/font.html'>font</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/frontbuffer.html'>frontbuffer</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/genobj.html'>genobj</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getaspect.html'>getaspect</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getcharsize.html'>getcharsize</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getdepth.html'>getdepth</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getdisplaysize.html'>getdisplaysize</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getfactors.html'>getfactors</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getfontasc.html'>getfontasc</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getfontdec.html'>getfontdec</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getfontheight.html'>getfontheight</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getfontsize.html'>getfontsize</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getfontwidth.html'>getfontwidth</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getgp.html'>getgp</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getgp2.html'>getgp2</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getgpt.html'>getgpt</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getkey.html'>getkey</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/getmatrix.html'>getmatrix</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getopenobj.html'>getopenobj</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getplanes.html'>getplanes</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getprefposandsize.html'>getprefposandsize</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getstring.html'>getstring</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/getviewport.html'>getviewport</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/hatchang.html'>hatchang</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/hatchpitch.html'>hatchpitch</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/invokeobj.html'>invokeobj</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Sample program</p><a href="../proc/invokeobj.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/isobj.html'>isobj</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/isobj_f.html'>isobj_F</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/leftjustify.html'>leftjustify</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/linestyle.html'>linestyle</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/linewidth.html'>linewidth</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/loadmatrix.html'>loadmatrix</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/loadobj.html'>loadobj</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/locator.html'>locator</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/lookat.html'>lookat</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/makeobj.html'>makeobj</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/makepoly.html'>makepoly</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/mapcolor.html'>mapcolor</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/move.html'>move</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/move2.html'>move2</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/multmatrix.html'>multmatrix</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/numchars.html'>numchars</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/ortho.html'>ortho</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/ortho2.html'>ortho2</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/page.html'>page</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/patch.html'>patch</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/patchbasis.html'>patchbasis</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/patchcurves.html'>patchcurves</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/patchprecision.html'>patchprecision</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/pdraw.html'>pdraw</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/perspective.html'>perspective</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/pmove.html'>pmove</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/point.html'>point</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/point2.html'>point2</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/polarview.html'>polarview</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/poly.html'>poly</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/poly2.html'>poly2</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/polyfill.html'>polyfill</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/polyhatch.html'>polyhatch</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/pop.html'>pop</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td><a href="../proc/pop.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/popattributes.html'>popattributes</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/popdev.html'>popdev</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/popmatrix.html'>popmatrix</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/popviewport.html'>popviewport</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/prefposition.html'>prefposition</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/prefsize.html'>prefsize</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/print.html'>print</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td><p>Sample program:</p><a href="../proc/print.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/printattribs.html'>printattribs</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/printvdevice.html'>printvdevice</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/push.html'>push</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td><a href="../proc/push.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/pushattributes.html'>pushattributes</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/pushdev.html'>pushdev</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/pushmatrix.html'>pushmatrix</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/pushviewport.html'>pushviewport</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/rcurve.html'>rcurve</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/rdraw.html'>rdraw</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/rdraw2.html'>rdraw2</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/rect.html'>rect</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/rightjustify.html'>rightjustify</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/rmove.html'>rmove</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/rmove2.html'>rmove2</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/rotate.html'>rotate</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/rsdraw2.html'>rsdraw2</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/rsmove2.html'>rsmove2</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/saveobj.html'>saveobj</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/scale.html'>scale</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/sdraw2.html'>sdraw2</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/sector.html'>sector</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/sgetgp2.html'>sgetgp2</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/slocator.html'>slocator</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/smove2.html'>smove2</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/spoint2.html'>spoint2</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/srect.html'>srect</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/strlength.html'>strlength</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Function</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/strlength_f.html'>strlength_F</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/swapbuffers.html'>swapbuffers</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/textang.html'>textang</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/textjustify.html'>textjustify</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/textsize.html'>textsize</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/textslant.html'>textslant</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/textweight.html'>textweight</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/topjustify.html'>topjustify</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/translate.html'>translate</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/unexpandviewport.html'>unexpandviewport</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/up.html'>up</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/vexit.html'>vexit</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/vflush.html'>vflush</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/vgetdev.html'>vgetdev</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/viewport.html'>viewport</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/vinit.html'>vinit</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/vnewdev.html'>vnewdev</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/voutput.html'>voutput</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../proc/vsetflush.html'>vsetflush</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Subroutine</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/vtowxy.html'>VtoWxy</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/window.html'>window</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/xcentertext.html'>xcentertext</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/ycentertext.html'>ycentertext</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			   <tr>
+                 <td><a href='../interface/yobbarays.html'>yobbarays</a></td>
+                 <td><a href='../module/m_draw.html'>M_draw</a></td>
+                 <td>Interface</td>
+                 <td></td>
+               </tr>
+			 </tbody></table>
+             
+        </div>
+      </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              M_draw
+ was developed by John S. Urban<br>              &copy; 2025 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2025-07-11 01:03 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

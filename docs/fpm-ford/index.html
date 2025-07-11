@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="M_draw module">
+    <meta name="author" content="John S. Urban" >
+    <link rel="icon" href="./favicon.png">
+
+    <title> M_draw </title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="./css/fontawesome.min.css" rel="stylesheet">
+    <link href="./css/brands.min.css" rel="stylesheet">
+    <link href="./css/regular.min.css" rel="stylesheet">
+    <link href="./css/solid.min.css" rel="stylesheet">
+    <link href="./css/v4-font-face.min.css" rel="stylesheet">
+    <link href="./css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="./css/local.css" rel="stylesheet">
+    <link href="./css/pygments.css" rel="stylesheet">
+    <script src="./js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="./index.html">M_draw </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="./sourcefile/m_draw.f90.html">Source File</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="./lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="./search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <!-- Main component for a primary marketing message or call to action -->
+    <div class="p-5 mb-4 bg-light border rounded-3" id="jumbotron">
+      <p>M_draw module</p>
+        <p> Find us on&hellip;</p>
+      <p>
+        <a class="btn btn-lg btn-primary" href="https://github.com/urbanjost/M_draw" role="button">GitHub</a>
+        
+        
+        
+        
+      </p>
+    </div>
+
+      <div class="row" id='text'>
+        <div class=col-md-8>
+          <h1>M_draw</h1>
+          <!--
+author_pic:
+twitter:
+website:
+-->
+<h1 id="name">Name</h1>
+<p><img alt="sample" src="images/M_draw.gif"></p>
+<h2 id="m_draw-low-level-vector-graphics-library">M_draw - low level vector graphics library</h2>
+<h2 id="description">Description</h2>
+<p>This is a base graphics library intended for use with Fortran
+although largely written in C. It is based on the public domain
+VOGLE graphics library. It allows for creating vector-based 
+graphics with a variety of output devices.</p>
+<h2 id="download-and-build-with-make1">Download and Build with make(1) <img alt="gmake" src="docs/images/gnu.gif"></h2>
+<div class="codehilite"><pre><span></span><code> <span class="nv">git</span> <span class="nv">clone</span> <span class="nv">https</span>:<span class="o">//</span><span class="nv">github</span>.<span class="nv">com</span><span class="o">/</span><span class="nv">urbanjost</span><span class="o">/</span><span class="nv">M_draw</span>.<span class="nv">git</span>
+ <span class="nv">cd</span> <span class="nv">M_draw</span><span class="o">/</span><span class="nv">src</span>
+ # <span class="nv">change</span> <span class="nv">Makefile</span> <span class="k">if</span> <span class="nv">not</span> <span class="nv">using</span> <span class="nv">one</span> <span class="nv">of</span> <span class="nv">the</span> <span class="nv">listed</span> <span class="nv">compilers</span>
+
+ # <span class="k">for</span> <span class="nv">gfortran</span>
+ <span class="nv">make</span> <span class="nv">clean</span>
+ <span class="nv">make</span> <span class="nv">F90</span><span class="o">=</span><span class="nv">gfortran</span> <span class="nv">gfortran</span>
+
+ # <span class="k">for</span> <span class="nv">ifort</span>
+ <span class="nv">make</span> <span class="nv">clean</span>
+ <span class="nv">make</span> <span class="nv">F90</span><span class="o">=</span><span class="nv">ifort</span> <span class="nv">ifort</span>
+
+ # <span class="k">for</span> <span class="nv">nvfortran</span>
+ <span class="nv">make</span> <span class="nv">clean</span>
+ <span class="nv">make</span> <span class="nv">F90</span><span class="o">=</span><span class="nv">nvfortran</span> <span class="nv">nvfortran</span>
+</code></pre></div>
+
+<p>This will compile the Fortran module and C code  and basic example
+programs that exercise the routines.</p>
+<h2 id="download-and-build-with-fpm1">Download and Build with fpm(1) <img alt="fpm" src="docs/images/fpm_logo.gif"></h2>
+<p>Alternatively, download the github repository and build it with
+fpm ( as described at <a href="https://github.com/fortran-lang/fpm">Fortran Package Manager</a> )</p>
+<div class="codehilite"><pre><span></span><code>     <span class="c1">#!/bin/bash</span>
+     git clone https://github.com/urbanjost/M_draw.git
+     <span class="nb">cd</span> M_draw
+     <span class="c1">#</span>
+     <span class="c1"># specify directory to place Hershey font files in</span>
+     <span class="nb">export</span> <span class="nv">BUILD_DIR</span><span class="o">=</span><span class="nv">$HOME</span>/local/lib 
+     mkdir -p <span class="nv">$BUILD_DIR</span>
+     <span class="c1">#</span>
+     <span class="c1"># create font files</span>
+     fpm run make_hershey
+     <span class="c1">#</span>
+     <span class="c1"># set environment variables</span>
+     <span class="nb">export</span> <span class="nv">M_DRAW_FONTPATH</span><span class="o">=</span><span class="nv">$HOME</span>/.local/lib/hershey
+     <span class="nb">export</span> <span class="nv">M_DRAW_DEVICE</span><span class="o">=</span>X11
+
+     <span class="c1"># run tests</span>
+     fpm <span class="nb">test</span>  <span class="c1"># run unit tests</span>
+</code></pre></div>
+
+<p>or just list it as a dependency in your fpm.toml project file.</p>
+<div class="codehilite"><pre><span></span><code><span class="w">     </span><span class="k">[dependencies]</span><span class="w"></span>
+<span class="w">     </span><span class="n">M_draw</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;https://github.com/urbanjost/M_draw.git&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>Note that M_draw.f90 is registered at the <a href="https://fortran-lang.org/packages/fpm">fpm(1) registry</a></p>
+<h2 id="running-an-example">Running an Example</h2>
+<p>Before running the example programs you must specify the location
+of the font definition files and a default output device. For example:</p>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="c1"># assuming you are in M_draw/src ...</span><span class="w"></span>
+<span class="w"> </span><span class="k">export</span><span class="w"> </span><span class="n">M_DRAW_FONTPATH</span><span class="o">=</span><span class="n n-Quoted">`pwd`</span><span class="o">/</span><span class="n">hershey</span><span class="w"></span>
+<span class="c1">#Specify a default output device and size</span><span class="w"></span>
+<span class="w"> </span><span class="k">export</span><span class="w"> </span><span class="n">M_DRAW_DEVICE</span><span class="o">=</span><span class="s1">&#39;X11 640 480&#39;</span><span class="w"></span>
+<span class="w"> </span><span class="c1"># run an example program</span><span class="w"></span>
+<span class="w"> </span><span class="n">PROGRAMS</span><span class="o">/</span><span class="n">EXAMPLES</span><span class="o">/</span><span class="n">fballs</span><span class="w"></span>
+</code></pre></div>
+
+<p>While you are there, you might want to generate a text version of the
+documentation as well:</p>
+<div class="codehilite"><pre><span></span><code><span class="p">#</span><span class="w"> </span><span class="n">show</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="n">man</span><span class="o">-</span><span class="n">pages</span><span class="w"> </span><span class="n">as</span><span class="w"> </span><span class="n">text</span><span class="w"></span>
+<span class="n">env</span><span class="w"> </span><span class="n">MANWIDTH</span><span class="o">=</span><span class="mh">80</span><span class="w"> </span><span class="n">MANPATH</span><span class="o">=</span><span class="p">..</span><span class="o">/</span><span class="n">man</span><span class="w"> </span><span class="n">man</span><span class="w"> </span><span class="o">--</span><span class="n">regex</span><span class="w"> </span><span class="p">&#39;.</span><span class="o">*</span><span class="p">&#39;</span><span class="w"> </span><span class="o">|</span><span class="n">col</span><span class="w"> </span><span class="o">-</span><span class="n">b</span><span class="o">|</span><span class="n">tee</span><span class="w"> </span><span class="n">man</span><span class="p">.</span><span class="n">txt</span><span class="w"></span>
+</code></pre></div>
+
+<h2 id="notes">Notes</h2>
+<p>The *.o files can be combined into a library file and the library
+and module files can be placed in a convenient location for easier
+loading.</p>
+<p>The hershey/ directory typically is placed in /usr/share/hershey 
+or /usr/local/lib on GNU/Linux platforms. Just remember to set
+the environment variable M_DRAW_FONTPATH to the directory name.</p>
+<p>The build assumes you have the X11 libraries, and does not include
+the PC driver often used with Cygwin. </p>
+<p>It is relatively easy to remove a driver such as C-X11.c by going into
+C-drivers.c and changing a line like &ldquo;#define X11&rdquo; to &ldquo;#undef X11&rdquo; and
+removing C-X11.c from the Makefile. If anyone is interested about the
+CygWin/PC driver let me know; but it is relatively easy to install X11
+Windows with CygWin and installing X11 Windows allows you to use many
+more CygWin utilities as well.</p>
+<h2 id="documentation">Documentation   <img alt="docs" src="docs/images/docs.gif"></h2>
+<h3 id="user">User</h3>
+<!--
+   - [An overview in HTML](https://urbanjost.github.io/M_draw/M_draw.html)
+-->
+
+<ul>
+<li>
+<p>a simple <a href="https://urbanjost.github.io/M_draw/">index</a> to
+     the individual man-pages in HTML form</p>
+</li>
+<li>
+<p>A single page that uses javascript to combine all the HTML
+     descriptions of the man-pages is at 
+     <a href="https://urbanjost.github.io/M_draw/BOOK_M_draw.html">BOOK_M_draw</a>.</p>
+</li>
+</ul>
+<p>The overview is maintained manually and may be out of date but covers
+the core routines (which are very stable). The other documentation
+is auto-generated during a rebuild of this repository, and will
+automatically have the latest routines.</p>
+<h2 id="man-pages">Man-pages <img alt="man-pages" src="docs/images/manpages.gif"></h2>
+<p>Literal man-pages for use on GNU/Linux, Unix and CygWin platforms:
+  - <a href="https://urbanjost.github.io/M_draw/manpages.zip">manpages.zip</a>
+  - <a href="https://urbanjost.github.io/M_draw/manpages.tgz">manpages.tgz</a></p>
+<h2 id="examples-and-unit-tests">Examples and Unit Tests</h2>
+<p>There are no automated unit tests per-se. Running the example programs
+and demo programs ensures the library is functioning. Available 
+programs include:</p>
+<ul>
+<li>confidence tests in the test/ directory use basic programs and are
+    a good resource for new users.</li>
+<li>demo programs extracted from the man pages in the <a href="example/">example/</a> directory</li>
+</ul>
+<h2 id="future">Future</h2>
+<p>There are higher-level routines based on this library not yet available
+on github. Ultimately the hope is to release these as fpm packages
+as described at <a href="https://fortran-lang.org">https://fortran-lang.org</a>.</p>
+<p>This version is largely C code based originally on the public-domain
+Vogle graphics library but the intent is to convert it to a native
+Fortran library, which it is very amenable to.</p>
+<p>There are a number of programs already using this low-level library
+to generate higher-level graphics:
+                 <img alt="sample" src="docs/images/M_slices.gif"></p>
+<hr>
+<ul>
+<li><a href="docs/CHANGELOG.md">CHANGELOG</a> provides a history of significant changes</li>
+<li><a href="docs/STATUS.md">CI/CD BUILD STATUS</a></li>
+</ul>
+<hr>
+        </div>
+          <div class="col-md-4">
+            <div class="card card-body bg-light">
+              <h2 class="card-title">Developer Info</h2>
+              <h4 class="card-text">John S. Urban</h4>
+              <p class="card-text"></p>
+                <div class="text-center"><div class="btn-group" role="group">
+                    
+                    <a class="btn btn-lg btn-primary" href="https://github.com/urbanjost/M_draw"><i class="fa fa-github fa-lg"></i></a>
+                    
+                    
+                    
+                    
+                    
+                    
+                </div></div>
+            </div>
+          </div>
+      </div>
+        <div class="row">
+          <hr>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Source Files</h3>
+              <ul><li><a href='sourcefile/m_draw.f90.html'>M_draw.F90</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/files.html"><em>All source files&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Modules</h3>
+              <ul><li><a href='module/m_draw.html'>M_draw</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/modules.html"><em>All modules&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Procedures</h3>
+              <ul><li><a href='interface/arc.html'>arc</a></li><li><a href='interface/arcprecision.html'>arcprecision</a></li><li><a href='interface/backbuffer.html'>backbuffer</a></li><li><a href='proc/backface.html'>backface</a></li><li><a href='proc/backfacedir.html'>backfacedir</a></li><li><a href='interface/bottomjustify.html'>bottomjustify</a></li><li><a href='interface/boxfit.html'>boxfit</a></li><li><a href='proc/boxtext.html'>boxtext</a></li><li><a href='interface/calcw2vcoeffs.html'>CalcW2Vcoeffs</a></li><li><a href='interface/callobj.html'>callobj</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/procedures.html"><em>All procedures&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-xs-6 col-sm-3">
+            <div>
+              <h3>Derived Types</h3>
+              <ul><li><a href='type/matrix.html'>MATRIX</a></li></ul>
+            </div>
+            <div>
+              <ul>
+                <li><a href="./lists/types.html"><em>All derived types&hellip;</em></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              M_draw
+ was developed by John S. Urban<br>              &copy; 2025 
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2025-07-11 01:03 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>
